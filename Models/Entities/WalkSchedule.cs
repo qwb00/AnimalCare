@@ -14,8 +14,8 @@ namespace Models.Entities
         public bool IsAvailable { get; set; }
         public Guid AnimalId { get; set; }
         public Animal Animal { get; set; }
-        public Guid CaretakerId { get; set; }
+        public Guid CareTakerId { get; set; }
         public CareTaker CareTaker { get; set; }
-        public Reservation Reservation { get; set; }
+        public ICollection<Reservation>? Reservations { get; set; } = new List<Reservation>();
     }
 }

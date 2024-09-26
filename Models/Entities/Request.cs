@@ -15,7 +15,7 @@ namespace Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public Guid AnimalId { get; set; }
         public Animal Animal { get; set; }
-        public Guid CaretakerId { get; set; }
+        public Guid CareTakerId { get; set; }
         public CareTaker CareTaker { get; set; }
         public Guid VeterinarianId { get; set; }
         public Veterinarian Veterinarian { get; set; }
