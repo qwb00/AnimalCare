@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{DB397D5D-C8D3-455D-8AA4-09161551C26F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{DB397D5D-C8D3-455D-8AA4-09161551C26F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Models.Entities
 {
-    public class WalkSchedule
+    public class WalkSchedule : BaseEntity
     {
         public DateTime Date { get; set; }
         public TimeSpan TimeStart { get; set; }

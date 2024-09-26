@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Repositories
 {
-    public class RepositoryContext : IdentityDbContext<User>
+    public class RepositoryContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public DbSet<Animal>? Animals { get; set; }
         public DbSet<HealthRecord>? HealthRecords { get; set; }
@@ -56,7 +53,7 @@ namespace Repositories
                  .HasMany(user => user.Reservations)
                  .WithOne(r => r.CareTaker)
                  .HasForeignKey(r => r.CareTakerId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<CareTaker>()
                  .HasMany(user => user.Schedules)
                  .WithOne(r => r.CareTaker)
@@ -74,12 +71,12 @@ namespace Repositories
                  .HasMany(user => user.Records)
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Veterinarian>()
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.NoAction);
         }
         private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
         {
@@ -108,7 +105,7 @@ namespace Repositories
                  .HasMany(a => a.Reservations)
                  .WithOne(r => r.WalkSchedule)
                  .HasForeignKey(r => r.WalkScheduleId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.Restrict);
         }
 
     }
