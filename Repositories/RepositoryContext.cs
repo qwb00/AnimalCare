@@ -10,7 +10,6 @@ namespace Repositories
         public DbSet<Animal>? Animals { get; set; }
         public DbSet<HealthRecord>? HealthRecords { get; set; }
         public DbSet<Reservation>? Reservations { get; set; }
-        public DbSet<WalkSchedule>? WalkSchedules { get; set; }
         public DbSet<Request>? Requests { get; set; }
 
         public RepositoryContext(DbContextOptions options) : base(options)
@@ -33,7 +32,6 @@ namespace Repositories
             ConfigureVeterinarianEntity(modelBuilder);
             ConfigureVolunteerEntity(modelBuilder);
             ConfigureAnimalEntity(modelBuilder);
-            ConfigureWalkScheduleEntity(modelBuilder);
 
         }
 
@@ -55,15 +53,10 @@ namespace Repositories
                  .HasForeignKey(r => r.CareTakerId)
                  .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<CareTaker>()
-                 .HasMany(user => user.Schedules)
-                 .WithOne(r => r.CareTaker)
-                 .HasForeignKey(r => r.CareTakerId)
-                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<CareTaker>()
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.CareTaker)
                  .HasForeignKey(r => r.CareTakerId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.NoAction);
         }
         private void ConfigureVeterinarianEntity(ModelBuilder modelBuilder)
         {
@@ -76,7 +69,7 @@ namespace Repositories
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.NoAction);
+                 .OnDelete(DeleteBehavior.Cascade);
         }
         private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
         {
@@ -94,18 +87,10 @@ namespace Repositories
                  .HasForeignKey(r => r.AnimalId)
                  .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Animal>()
-                 .HasMany(a => a.WalkSchedules)
+                 .HasMany(a => a.Reservations)
                  .WithOne(r => r.Animal)
                  .HasForeignKey(r => r.AnimalId)
                  .OnDelete(DeleteBehavior.Cascade);
-        }
-        private void ConfigureWalkScheduleEntity(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<WalkSchedule>()
-                 .HasMany(a => a.Reservations)
-                 .WithOne(r => r.WalkSchedule)
-                 .HasForeignKey(r => r.WalkScheduleId)
-                 .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

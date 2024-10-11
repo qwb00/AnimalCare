@@ -22,9 +22,10 @@ namespace Models.Entities
 
         [ForeignKey("VolunteerId")]
         public Volunteer Volunteer { get; set; }
-        public Guid WalkScheduleId { get; set; }
 
-        [ForeignKey("WalkScheduleId")]
-        public WalkSchedule WalkSchedule { get; set; }
+        [Required]
+        public Guid AnimalId { get; set; }
+        [ForeignKey("AnimalId")]
+        public Animal Animal { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AnimalCare.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdatedRelationships : Migration
+    public partial class Updated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -229,39 +229,10 @@ namespace AnimalCare.Migrations
                         name: "FK_Requests_AspNetUsers_CareTakerId",
                         column: x => x.CareTakerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Requests_AspNetUsers_VeterinarianId",
                         column: x => x.VeterinarianId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WalkSchedules",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimeStart = table.Column<TimeSpan>(type: "time", nullable: false),
-                    TimeEnd = table.Column<TimeSpan>(type: "time", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CareTakerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WalkSchedules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WalkSchedules_Animals_AnimalId",
-                        column: x => x.AnimalId,
-                        principalTable: "Animals",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WalkSchedules_AspNetUsers_CareTakerId",
-                        column: x => x.CareTakerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -276,11 +247,17 @@ namespace AnimalCare.Migrations
                     IsEnded = table.Column<bool>(type: "bit", nullable: false),
                     CareTakerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VolunteerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WalkScheduleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservations_Animals_AnimalId",
+                        column: x => x.AnimalId,
+                        principalTable: "Animals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Reservations_AspNetUsers_CareTakerId",
                         column: x => x.CareTakerId,
@@ -292,12 +269,6 @@ namespace AnimalCare.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Reservations_WalkSchedules_WalkScheduleId",
-                        column: x => x.WalkScheduleId,
-                        principalTable: "WalkSchedules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -379,6 +350,11 @@ namespace AnimalCare.Migrations
                 column: "VeterinarianId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reservations_AnimalId",
+                table: "Reservations",
+                column: "AnimalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reservations_CareTakerId",
                 table: "Reservations",
                 column: "CareTakerId");
@@ -387,21 +363,6 @@ namespace AnimalCare.Migrations
                 name: "IX_Reservations_VolunteerId",
                 table: "Reservations",
                 column: "VolunteerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservations_WalkScheduleId",
-                table: "Reservations",
-                column: "WalkScheduleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WalkSchedules_AnimalId",
-                table: "WalkSchedules",
-                column: "AnimalId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WalkSchedules_CareTakerId",
-                table: "WalkSchedules",
-                column: "CareTakerId");
         }
 
         /// <inheritdoc />
@@ -433,9 +394,6 @@ namespace AnimalCare.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "WalkSchedules");
 
             migrationBuilder.DropTable(
                 name: "Animals");

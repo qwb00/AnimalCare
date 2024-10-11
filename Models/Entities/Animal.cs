@@ -19,6 +19,7 @@ namespace Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime DateFound { get; set; }
         public ICollection<HealthRecord> HealthRecords { get; set; }
-        public ICollection<WalkSchedule> WalkSchedules { get; set; }
+
+        public ICollection<Reservation> Reservations { get; set; }
     }
 }
