@@ -188,39 +188,7 @@ namespace AnimalCare.Migrations
                     b.ToTable("Animals");
                 });
 
-            modelBuilder.Entity("Models.Entities.HealthRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AnimalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("VeterinarianId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("VeterinarianId");
-
-                    b.ToTable("HealthRecords");
-                });
-
-            modelBuilder.Entity("Models.Entities.Request", b =>
+            modelBuilder.Entity("Models.Entities.ExaminationRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,6 +203,10 @@ namespace AnimalCare.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -243,16 +215,11 @@ namespace AnimalCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("VeterinarianId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AnimalId");
 
                     b.HasIndex("CareTakerId");
-
-                    b.HasIndex("VeterinarianId");
 
                     b.ToTable("Requests");
                 });
@@ -266,13 +233,13 @@ namespace AnimalCare.Migrations
                     b.Property<Guid>("AnimalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CareTakerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsEnded")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ReservedAt")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("VolunteerId")
@@ -281,8 +248,6 @@ namespace AnimalCare.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AnimalId");
-
-                    b.HasIndex("CareTakerId");
 
                     b.HasIndex("VolunteerId");
 
@@ -395,10 +360,6 @@ namespace AnimalCare.Migrations
                 {
                     b.HasBaseType("Models.Entities.User");
 
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasDiscriminator().HasValue("Veterinarian");
                 });
 
@@ -463,29 +424,10 @@ namespace AnimalCare.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Entities.HealthRecord", b =>
+            modelBuilder.Entity("Models.Entities.ExaminationRecord", b =>
                 {
                     b.HasOne("Models.Entities.Animal", "Animal")
-                        .WithMany("HealthRecords")
-                        .HasForeignKey("AnimalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
-                        .WithMany("Records")
-                        .HasForeignKey("VeterinarianId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Animal");
-
-                    b.Navigation("Veterinarian");
-                });
-
-            modelBuilder.Entity("Models.Entities.Request", b =>
-                {
-                    b.HasOne("Models.Entities.Animal", "Animal")
-                        .WithMany()
+                        .WithMany("Examinations")
                         .HasForeignKey("AnimalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -496,17 +438,9 @@ namespace AnimalCare.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
-                        .WithMany("Requests")
-                        .HasForeignKey("VeterinarianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Animal");
 
                     b.Navigation("CareTaker");
-
-                    b.Navigation("Veterinarian");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>
@@ -517,12 +451,6 @@ namespace AnimalCare.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Entities.CareTaker", "CareTaker")
-                        .WithMany("Reservations")
-                        .HasForeignKey("CareTakerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Models.Entities.Volunteer", "Volunteer")
                         .WithMany("Reservations")
                         .HasForeignKey("VolunteerId")
@@ -531,29 +459,18 @@ namespace AnimalCare.Migrations
 
                     b.Navigation("Animal");
 
-                    b.Navigation("CareTaker");
-
                     b.Navigation("Volunteer");
                 });
 
             modelBuilder.Entity("Models.Entities.Animal", b =>
                 {
-                    b.Navigation("HealthRecords");
+                    b.Navigation("Examinations");
 
                     b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("Models.Entities.CareTaker", b =>
                 {
-                    b.Navigation("Requests");
-
-                    b.Navigation("Reservations");
-                });
-
-            modelBuilder.Entity("Models.Entities.Veterinarian", b =>
-                {
-                    b.Navigation("Records");
-
                     b.Navigation("Requests");
                 });
 

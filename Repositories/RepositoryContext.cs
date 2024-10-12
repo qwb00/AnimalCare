@@ -8,9 +8,8 @@ namespace Repositories
     public class RepositoryContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public DbSet<Animal>? Animals { get; set; }
-        public DbSet<HealthRecord>? HealthRecords { get; set; }
         public DbSet<Reservation>? Reservations { get; set; }
-        public DbSet<Request>? Requests { get; set; }
+        public DbSet<ExaminationRecord>? Requests { get; set; }
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
@@ -29,7 +28,6 @@ namespace Repositories
 
             ConfigureUserEntity(modelBuilder);
             ConfigureCareTakerEntity(modelBuilder);
-            ConfigureVeterinarianEntity(modelBuilder);
             ConfigureVolunteerEntity(modelBuilder);
             ConfigureAnimalEntity(modelBuilder);
 
@@ -48,28 +46,10 @@ namespace Repositories
         private void ConfigureCareTakerEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CareTaker>()
-                 .HasMany(user => user.Reservations)
-                 .WithOne(r => r.CareTaker)
-                 .HasForeignKey(r => r.CareTakerId)
-                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<CareTaker>()
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.CareTaker)
                  .HasForeignKey(r => r.CareTakerId)
                  .OnDelete(DeleteBehavior.NoAction);
-        }
-        private void ConfigureVeterinarianEntity(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Veterinarian>()
-                 .HasMany(user => user.Records)
-                 .WithOne(r => r.Veterinarian)
-                 .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Veterinarian>()
-                 .HasMany(user => user.Requests)
-                 .WithOne(r => r.Veterinarian)
-                 .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.Cascade);
         }
         private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
         {
@@ -81,11 +61,6 @@ namespace Repositories
         }
         private void ConfigureAnimalEntity(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Animal>()
-                 .HasMany(a => a.HealthRecords)
-                 .WithOne(r => r.Animal)
-                 .HasForeignKey(r => r.AnimalId)
-                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Animal>()
                  .HasMany(a => a.Reservations)
                  .WithOne(r => r.Animal)

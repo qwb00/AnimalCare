@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Models.Entities
 {
-    public class Request : BaseEntity
+    public class ExaminationRecord : BaseEntity
     {
         public string Text { get; set; }
         public string Status { get; set; }
+
+        public string Notes { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -22,12 +24,5 @@ namespace Models.Entities
         public Animal Animal { get; set; }
         public Guid CareTakerId { get; set; }
         public CareTaker CareTaker { get; set; }
-
-        [Required]
-        public Guid VeterinarianId { get; set; }
-        [ForeignKey("VeterinarianId")]
-        public Veterinarian Veterinarian { get; set; }
-
-
     }
 }

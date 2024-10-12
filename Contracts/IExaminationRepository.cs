@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
-    public interface IRequestRepository : IRepository<Request>
+    public interface IExaminationRepository : IRepository<ExaminationRecord>
     {
     }
 }

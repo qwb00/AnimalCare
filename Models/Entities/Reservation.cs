@@ -11,12 +11,10 @@ namespace Models.Entities
     public class Reservation : BaseEntity
     {
         [DataType(DataType.DateTime)]
-        public DateTime ReservedAt { get; set; } 
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public bool IsEnded { get; set; }
-        public Guid CareTakerId { get; set; }
-
-        [ForeignKey("CareTakerId")]
-        public CareTaker? CareTaker { get; set; }
+     
         [Required]
         public Guid VolunteerId { get; set; }
 
