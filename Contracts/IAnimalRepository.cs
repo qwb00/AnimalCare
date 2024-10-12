@@ -2,8 +2,7 @@
 
 namespace Contracts
 {
-    public interface IAnimalRepository : IRepo<Animal>
+    public interface IAnimalRepository : IRepository<Animal>
     {
-        Task<IEnumerable<Animal>> GetAllAnimalsAsync(bool trackChanges);
     }
 }
