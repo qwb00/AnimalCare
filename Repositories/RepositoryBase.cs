@@ -23,10 +23,10 @@ namespace Repositories
 
             return query;
         }
-        public IQueryable<T> GetAll(bool trackChanges) => !trackChanges ?
+        protected IQueryable<T> GetAll(bool trackChanges) => !trackChanges ?
             _dbSet.AsNoTracking() : _dbSet;
 
-        public virtual void Create(T entity) => _dbSet.Add(entity);
+        protected void Create(T entity) => _dbSet.Add(entity);
 
         public virtual void CreateRange(IEnumerable<T> entities) => _dbSet.AddRange(entities);
 

@@ -5,8 +5,7 @@ namespace Contracts
 {
     public interface IRepository<T> where T : BaseEntity, new()
     {
-        IQueryable<T> GetAll(bool trackChanges);
-        void Create(T entity);
+        void CreateRange(IEnumerable<T> entities);
         void Update(T entity);
         void Delete(T entity);
     }
