@@ -9,5 +9,7 @@ namespace Contracts
 {
     public interface IExaminationRepository : IRepository<ExaminationRecord>
     {
+        Task<IEnumerable<ExaminationRecord>> GetAllRecordsAsync(bool trackChanges);
+        void CreateExamination(ExaminationRecord examination, Guid careTakerId);
     }
 }
