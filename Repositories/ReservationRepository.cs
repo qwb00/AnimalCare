@@ -28,7 +28,7 @@ namespace Repositories
         // gets all unended reservations for caretaker
         public async Task<IEnumerable<Reservation>> GetUnapprovedReservationsAsync(bool trackChanges)
         {
-            return await GetByCondition(r => !r.isEnded, trackChanges).ToListAsync();
+            return await GetByCondition(r => !r.IsEnded, trackChanges).ToListAsync();
         }
         
         //gets all approvedd reservations

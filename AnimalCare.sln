@@ -14,7 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{DB397D5D-C8D3-455D-8AA4-09161551C26F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Contracts", "Service.Contracts\Service.Contracts.csproj", "{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{818DC013-E178-4DA1-A9AB-89714BB2C3DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalCare.Presentation", "AnimalCare.Presentation\AnimalCare.Presentation.csproj", "{BE8CEF2D-6624-4327-81B8-6916936D46A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +44,18 @@ Global
 		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818DC013-E178-4DA1-A9AB-89714BB2C3DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818DC013-E178-4DA1-A9AB-89714BB2C3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818DC013-E178-4DA1-A9AB-89714BB2C3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818DC013-E178-4DA1-A9AB-89714BB2C3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE8CEF2D-6624-4327-81B8-6916936D46A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8CEF2D-6624-4327-81B8-6916936D46A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8CEF2D-6624-4327-81B8-6916936D46A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE8CEF2D-6624-4327-81B8-6916936D46A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
