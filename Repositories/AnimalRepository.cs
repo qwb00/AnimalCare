@@ -14,10 +14,20 @@ namespace Repositories
         public async Task<IEnumerable<Animal>> GetAllAnimalsAsync(bool trackChanges) =>
             await GetAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
 
-        #pragma warning disable CS8603 // Possible null reference return.
-        public async Task<Animal> GetAnimalByNameAsync(string name, bool trackChanges) =>
-            await GetByCondition(c => c.Name.Equals(name), trackChanges)
-        .SingleOrDefaultAsync();
+        public async Task<Animal> GetAnimalByNameAsync(string name, bool trackChanges)
+        {
+            var animal = await GetByCondition(c => c.Name != null && c.Name.Equals(name), trackChanges)
+                .SingleOrDefaultAsync();
+
+            if (animal == null)
+            {
+                throw new KeyNotFoundException($"Animal with name '{name}' was not found.");
+            }
+
+            return animal;
+        }
+
+
 
         public void CreateAnimal(Animal animal) => Create(animal);
     }

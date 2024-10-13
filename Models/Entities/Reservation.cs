@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.Entities
 {
@@ -19,11 +14,10 @@ namespace Models.Entities
         public Guid VolunteerId { get; set; }
 
         [ForeignKey("VolunteerId")]
-        public Volunteer Volunteer { get; set; }
+        public Volunteer? Volunteer { get; set; }
 
         [Required]
         public Guid AnimalId { get; set; }
-        [ForeignKey("AnimalId")]
-        public Animal Animal { get; set; }
+        public Animal? Animal { get; set; }
     }
 }

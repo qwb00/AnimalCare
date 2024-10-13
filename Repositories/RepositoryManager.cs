@@ -1,6 +1,7 @@
 ﻿using Contracts;
 
 
+
 namespace Repositories
 {
     public class RepositoryManager : IRepositoryManager
