@@ -19,5 +19,13 @@ namespace Repositories
             examination.CareTakerId = careTakerId;
             Create(examination);
         }
+        
+        // get all records for a specific animal
+        public async Task<IEnumerable<ExaminationRecord>> GetRecordsByAnimalNameAsync(string animalName, bool trackChanges)
+        {
+            return await GetByCondition(e => e.Animal.Name.Equals(animalName), trackChanges, e => e.Animal)
+                .OrderBy(c => c.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

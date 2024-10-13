@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Models.Entities
 {
+    [Table("ExaminationRecord")]
     public class ExaminationRecord : BaseEntity
     {
         public string Text { get; set; }

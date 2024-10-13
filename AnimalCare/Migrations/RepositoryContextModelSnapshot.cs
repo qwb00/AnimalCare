@@ -162,6 +162,10 @@ namespace AnimalCare.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<string>("Breed")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DateFound")
                         .HasColumnType("datetime2");
 
@@ -221,7 +225,7 @@ namespace AnimalCare.Migrations
 
                     b.HasIndex("CareTakerId");
 
-                    b.ToTable("Requests");
+                    b.ToTable("ExaminationRecord");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>

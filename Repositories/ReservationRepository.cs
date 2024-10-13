@@ -24,6 +24,50 @@ namespace Repositories
             reservation.VolunteerId = volunteerId;
             Create(reservation);
         }
+        
+        // gets all unended reservations for caretaker
+        public async Task<IEnumerable<Reservation>> GetUnapprovedReservationsAsync(bool trackChanges)
+        {
+            return await GetByCondition(r => !r.isEnded, trackChanges).ToListAsync();
+        }
+        
+        //gets all approvedd reservations
+        public async Task<IEnumerable<Reservation>> GetApprovedReservationsAsync(bool trackChanges)
+        {
+            return await GetByCondition(r => r.isAproved, trackChanges).ToListAsync();
+        }
 
+	    public async Task<IEnumerable<Reservation>> GetReservationsByDateRangeAsync(DateTime startDate, DateTime endDate, bool trackChanges)
+		{
+    		return await GetByCondition(
+        		r => r.StartDate >= startDate && r.EndDate <= endDate,
+        		trackChanges,
+        		r => r.Animal,
+        		r => r.Volunteer)
+    			.OrderBy(r => r.StartDate)
+    			.ToListAsync();
+		}
+		public async Task<IEnumerable<Reservation>> GetReservationsByAnimalNameAsync(string animalName, bool trackChanges)
+		{
+			return await GetByCondition(
+				r => r.Animal != null && r.Animal.Name.Equals(animalName),
+				trackChanges,
+				r => r.Animal,
+				r => r.Volunteer)
+				.OrderBy(r => r.StartDate)
+				.ToListAsync();
+		}
+		public async Task<IEnumerable<Reservation>> GetReservationsByVolunteerNameAsync(string volunteerName, bool trackChanges)
+		{
+    		return await GetByCondition(
+        		r => r.Volunteer != null && r.Volunteer.FullName.Equals(volunteerName),
+        		trackChanges,
+        		r => r.Animal,
+        		r => r.Volunteer)
+    			.OrderBy(r => r.StartDate)
+    			.ToListAsync();
+		}
+		
+		
     }
 }
