@@ -25,5 +25,7 @@ namespace Models.Entities
         public Guid AnimalId { get; set; }
         [ForeignKey("AnimalId")]
         public Animal Animal { get; set; }
+        
+        public bool isAproved { get; set; }
     }
 }
