@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AnimalCare.Migrations
 {
     /// <inheritdoc />
-    public partial class HealthRecorddeleted : Migration
+    public partial class Updated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,6 +18,7 @@ namespace AnimalCare.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Species = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Breed = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     History = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -177,7 +178,7 @@ namespace AnimalCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Requests",
+                name: "ExaminationRecord",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -186,20 +187,26 @@ namespace AnimalCare.Migrations
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CareTakerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CareTakerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VeterinarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Requests", x => x.Id);
+                    table.PrimaryKey("PK_ExaminationRecord", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Requests_Animals_AnimalId",
+                        name: "FK_ExaminationRecord_Animals_AnimalId",
                         column: x => x.AnimalId,
                         principalTable: "Animals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Requests_AspNetUsers_CareTakerId",
+                        name: "FK_ExaminationRecord_AspNetUsers_CareTakerId",
                         column: x => x.CareTakerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ExaminationRecord_AspNetUsers_VeterinarianId",
+                        column: x => x.VeterinarianId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -213,7 +220,8 @@ namespace AnimalCare.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsEnded = table.Column<bool>(type: "bit", nullable: false),
                     VolunteerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    isAproved = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -286,14 +294,19 @@ namespace AnimalCare.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Requests_AnimalId",
-                table: "Requests",
+                name: "IX_ExaminationRecord_AnimalId",
+                table: "ExaminationRecord",
                 column: "AnimalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Requests_CareTakerId",
-                table: "Requests",
+                name: "IX_ExaminationRecord_CareTakerId",
+                table: "ExaminationRecord",
                 column: "CareTakerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExaminationRecord_VeterinarianId",
+                table: "ExaminationRecord",
+                column: "VeterinarianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_AnimalId",
@@ -325,7 +338,7 @@ namespace AnimalCare.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Requests");
+                name: "ExaminationRecord");
 
             migrationBuilder.DropTable(
                 name: "Reservations");

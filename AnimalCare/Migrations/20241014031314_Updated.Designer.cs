@@ -12,15 +12,15 @@ using Repositories;
 namespace AnimalCare.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241012193032_HealthRecord deleted")]
-    partial class HealthRecorddeleted
+    [Migration("20241014031314_Updated")]
+    partial class Updated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -165,6 +165,10 @@ namespace AnimalCare.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<string>("Breed")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DateFound")
                         .HasColumnType("datetime2");
 
@@ -218,13 +222,18 @@ namespace AnimalCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("VeterinarianId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AnimalId");
 
                     b.HasIndex("CareTakerId");
 
-                    b.ToTable("Requests");
+                    b.HasIndex("VeterinarianId");
+
+                    b.ToTable("ExaminationRecord");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>
@@ -247,6 +256,9 @@ namespace AnimalCare.Migrations
 
                     b.Property<Guid>("VolunteerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isAproved")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -441,9 +453,17 @@ namespace AnimalCare.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
+                        .WithMany("Requests")
+                        .HasForeignKey("VeterinarianId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Animal");
 
                     b.Navigation("CareTaker");
+
+                    b.Navigation("Veterinarian");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>
@@ -473,6 +493,11 @@ namespace AnimalCare.Migrations
                 });
 
             modelBuilder.Entity("Models.Entities.CareTaker", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("Models.Entities.Veterinarian", b =>
                 {
                     b.Navigation("Requests");
                 });

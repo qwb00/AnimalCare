@@ -3,6 +3,8 @@ using Service;
 using Service.Contracts;
 using Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Models.Entities;
 
 namespace AnimalCare.Extensions
 {
@@ -33,6 +35,21 @@ namespace AnimalCare.Extensions
             services.AddDbContextPool<RepositoryContext>(
                 options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection"),
                 sqlOptions => sqlOptions.EnableRetryOnFailure()));
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            var builder = services.AddIdentityCore<User>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = true;
+                o.Password.RequireUppercase = true;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 10;
+                o.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<RepositoryContext>()
+                .AddDefaultTokenProviders();
+        }
 
     }
 }

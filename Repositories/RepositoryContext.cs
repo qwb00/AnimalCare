@@ -28,6 +28,7 @@ namespace Repositories
 
             ConfigureUserEntity(modelBuilder);
             ConfigureCareTakerEntity(modelBuilder);
+            ConfigureVeterinarianEntity(modelBuilder);
             ConfigureVolunteerEntity(modelBuilder);
             ConfigureAnimalEntity(modelBuilder);
 
@@ -49,6 +50,14 @@ namespace Repositories
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.CareTaker)
                  .HasForeignKey(r => r.CareTakerId)
+                 .OnDelete(DeleteBehavior.NoAction);
+        }
+        private void ConfigureVeterinarianEntity(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Veterinarian>()
+                 .HasMany(user => user.Requests)
+                 .WithOne(r => r.Veterinarian)
+                 .HasForeignKey(r => r.VeterinarianId)
                  .OnDelete(DeleteBehavior.NoAction);
         }
         private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
