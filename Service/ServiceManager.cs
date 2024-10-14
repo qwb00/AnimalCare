@@ -16,7 +16,7 @@ namespace Service
         {
             _animalService = new Lazy<IAnimalService>(() => new AnimalService(repositoryManager, mapper));
             _examinationService = new Lazy<IExaminationService>(() => new ExaminationService(repositoryManager, mapper));
-            _reservationService = new Lazy<IReservationService>(() => new ReservationService(userManager, mapper));
+            _reservationService = new Lazy<IReservationService>(() => new ReservationService(repositoryManager, mapper));
         }
 
         public IAnimalService AnimalService => _animalService.Value;

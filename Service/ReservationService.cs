@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Service.Contracts;
 
 namespace Service
 {
-    public class ReservationService
+    public class ReservationService : IReservationService
     {
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
