@@ -198,10 +198,10 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("56a7d79a-2af3-43e1-8905-43b2dec85887"),
+                            Id = new Guid("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
                             Age = 3,
                             Breed = "Labrador Retriever",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9444),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8218),
                             History = "",
                             Name = "Bella",
                             Photo = "",
@@ -210,10 +210,10 @@ namespace AnimalCare.Migrations
                         },
                         new
                         {
-                            Id = new Guid("48378c27-4efa-45c6-a6c8-5695fa70f1d1"),
+                            Id = new Guid("59fe555e-3bcc-4ace-b9fc-68b76805ac59"),
                             Age = 5,
                             Breed = "German Shepherd",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9459),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8237),
                             History = "",
                             Name = "Max",
                             Photo = "",
@@ -222,10 +222,10 @@ namespace AnimalCare.Migrations
                         },
                         new
                         {
-                            Id = new Guid("c11fae18-6bb7-4e32-a133-1a16299edd42"),
+                            Id = new Guid("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"),
                             Age = 2,
                             Breed = "Siamese",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9461),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8241),
                             History = "",
                             Name = "Luna",
                             Photo = "",
@@ -234,10 +234,10 @@ namespace AnimalCare.Migrations
                         },
                         new
                         {
-                            Id = new Guid("dc3554a8-bead-448a-a4cf-8a62674d1dd2"),
+                            Id = new Guid("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"),
                             Age = 4,
                             Breed = "Bulldog",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9463),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8244),
                             History = "",
                             Name = "Charlie",
                             Photo = "",
@@ -246,10 +246,10 @@ namespace AnimalCare.Migrations
                         },
                         new
                         {
-                            Id = new Guid("37f81748-796e-4bbf-b80d-3b65583dc04b"),
+                            Id = new Guid("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"),
                             Age = 3,
                             Breed = "Persian",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9466),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8247),
                             History = "",
                             Name = "Lucy",
                             Photo = "",
@@ -258,10 +258,10 @@ namespace AnimalCare.Migrations
                         },
                         new
                         {
-                            Id = new Guid("978b9cbb-acf5-4a4c-ba8c-c8e496473625"),
+                            Id = new Guid("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"),
                             Age = 1,
                             Breed = "Maine Coon",
-                            DateFound = new DateTime(2024, 10, 16, 2, 3, 31, 689, DateTimeKind.Local).AddTicks(9617),
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8614),
                             History = "",
                             Name = "Milo",
                             Photo = "",
@@ -342,48 +342,6 @@ namespace AnimalCare.Migrations
                     b.HasIndex("VolunteerId");
 
                     b.ToTable("Reservations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("6010c19f-105b-4332-8d7b-322446924ec4"),
-                            AnimalId = new Guid("6b460ac8-e980-4156-ab54-6879ae3d5765"),
-                            EndDate = new DateTime(2023, 10, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsEnded = false,
-                            StartDate = new DateTime(2023, 10, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
-                            VolunteerId = new Guid("67c78ab0-a065-4643-a08d-8f90ca75ed85"),
-                            isAproved = false
-                        },
-                        new
-                        {
-                            Id = new Guid("410d0472-9834-490a-9a35-6ad1fe459499"),
-                            AnimalId = new Guid("54fb58d9-f5b7-4212-a2e5-48becb3c7556"),
-                            EndDate = new DateTime(2023, 10, 2, 15, 30, 0, 0, DateTimeKind.Unspecified),
-                            IsEnded = false,
-                            StartDate = new DateTime(2023, 10, 2, 14, 0, 0, 0, DateTimeKind.Unspecified),
-                            VolunteerId = new Guid("1ae53408-8c0e-4c2d-9670-7165c1fd5dd2"),
-                            isAproved = false
-                        },
-                        new
-                        {
-                            Id = new Guid("8b948342-f0f9-49a4-884b-988b5578f3b4"),
-                            AnimalId = new Guid("d8258da5-7d52-41a7-9ed6-bff3fb8d3019"),
-                            EndDate = new DateTime(2023, 10, 3, 11, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsEnded = false,
-                            StartDate = new DateTime(2023, 10, 3, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            VolunteerId = new Guid("917fbf03-8eea-4fcd-b7fd-3ec45a7bfc8d"),
-                            isAproved = false
-                        },
-                        new
-                        {
-                            Id = new Guid("f7a6fdf6-21d8-41c3-bd52-2ecd7188d2ef"),
-                            AnimalId = new Guid("07ca3758-9282-4e41-b7fa-74cc487d81b7"),
-                            EndDate = new DateTime(2023, 10, 4, 12, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsEnded = false,
-                            StartDate = new DateTime(2023, 10, 4, 11, 0, 0, 0, DateTimeKind.Unspecified),
-                            VolunteerId = new Guid("7df948c5-8a6c-43e2-af95-d4409d87908f"),
-                            isAproved = false
-                        });
                 });
 
             modelBuilder.Entity("Models.Entities.User", b =>

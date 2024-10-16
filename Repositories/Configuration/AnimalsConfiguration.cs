@@ -11,8 +11,8 @@ namespace Repositories.Configuration
             builder.HasData
             (
                 new Animal 
-                { 
-                    Id = Guid.Parse("1aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), 
+                {
+                    Id = Guid.Parse("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
                     Name = "Bella", 
                     Species = "Dog", 
                     Breed = "Labrador Retriever", 
@@ -22,8 +22,8 @@ namespace Repositories.Configuration
                     Type = "Dog" 
                 },
                 new Animal 
-                { 
-                    Id = Guid.Parse("11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), 
+                {
+                    Id = Guid.Parse("59fe555e-3bcc-4ace-b9fc-68b76805ac59"),
                     Name = "Max", 
                     Species = "Dog", 
                     Breed = "German Shepherd", 
@@ -34,8 +34,8 @@ namespace Repositories.Configuration
                     Type = "Dog"
                 },
                 new Animal 
-                { 
-                    Id = Guid.Parse("111aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                {
+                    Id = Guid.Parse("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"),
                     Name = "Luna", 
                     Species = "Cat", 
                     Breed = "Siamese",
@@ -46,8 +46,8 @@ namespace Repositories.Configuration
                     Type = "Cat"
                 },
                 new Animal 
-                { 
-                    Id = Guid.Parse("1111aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                {
+                    Id = Guid.Parse("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"),
                     Name = "Charlie", 
                     Species = "Dog", 
                     Breed = "Bulldog",
@@ -59,7 +59,7 @@ namespace Repositories.Configuration
                 },
                 new Animal
                 {
-                    Id = Guid.Parse("11111aaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), 
+                    Id = Guid.Parse("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"),
                     Name = "Lucy",
                     Species = "Cat", 
                     Breed = "Persian",
@@ -70,8 +70,8 @@ namespace Repositories.Configuration
                     Type = "Cat" 
                 },
                 new Animal 
-                { 
-                    Id = Guid.Parse("111111aa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                {
+                    Id = Guid.Parse("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"),
                     Name = "Milo",
                     Species = "Cat", 
                     Breed = "Maine Coon",

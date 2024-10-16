@@ -21,7 +21,6 @@ namespace Repositories
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new AnimalsConfiguration());
-            modelBuilder.ApplyConfiguration(new ReservationsConfiguration());
 
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")

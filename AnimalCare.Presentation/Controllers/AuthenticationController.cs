@@ -10,38 +10,38 @@ namespace AnimalCare.Presentation.Controllers
         private readonly IServiceManager _service;
         public AuthenticationController(IServiceManager service) => _service = service;
 
-        [HttpPost]
-     //   [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDTO userForRegistration)
-        {
-            var result = await _service.AuthenticationService.RegisterUser(userForRegistration);
+    //    [HttpPost]
+    // //   [ServiceFilter(typeof(ValidationFilterAttribute))]
+    //    public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDTO userForRegistration)
+    //    {
+    //        var result = await _service.AuthenticationService.RegisterUser(userForRegistration);
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(error.Code, error.Description);
-                }
+    //        if (!result.Succeeded)
+    //        {
+    //            foreach (var error in result.Errors)
+    //            {
+    //                ModelState.AddModelError(error.Code, error.Description);
+    //            }
 
-                return BadRequest(ModelState);
-            }
+    //            return BadRequest(ModelState);
+    //        }
 
-            return StatusCode(201);
-        }
+    //        return StatusCode(201);
+    //    }
 
-        [HttpPost("login")]
-    //    [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDTO userForAuthentication)
-        {
-            if (!await _service.AuthenticationService.ValidateUser(userForAuthentication))
-            {
-                return Unauthorized();
-            }
+    //    [HttpPost("login")]
+    ////    [ServiceFilter(typeof(ValidationFilterAttribute))]
+    //    public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDTO userForAuthentication)
+    //    {
+    //        if (!await _service.AuthenticationService.ValidateUser(userForAuthentication))
+    //        {
+    //            return Unauthorized();
+    //        }
 
-            return Ok(new
-            {
-                Token = await _service.AuthenticationService.CreateToken()
-            });
-        }
+    //        return Ok(new
+    //        {
+    //            Token = await _service.AuthenticationService.CreateToken()
+    //        });
+    //    }
     }
 }

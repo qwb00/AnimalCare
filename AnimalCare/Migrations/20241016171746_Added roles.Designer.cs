@@ -12,8 +12,8 @@ using Repositories;
 namespace AnimalCare.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241014031314_Updated")]
-    partial class Updated
+    [Migration("20241016171746_Added roles")]
+    partial class Addedroles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -190,9 +190,87 @@ namespace AnimalCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Animals");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
+                            Age = 3,
+                            Breed = "Labrador Retriever",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8218),
+                            History = "",
+                            Name = "Bella",
+                            Photo = "",
+                            Species = "Dog",
+                            Type = "Dog"
+                        },
+                        new
+                        {
+                            Id = new Guid("59fe555e-3bcc-4ace-b9fc-68b76805ac59"),
+                            Age = 5,
+                            Breed = "German Shepherd",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8237),
+                            History = "",
+                            Name = "Max",
+                            Photo = "",
+                            Species = "Dog",
+                            Type = "Dog"
+                        },
+                        new
+                        {
+                            Id = new Guid("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"),
+                            Age = 2,
+                            Breed = "Siamese",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8241),
+                            History = "",
+                            Name = "Luna",
+                            Photo = "",
+                            Species = "Cat",
+                            Type = "Cat"
+                        },
+                        new
+                        {
+                            Id = new Guid("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"),
+                            Age = 4,
+                            Breed = "Bulldog",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8244),
+                            History = "",
+                            Name = "Charlie",
+                            Photo = "",
+                            Species = "Dog",
+                            Type = "Dog"
+                        },
+                        new
+                        {
+                            Id = new Guid("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"),
+                            Age = 3,
+                            Breed = "Persian",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8247),
+                            History = "",
+                            Name = "Lucy",
+                            Photo = "",
+                            Species = "Cat",
+                            Type = "Cat"
+                        },
+                        new
+                        {
+                            Id = new Guid("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"),
+                            Age = 1,
+                            Breed = "Maine Coon",
+                            DateFound = new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8614),
+                            History = "",
+                            Name = "Milo",
+                            Photo = "",
+                            Species = "Cat",
+                            Type = "Cat"
+                        });
                 });
 
             modelBuilder.Entity("Models.Entities.ExaminationRecord", b =>

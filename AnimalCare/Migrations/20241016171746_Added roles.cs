@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace AnimalCare.Migrations
 {
     /// <inheritdoc />
-    public partial class Updated : Migration
+    public partial class Addedroles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +24,8 @@ namespace AnimalCare.Migrations
                     Age = table.Column<int>(type: "int", nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     History = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateFound = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateFound = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,6 +241,19 @@ namespace AnimalCare.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Animals",
+                columns: new[] { "Id", "Age", "Breed", "DateFound", "History", "Name", "Photo", "Species", "Type" },
+                values: new object[,]
+                {
+                    { new Guid("59fe555e-3bcc-4ace-b9fc-68b76805ac59"), 5, "German Shepherd", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8237), "", "Max", "", "Dog", "Dog" },
+                    { new Guid("5bc27217-6817-40e4-b8d1-60dc9aca3e83"), 3, "Labrador Retriever", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8218), "", "Bella", "", "Dog", "Dog" },
+                    { new Guid("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"), 3, "Persian", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8247), "", "Lucy", "", "Cat", "Cat" },
+                    { new Guid("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"), 2, "Siamese", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8241), "", "Luna", "", "Cat", "Cat" },
+                    { new Guid("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"), 1, "Maine Coon", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8614), "", "Milo", "", "Cat", "Cat" },
+                    { new Guid("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"), 4, "Bulldog", new DateTime(2024, 10, 16, 20, 17, 46, 400, DateTimeKind.Local).AddTicks(8244), "", "Charlie", "", "Dog", "Dog" }
                 });
 
             migrationBuilder.CreateIndex(
