@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
+using Repositories.Configuration;
 
 namespace Repositories
 {
@@ -18,6 +19,9 @@ namespace Repositories
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new AnimalsConfiguration());
+            modelBuilder.ApplyConfiguration(new ReservationsConfiguration());
 
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")

@@ -1,4 +1,7 @@
 using AnimalCare.Extensions;
+using Repositories.Configuration;
+using Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,15 @@ builder.Services.ConfigureIdentity();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<RepositoryContext>();
+    context.Database.Migrate();
+
+    await UserInitializer.InitializeAsync(services);
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -36,6 +48,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
