@@ -20,6 +20,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 
 var app = builder.Build();
 
