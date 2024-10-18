@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using Repositories.Configuration;
+//using Repositories.Configuration;
 
 namespace Repositories
 {
@@ -20,7 +20,7 @@ namespace Repositories
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new AnimalsConfiguration());
+            //modelBuilder.ApplyConfiguration(new AnimalsConfiguration());
 
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")
