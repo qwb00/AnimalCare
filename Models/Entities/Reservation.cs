@@ -26,6 +26,14 @@ namespace Models.Entities
         [ForeignKey("AnimalId")]
         public Animal Animal { get; set; }
         
+        /*
+         * Sasha: 
+         *      need checking (????).
+         *      For a FE to color a reservation in a calendar
+         *      if it was reserved but don't approved so user cannot reserve it again 
+         */ 
+        public bool isReserved { get; set; }
+        // when was approved needed to be colored in a calendar in another color
         public bool isAproved { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 using AnimalCare.Extensions;
-using Repositories.Configuration;
 using Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,8 +29,8 @@ using (var scope = app.Services.CreateScope())
     //var context = services.GetRequiredService<RepositoryContext>();
     //context.Database.Migrate();
 
-    await UserInitializer.InitializeAsync(services);
-    await ReservationsConfiguration.SeedReservations(services);
+    //await UserInitializer.InitializeAsync(services);
+    //await ReservationsConfiguration.SeedReservations(services);
 }
 
 // Configure the HTTP request pipeline.

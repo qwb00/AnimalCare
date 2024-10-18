@@ -18,6 +18,9 @@ namespace Models.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		
+		[DataType(DataType.DateTime)]
+		public DateTime Date { get; set; } = DateTime.UtcNow;
 
         [Required]
         public Guid AnimalId { get; set; }
