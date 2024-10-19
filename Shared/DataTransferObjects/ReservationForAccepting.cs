@@ -4,7 +4,7 @@ namespace Shared.DataTransferObjects;
 
 public record ReservationForAccepting
 {
-    public int Id { get; init; }
+    public Guid Id { get; init; }
     public string VolunteerName { get; init; }
     public string AnimalName { get; init; }
     public string AnimalBreed { get; init; }

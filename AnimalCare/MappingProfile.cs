@@ -16,6 +16,10 @@ namespace AnimalCare
                 (dst => dst.Reservations, src => src.Reservations)
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
+
+            CreateMap<Reservation, ReservationForVolunteerShow>();
+
+            CreateMap<ExaminationRecord, ExaminationRecordForCaretaker>();
         }
     }
 }

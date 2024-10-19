@@ -23,20 +23,12 @@ namespace Repositories
 
             return query;
         }
-        protected IQueryable<T> GetAll(bool trackChanges, params Expression<Func<T, object>>[]? includes)
-        {
-            var query = !trackChanges ? _dbSet.AsNoTracking() : _dbSet;
+        protected IQueryable<T> GetAll(bool trackChanges)
+           => !trackChanges ? _dbSet.AsNoTracking() : _dbSet;
 
-            if (includes != null && includes.Any())
-            {
-                query = includes.Aggregate(query, (current, include) => current.Include(include));
-            }
 
-            return query;
-        }
-
-        public async Task<T> GetByIdAsync(Guid id, bool trackChanges)
-            => await GetByCondition(e => e.Id == id, trackChanges).SingleOrDefaultAsync();
+        public async Task<T> GetByIdAsync(Guid id, bool trackChanges, params Expression<Func<T, object>>[] includes)
+            => await GetByCondition(e => e.Id == id, trackChanges, includes).SingleOrDefaultAsync();
 
         protected void Create(T entity) => _dbSet.Add(entity);
 
