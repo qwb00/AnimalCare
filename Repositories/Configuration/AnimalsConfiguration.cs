@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.DependencyInjection;
@@ -158,6 +159,7 @@ namespace Repositories.Configuration
                         DateFound = DateTime.UtcNow.AddDays(-10)
                     }
                 );
+
             }
         }
     }

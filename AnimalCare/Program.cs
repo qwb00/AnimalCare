@@ -29,6 +29,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     var context = services.GetRequiredService<RepositoryContext>();
     var userManager = services.GetRequiredService<UserManager<User>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
@@ -39,6 +40,7 @@ using (var scope = app.Services.CreateScope())
     await AnimalsConfiguration.SeedAnimalsAsync(context);
     await ReservationsConfiguration.SeedReservations(context);
     await ExaminationRecordsConfiguration.SeedExaminationRecordsAsync(context);
+
 }
 
 // Configure the HTTP request pipeline.
