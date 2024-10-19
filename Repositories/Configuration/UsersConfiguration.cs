@@ -6,18 +6,23 @@ namespace Repositories.Configuration;
 
 public class UsersConfiguration
 {
-    public static async Task InitializeAsync(IServiceProvider serviceProvider)
+    public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
     {
-        using var scope = serviceProvider.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
         var roles = new[] { "Administrator", "Veterinarian", "CareTaker", "Volunteer" };
         foreach (var roleName in roles)
         {
-            if (await roleManager.FindByNameAsync(roleName) != null) continue;
-            var role = new IdentityRole<Guid> { Name = roleName };
-            await roleManager.CreateAsync(role);
+            if (await roleManager.FindByNameAsync(roleName) == null)
+            {
+                var role = new IdentityRole<Guid> { Name = roleName };
+                var roleResult = await roleManager.CreateAsync(role);
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        Console.WriteLine($"Error creating role {roleName}: {error.Description}");
+                    }
+                }
+            }
         }
 
         if (await userManager.FindByEmailAsync("admin1@gmail.com") == null)
@@ -35,6 +40,13 @@ public class UsersConfiguration
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(admin, "Administrator");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating admin user: {error.Description}");
+                }
             }
         }
 
@@ -54,6 +66,13 @@ public class UsersConfiguration
             {
                 await userManager.AddToRoleAsync(vet, "Veterinarian");
             }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating Veterinarian user: {error.Description}");
+                }
+            }
         }
 
         if (await userManager.FindByEmailAsync("vet2@gmail.com") == null)
@@ -72,6 +91,13 @@ public class UsersConfiguration
             {
                 await userManager.AddToRoleAsync(vet, "Veterinarian");
             }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating Veterinarian user: {error.Description}");
+                }
+            }
         }
 
         if (await userManager.FindByEmailAsync("caretaker1@gmail.com") == null)
@@ -89,6 +115,13 @@ public class UsersConfiguration
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(caretaker, "CareTaker");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating caretaker user: {error.Description}");
+                }
             }
         }
 
@@ -109,6 +142,13 @@ public class UsersConfiguration
             {
                 await userManager.AddToRoleAsync(volunteer, "Volunteer");
             }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating volunteer user: {error.Description}");
+                }
+            }
         }
 
         if (await userManager.FindByEmailAsync("volunteer2@gmail.com") == null)
@@ -127,6 +167,13 @@ public class UsersConfiguration
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(volunteer, "Volunteer");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"Error creating volunteer user: {error.Description}");
+                }
             }
         }
     }
