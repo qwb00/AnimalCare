@@ -16,15 +16,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositorie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{EE6D21E1-96C8-4C16-AD9B-9FE095D52203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Contracts", "Service.Contracts\Service.Contracts.csproj", "{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Contracts", "Service.Contracts\Service.Contracts.csproj", "{E3418C73-1CEA-43D5-80D9-442D5CB42FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{818DC013-E178-4DA1-A9AB-89714BB2C3DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{818DC013-E178-4DA1-A9AB-89714BB2C3DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalCare.Presentation", "AnimalCare.Presentation\AnimalCare.Presentation.csproj", "{BE8CEF2D-6624-4327-81B8-6916936D46A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalCare.Presentation", "AnimalCare.Presentation\AnimalCare.Presentation.csproj", "{BE8CEF2D-6624-4327-81B8-6916936D46A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{D129F340-8F7B-4DB4-A279-DA75E71E52DF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{59EA1718-8710-4424-ADC0-A49AB3E01B59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{D129F340-8F7B-4DB4-A279-DA75E71E52DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +62,6 @@ Global
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
