@@ -12,7 +12,7 @@ namespace Repositories
         }
 
         public async Task<IEnumerable<Animal>> GetAllAnimalsAsync(bool trackChanges) =>
-            await GetAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
+            await GetAll(trackChanges, r => r.Reservations, e => e.Examinations).OrderBy(c => c.Name).ToListAsync();
 
         #pragma warning disable CS8603 // Possible null reference return.
         public async Task<Animal> GetAnimalByNameAsync(string name, bool trackChanges) =>
