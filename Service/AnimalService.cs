@@ -53,7 +53,7 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task UpdateCompanyAsync(Guid animalId, AnimalForUpdateDTO animalForUpdate, bool trackChanges)
+        public async Task UpdateAnimalAsync(Guid animalId, AnimalForUpdateDTO animalForUpdate, bool trackChanges)
         {
             var animalEntity = await GetAnimalAndCheckIfItExists(animalId, trackChanges);
 
