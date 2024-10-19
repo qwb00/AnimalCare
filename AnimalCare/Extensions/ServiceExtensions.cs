@@ -47,7 +47,8 @@ namespace AnimalCare.Extensions
                 o.Password.RequireLowercase = true;
                 o.Password.RequireUppercase = true;
                 o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 10;
+                // Minimum password length need to be changed
+                o.Password.RequiredLength = 3;
                 o.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<RepositoryContext>()
