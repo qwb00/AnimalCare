@@ -63,7 +63,7 @@ namespace Service
 
         private async Task<Animal> GetAnimalAndCheckIfItExists(Guid id, bool trackChanges)
         {
-            var animal = await _repository.Animal.GetByIdAsync(id, trackChanges);
+            var animal = await _repository.Animal.GetByIdAsync(id, trackChanges, e => e.Examinations, e => e.Reservations);
             if (animal is null)
                 throw new Exception("Animal not found");
 
