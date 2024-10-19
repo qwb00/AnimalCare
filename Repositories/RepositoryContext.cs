@@ -22,8 +22,6 @@ namespace Repositories
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new AnimalsConfiguration());
-
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")
                 .HasValue<Administrator>("Administrator")

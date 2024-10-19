@@ -5,11 +5,8 @@ namespace Repositories.Configuration;
 
 public static class ReservationsConfiguration
 {
-    public static async Task SeedReservations(IServiceProvider serviceProvider)
+    public static async Task SeedReservations(RepositoryContext context)
     {
-        using var scope = serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
-
         if (context.Reservations != null && !context.Reservations.Any())
         {
             context.Reservations.AddRange(
