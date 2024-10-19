@@ -37,6 +37,9 @@ namespace Repositories
             return query;
         }
 
+        public async Task<T> GetByIdAsync(Guid id, bool trackChanges)
+            => await GetByCondition(e => e.Id == id, trackChanges).SingleOrDefaultAsync();
+
         protected void Create(T entity) => _dbSet.Add(entity);
 
         public virtual void CreateRange(IEnumerable<T> entities) => _dbSet.AddRange(entities);
