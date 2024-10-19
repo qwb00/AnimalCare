@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalCare.Presentation", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{D129F340-8F7B-4DB4-A279-DA75E71E52DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{59EA1718-8710-4424-ADC0-A49AB3E01B59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59EA1718-8710-4424-ADC0-A49AB3E01B59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
