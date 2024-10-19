@@ -27,11 +27,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<RepositoryContext>();
-    context.Database.Migrate();
-
+    //var context = services.GetRequiredService<RepositoryContext>();
+    //context.Database.Migrate();
+    
     await UsersConfiguration.InitializeAsync(services);
     await ReservationsConfiguration.SeedReservations(services);
+    await ExaminationRecordsConfiguration.SeedExaminationRecordsAsync(services);
 }
 
 // Configure the HTTP request pipeline.
