@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Models.Entities
@@ -24,6 +25,7 @@ namespace Models.Entities
         [Required]
         public Guid AnimalId { get; set; }
         [ForeignKey("AnimalId")]
+        [JsonIgnore]
         public Animal Animal { get; set; }
         
         /*
