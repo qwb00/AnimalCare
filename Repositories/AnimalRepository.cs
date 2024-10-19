@@ -12,7 +12,7 @@ namespace Repositories
         }
 
         public async Task<IEnumerable<Animal>> GetAllAnimalsAsync(bool trackChanges) =>
-            await GetAll(trackChanges, r => r.Reservations, e => e.Examinations).OrderBy(c => c.Name).ToListAsync();
+            await GetAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
 
         #pragma warning disable CS8603 // Possible null reference return.
         public async Task<Animal> GetAnimalByNameAsync(string name, bool trackChanges) =>
@@ -21,18 +21,18 @@ namespace Repositories
 
         public void CreateAnimal(Animal animal) => Create(animal);
         
-        public async Task<IEnumerable<Animal>> GetThreeAnimalsAsync(bool trackChanges)
-        {
-            var animals = await GetAll(trackChanges, a => a.Reservations, a => a.Examinations).ToListAsync();
-            var dogs = animals.Where(a => a.Species == Shared.Enums.Species.Dog).ToList();
-            var cats = animals.Where(a => a.Species == Shared.Enums.Species.Cat).ToList();
-            if (dogs.Any() && cats.Any())
-            {
-                return animals.Take(3).ToList();
-            }
+        //public async Task<IEnumerable<Animal>> GetThreeAnimalsAsync(bool trackChanges)
+        //{
+        //    var animals = await GetAll(trackChanges, a => a.Reservations, a => a.Examinations).ToListAsync();
+        //    var dogs = animals.Where(a => a.Species == Shared.Enums.Species.Dog).ToList();
+        //    var cats = animals.Where(a => a.Species == Shared.Enums.Species.Cat).ToList();
+        //    if (dogs.Any() && cats.Any())
+        //    {
+        //        return animals.Take(3).ToList();
+        //    }
 
-            return Enumerable.Empty<Animal>();
-        }
+        //    return Enumerable.Empty<Animal>();
+        //}
         
         public async Task<DateTime?> GetLastExaminationDateAsync(Guid animalId, bool trackChanges)
         {
