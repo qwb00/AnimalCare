@@ -7,7 +7,7 @@ using Shared.Enums;
 
 namespace Repositories.Configuration
 {
-    public class AnimalsConfiguration
+    public static class AnimalsConfiguration
     {
         public static async Task SeedAnimalsAsync(RepositoryContext context)
         {
