@@ -4,8 +4,8 @@ using Service.Contracts;
 
 namespace AnimalCare.Presentation.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AnimalsController : ControllerBase
     {
         private readonly IServiceManager _service;
@@ -22,7 +22,15 @@ namespace AnimalCare.Presentation.Controllers
             var animals = await _service.AnimalService.GetAllAnimalsAsync(trackChanges: false);
 
             return Ok(animals);
-        }   
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetAnimal(Guid id)
+        {
+            var animal = await _service.AnimalService.GetAnimalAsync(id, false);
+
+            return Ok(animal);
+        }
 
     }
 }
