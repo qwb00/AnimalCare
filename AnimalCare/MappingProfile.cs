@@ -24,32 +24,48 @@ namespace AnimalCare
             CreateMap<ReservationForUpdateDto, Reservation>();
             
             CreateMap<ReservationForCreationDto, Reservation>()
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ReservationDate.Date + src.StartTime))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.ReservationDate.Date + src.EndTime))
-                .ForMember(dest => dest.isReserved, opt => opt.MapFrom(src => true))
-                .ForMember(dest => dest.isAproved, opt => opt.MapFrom(src => false))
-                .ForMember(dest => dest.IsEnded, opt => opt.MapFrom(src => false));
+                .MapMembers(
+                    (dst => dst.StartDate, src => src.ReservationDate.Date + src.StartTime),
+                    (dst => dst.EndDate, src => src.ReservationDate.Date + src.EndTime)
+                )
+                .UseValue(dst => dst.isReserved, true)
+                .UseValue(dst => dst.isAproved, false)
+                .UseValue(dst => dst.IsEnded, false);
             
             CreateMap<Reservation, ReservationForConfirmationDto>()
-                .ForMember(dest => dest.VolunteerName, opt => opt.MapFrom(src => src.Volunteer.FullName))
-                .ForMember(dest => dest.AnimalName, opt => opt.MapFrom(src => src.Animal.Name))
-                .ForMember(dest => dest.AnimalBreed, opt => opt.MapFrom(src => src.Animal.Breed))
-                .ForMember(dest => dest.ReservationDate, opt => opt.MapFrom(src => src.StartDate.Date))
-                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartDate.TimeOfDay))
-                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndDate.TimeOfDay))
-                .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Animal.Photo));
-
+                .MapMembers(
+                    (dst => dst.VolunteerName, src => src.Volunteer.FullName),
+                    (dst => dst.AnimalName, src => src.Animal.Name),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.ReservationDate, src => src.StartDate.Date),
+                    (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
+                    (dst => dst.EndTime, src => src.EndDate.TimeOfDay),
+                    (dst => dst.Photo, src => src.Animal.Photo)
+                );
+            
             CreateMap<Reservation, ReservationForUserDto>()
-                .ForMember(dest => dest.AnimalName, opt => opt.MapFrom(src => src.Animal.Name))
-                .ForMember(dest => dest.AnimalBreed, opt => opt.MapFrom(src => src.Animal.Breed))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => DetermineReservationStatus(src)));
-
+                .MapMembers(
+                    (dst => dst.AnimalName, src => src.Animal.Name),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed)
+                )
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => DetermineReservationStatus(src))
+                );
+            
             CreateMap<ReservationForUpdateDto, Reservation>()
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.Date.Date + src.StartTime))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.Date.Date + src.EndTime))
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.VolunteerId, opt => opt.Ignore())
-                .ForMember(dest => dest.AnimalId, opt => opt.Ignore());
+                .MapMembers(
+                    (dst => dst.StartDate, src => src.Date.Date + src.StartTime),
+                    (dst => dst.EndDate, src => src.Date.Date + src.EndTime),
+                    (dst => dst.IsEnded, src => src.IsEnded),
+                    (dst => dst.isReserved, src => src.IsReserved),
+                    (dst => dst.isAproved, src => src.IsApproved)
+                )
+                .Ignore(
+                    dst => dst.Id,
+                    dst => dst.VolunteerId,
+                    dst => dst.AnimalId
+                );
         }
         
         private ReservationStatus DetermineReservationStatus(Reservation reservation)
