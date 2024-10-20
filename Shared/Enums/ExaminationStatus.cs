@@ -4,5 +4,6 @@ namespace Shared.Enums;
 public enum ExaminationStatus
 {
     InProgress,
-    Completed
+    Completed,
+    Cancelled
 }

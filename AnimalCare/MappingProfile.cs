@@ -2,6 +2,7 @@
 using AutoMapper;
 using Shared.DataTransferObjects;
 using AnimalCare.Extensions;
+using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Shared.DataTransferObjects.ReservationsDTO;
 using Shared.Enums;
 
@@ -18,10 +19,6 @@ namespace AnimalCare
                 (dst => dst.Reservations, src => src.Reservations)
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
-
-            CreateMap<ExaminationRecord, ExaminationRecordForCaretaker>();
-            
-            CreateMap<ReservationForUpdateDto, Reservation>();
             
             CreateMap<ReservationForCreationDto, Reservation>()
                 .MapMembers(
@@ -65,6 +62,49 @@ namespace AnimalCare
                     dst => dst.Id,
                     dst => dst.VolunteerId,
                     dst => dst.AnimalId
+                );
+
+            CreateMap<ExaminationRecordForCreationDto, ExaminationRecord>()
+                .MapMembers(
+                    (dst => dst.Date, src => src.ExaminationDate),
+                    (dst => dst.Type, src => src.Type),
+                    (dst => dst.Description, src => src.Description),
+                    (dst => dst.AnimalId, src => src.AnimalId),
+                    (dst => dst.VeterinarianId, src => src.VeterinarianId),
+                    (dst => dst.CareTakerId, src => src.CareTakerId)
+                )
+                .UseValue(dst => dst.Status, ExaminationStatus.InProgress)
+                .UseValue( dst => dst.FinalDiagnosis, "Not specified")
+                .Ignore(
+                    dst => dst.Id
+                );
+            
+            CreateMap<ExaminationRecordForUpdateDto, ExaminationRecord>()
+                .MapMembers(
+                    (dst => dst.Status, src => src.Status),
+                    (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
+                )
+                .Ignore(
+                    dst => dst.Id,
+                    dst => dst.AnimalId,
+                    dst => dst.VeterinarianId,
+                    dst => dst.Type,
+                    dst => dst.Date,
+                    dst => dst.Description
+                );
+            
+            CreateMap<ExaminationRecord, ExaminationRecordDto>()
+                .MapMembers(
+                    (dst => dst.Id, src => src.Id),
+                    (dst => dst.AnimalName, src => src.Animal.Name),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.VeterinarianName, src => src.Veterinarian.FullName),
+                    (dst => dst.AnimalPhoto, src => src.Animal.Photo),
+                    (dst => dst.Type, src => src.Type),
+                    (dst => dst.Status, src => src.Status),
+                    (dst => dst.ExaminationDate, src => src.Date),
+                    (dst => dst.Description, src => src.Description),
+                    (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
                 );
         }
         
