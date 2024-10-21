@@ -1,5 +1,5 @@
 ﻿using Models.Entities;
-using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace Service.Contracts
 {
@@ -7,5 +7,8 @@ namespace Service.Contracts
     {
         Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(bool trackChanges);
         Task<AnimalDetailedDto> GetAnimalAsync(Guid id, bool trackChanges);
+        Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreating animal);
+        Task UpdateAnimalAsync(Guid animalId, AnimalForUpdateDTO animalForUpdate, bool trackChanges);
+        Task DeleteAnimalAsync(Guid animalId, bool trackChanges);
     }
 }

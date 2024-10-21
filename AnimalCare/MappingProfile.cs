@@ -2,6 +2,7 @@
 using AutoMapper;
 using Shared.DataTransferObjects;
 using AnimalCare.Extensions;
+using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace AnimalCare
 {

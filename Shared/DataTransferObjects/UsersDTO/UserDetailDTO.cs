@@ -1,8 +1,8 @@
 using Shared.Enums;
 
-namespace Shared.DataTransferObjects;
+namespace Shared.DataTransferObjects.UsersDTO;
 
-public record UserBasicInformation
+public record UserDetailDTO
 {
     public string Name { get; init; }
     public string Email { get; init; }

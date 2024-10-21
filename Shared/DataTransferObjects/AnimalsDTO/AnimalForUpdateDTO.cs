@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.DataTransferObjects
+namespace Shared.DataTransferObjects.AnimalsDTO
 {
-    public abstract record AnimalForManipulationDTO
+    public record AnimalForUpdateDTO
     {
     }
 }
