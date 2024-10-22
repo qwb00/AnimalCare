@@ -4,14 +4,20 @@ using Repositories;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Repositories.Configuration;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(config =>
+{
+    config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+});
 // swagger 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
 
 //builder.Services.AddRazorPages();
 builder.Services.ConfigureCors();
@@ -51,7 +57,10 @@ if (!app.Environment.IsDevelopment())
 else
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(s =>
+    {
+        s.SwaggerEndpoint("/swagger/v1/swagger.json", "Animal Care API v1");
+    });
 }
 
 app.UseHttpsRedirection();
@@ -65,3 +74,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
+    new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+    .Services.BuildServiceProvider()
+    .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+    .OfType<NewtonsoftJsonPatchInputFormatter>().First();

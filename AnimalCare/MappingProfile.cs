@@ -2,6 +2,8 @@
 using AutoMapper;
 using Shared.DataTransferObjects;
 using AnimalCare.Extensions;
+using Shared.DataTransferObjects.AnimalsDTO;
+using Shared.DataTransferObjects.UsersDTO;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Shared.DataTransferObjects.ReservationsDTO;
 using Shared.Enums;
@@ -64,6 +66,24 @@ namespace AnimalCare
                     dst => dst.AnimalId
                 );
 
+            CreateMap<User, UserListDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+            CreateMap<User, UserDetailDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+
+
+            CreateMap<Volunteer, VolunteerListDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+
+            CreateMap<Volunteer, ChangeStatusForVolunteerDTO>();
+
+            CreateMap<ChangeStatusForVolunteerDTO, Volunteer>().MapMembers(
+                (dest => dest.IsVerified, src => src.IsVerified)
+                );
+
             CreateMap<ExaminationRecordForCreationDto, ExaminationRecord>()
                 .MapMembers(
                     (dst => dst.Date, src => src.ExaminationDate),
@@ -119,7 +139,7 @@ namespace AnimalCare
             else if (!reservation.IsEnded && DateTime.Now > reservation.EndDate)
                 return ReservationStatus.MISSED;
             else
-                return ReservationStatus.UPCOMING; // По умолчанию
+                return ReservationStatus.UPCOMING;
         }
     }
 }

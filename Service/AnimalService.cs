@@ -2,7 +2,7 @@
 using Contracts;
 using Service.Contracts;
 using Models.Entities;
-using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace Service
 {
@@ -33,7 +33,7 @@ namespace Service
             return animalDTO;
         }
 
-        public async Task<AnimalDetailedDto> CreateCompanyAsync(AnimalForCreating animal)
+        public async Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreating animal)
         {
             var animalEntity = _mapper.Map<Animal>(animal);
 

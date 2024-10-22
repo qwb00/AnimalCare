@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Shared.Enums;
 
-namespace Shared.DataTransferObjects;
+namespace Shared.DataTransferObjects.AnimalsDTO;
 
 public record AnimalForCreating : AnimalForCardsDto
 {
     public string Weight { get; set; }
-		
+
     // Enums Attributes
     public Sex Sex { get; set; }
     public Size Size { get; set; }
@@ -25,7 +25,7 @@ public record AnimalForCreating : AnimalForCardsDto
     public bool IsSterilized { get; set; }
     public bool IsChipped { get; set; }
     public DateTime LastExamination { get; set; }
-    
+
     // Behaviour 
     public bool IsPeopleFriendly { get; set; }
     public bool IsAnimalFriendly { get; set; }

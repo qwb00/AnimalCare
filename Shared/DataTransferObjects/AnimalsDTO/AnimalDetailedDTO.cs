@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Shared.DataTransferObjects.ReservationsDTO;
 
-namespace Shared.DataTransferObjects;
-using Shared.Enums;
+namespace Shared.DataTransferObjects.AnimalsDTO;
 
 // dto for a detailed animal page
 public record AnimalDetailedDto : AnimalForCreating

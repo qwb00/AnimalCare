@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Shared.Enums;
 
-namespace Shared.DataTransferObjects;
+namespace Shared.DataTransferObjects.AnimalsDTO;
 
 public record AnimalForHealthRecord : AnimalForCardsDto
 {
@@ -18,6 +18,6 @@ public record AnimalForHealthRecord : AnimalForCardsDto
     public bool IsSterilized { get; set; }
     public bool IsChipped { get; set; }
     public DateTime LastExamination { get; set; }
-    
+
     public string Notes { get; set; }
 }

@@ -1,16 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.DataTransferObjects.UsersDTO;
 
 namespace Service.Contracts
 {
-    //public interface IAuthenticationService
-    //{
-    //    Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration);
-    //    Task<bool> ValidateUser(UserForAuthenticationDto userForAuth);
-    //    Task<string> CreateToken();
-    //}
+    public interface IAuthenticationService
+    {
+        Task<IdentityResult> RegisterUser(UserForCreateDTO userForRegistration);
+        Task<bool> ValidateUser(UserForAuthenticationDTO userForAuth);
+        Task<string> CreateToken();
+    }
 }
