@@ -21,12 +21,29 @@ namespace AnimalCare.Presentation.Controllers
             return Ok(users);
         }
 
+        [HttpGet("{id:guid}", Name = "GetUserById")]
+        public async Task<IActionResult> GetUser(Guid id)
+        {
+            var user = await _service.UserService.GetUserAsync(id);
+            return Ok(user);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserForCreateDTO user)
         {
-            var createdUser = await _service.AuthenticationService.RegisterUser(user);
+            var result = await _service.AuthenticationService.RegisterUser(user);
 
-            return Created(string.Empty, createdUser);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            return StatusCode(201);
         }
 
 

@@ -3,6 +3,7 @@ using AutoMapper;
 using Shared.DataTransferObjects;
 using AnimalCare.Extensions;
 using Shared.DataTransferObjects.AnimalsDTO;
+using Shared.DataTransferObjects.UsersDTO;
 
 namespace AnimalCare
 {
@@ -17,6 +18,25 @@ namespace AnimalCare
                 (dst => dst.Reservations, src => src.Reservations)
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
+
+            CreateMap<User, UserListDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+            CreateMap<User, UserDetailDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+
+
+            CreateMap<Volunteer, VolunteerListDTO>().MapMembers(
+                (dst => dst.Name, src => src.FullName)
+                );
+
+            CreateMap<Volunteer, ChangeStatusForVolunteerDTO>();
+
+            CreateMap<ChangeStatusForVolunteerDTO, Volunteer>().MapMembers(
+                (dest => dest.IsVerified, src => src.IsVerified)
+                );
+
 
             CreateMap<Reservation, ReservationForVolunteerShow>();
 
