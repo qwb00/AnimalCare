@@ -1,11 +1,13 @@
-﻿using Models.Entities;
+﻿using System.Linq.Expressions;
+using Models.Entities;
 
 namespace Contracts
 {
     public interface IReservationRepository : IRepository<Reservation>
     {
         Task<IEnumerable<Reservation>> GetAllReservationsAsync(bool trackChanges);
-        Task<IEnumerable<Reservation>> GetReservationsAsync(Guid volunteerId, bool trackChanges);
-        void CreateReservation(Reservation reservation, Guid volunteerId);
+        Task<Reservation> GetReservationByIdAsync(Guid reservationId, bool trackChanges, params Expression<Func<Reservation, object>>[] includes);
+        Task<IEnumerable<Reservation>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges);
+        void CreateReservation(Reservation reservation);
     }
 }

@@ -396,6 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-
 /AnimalCare/appsettings.json
-/AnimalCare/Migrations/
