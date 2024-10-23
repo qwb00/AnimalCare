@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'; // Импортируем Link
 function Header() {
   return (
     <header className="p-4">
-      <div className="w-full max-w-4xl mx-auto flex justify-between items-center">
+      <div className="w-full max-w-[1024px] mx-auto flex justify-between items-center">
         {/* Логотип с эффектом увеличения при наведении */}
         <div className="flex items-center">
           <a href="/" className="transition transform hover:scale-105 duration-300 ease-in-out">

@@ -14,7 +14,7 @@ function HomeSlider() {
   }, []);
 
   return (
-    <div className="relative h-full w-full max-w-4xl mx-auto">
+    <div className="relative h-full w-full max-w-[1024px] mx-auto">
   {/* Первый слайд */}
   <div
     className={`absolute inset-0 transition-opacity duration-1000 ${activeSlide === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>

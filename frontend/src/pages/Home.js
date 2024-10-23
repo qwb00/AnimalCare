@@ -68,7 +68,7 @@ function Home() {
 
       {/* Секция с животными */}
       <div id="animals-section" className="bg-white p-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1024px] mx-auto">
           <h2 className="text-4xl font-black text-center mb-12">OUR ANIMALS</h2>
 
           {/* Карточки животных */}

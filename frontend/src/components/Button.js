@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Button({ text, variant, icon, iconPosition = 'left', className }) {
+function Button({ text, variant, icon, iconPosition = 'left', className, onClick }) {
   const baseClasses = "inline-flex py-2 px-4 font-semibold rounded-xl shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center";
   
   const variantClasses =
@@ -13,9 +13,12 @@ function Button({ text, variant, icon, iconPosition = 'left', className }) {
     : (<>{text} <img src={icon} alt="" className="ml-2 h-6 w-6" /></>);
 
   return (
-    <a href="/" className={`${baseClasses} ${variantClasses} ${className}`}>
+    <button
+      className={`${baseClasses} ${variantClasses} ${className}`}
+      onClick={onClick} // Добавляем обработчик клика
+    >
       {content}
-    </a>
+    </button>
   );
 }
 

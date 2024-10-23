@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import Header from '../components/Header'; // Импортируем компонент Header
-import Button from '../components/Button'; // Импортируем кнопку
-import Input from '../components/Input'; // Импортируем компонент Input
+import Search from '../components/Search'; // Импортируем компонент Search
+import Calendar from '../components/Calendar';
+import Footer from '../components/Footer'; // Импортируем компонент Footer
 
-// Массив с животными для выбора
-const animals = ['Lola', 'Peanut', 'Kelly'];
+// Массив с животными для проверки
+const availableAnimals = ['Lola', 'Peanut', 'Kelly'];
 
 function Reservations() {
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResult, setSearchResult] = useState(null); // Хранит результат поиска
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Управляет состоянием выпадающего меню
+  const [selectedAnimal, setSelectedAnimal] = useState(null); // Храним выбранное животное
 
-  // Функция для поиска животного
-  const handleSearch = () => {
-    if (animals.includes(searchValue)) {
-      setSearchResult(`Animal "${searchValue}" is selected!`);
+  const handleSearchResult = (result) => {
+    // Обрабатываем результат поиска
+    const match = result.match(/Animal "(.*)" is selected!/);
+    if (match && availableAnimals.includes(match[1])) {
+      setSelectedAnimal(match[1]); // Устанавливаем имя животного, если оно есть в массиве
     } else {
-      setSearchResult(`Animal "${searchValue}" not found.`);
+      setSelectedAnimal(null); // Сбрасываем, если животное не найдено
     }
-  };
-
-  // Функция для выбора животного из выпадающего меню
-  const handleSelectAnimal = (animal) => {
-    setSearchValue(animal);
-    setIsDropdownOpen(false); // Закрыть меню при выборе
   };
 
   return (
@@ -32,7 +26,7 @@ function Reservations() {
       <Header />
 
       {/* Основной контент */}
-      <div className="flex flex-col items-start justify-center mt-16 w-full max-w-[1024px] mx-auto px-4">
+      <div className="flex flex-col items-start justify-center mt-16 w-full max-w-[1024px] mx-auto px-0">
         {/* Заголовок WALKING SCHEDULE */}
         <h1 className="text-4xl font-black text-center mb-8 w-full">WALKING SCHEDULE</h1>
 
@@ -42,47 +36,67 @@ function Reservations() {
           <img src="/icons/calendar_black.png" alt="Calendar icon" className="h-6 w-6 ml-2" />
         </div>
 
-        {/* Поле ввода для поиска по имени животного и кнопка поиска */}
-        <div className="relative w-full mb-8">
-          <Input
+        {/* Поле поиска животного */}
+        <div className="flex items-start justify-start w-full mb-8">
+          <Search
             placeholder="Animal's name"
             icon="/icons/pen.png"
-            onChange={(e) => setSearchValue(e.target.value)} // Обновляем значение инпута
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Показать/скрыть выпадающее меню
+            onSearch={handleSearchResult}
           />
-          
-          {/* Выпадающее меню с именами животных */}
-          {isDropdownOpen && (
-            <ul className="absolute top-full left-0 w-full bg-white border-2 border-black rounded-xl mt-1 max-h-48 overflow-auto z-10">
-              {animals.map((animal) => (
-                <li
-                  key={animal}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSelectAnimal(animal)} // Выбираем животное
-                >
-                  {animal}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
-        <Button
-          text="Search"
-          variant="blue"
-          icon="/icons/search_white.png"
-          iconPosition="right"
-          className="ml-4"
-          onClick={handleSearch} // Обработчик клика для поиска
-        />
-
-        {/* Результат поиска */}
-        {searchResult && (
-          <div className="mt-4 text-lg font-semibold">
-            {searchResult}
+        {/* Добавляем отступ для разделения результатов поиска и заголовка календаря */}
+        {selectedAnimal ? (
+          <div className="mt-12 w-full"> {/* Добавлен отступ */}
+            <Calendar selectedAnimal={selectedAnimal} />
           </div>
+        ) : (
+          <p className="text-gray-600 mt-4">
+            Please select an animal to see the schedule or make sure the name matches the available animals.
+          </p>
         )}
+
+        {/* Секция с правилами выгула животных */}
+        <div className="mt-8 w-full">
+          <h2 className="text-4xl font-black mb-6 text-center">10 RULES TO WALK ANIMALS</h2>
+          <ol className="list-decimal list-inside space-y-4 text-justify">
+            <li>
+              <strong>Mandatory Training:</strong> All volunteers must complete a training session covering animal handling, safety protocols, and shelter policies before engaging in any activities.
+            </li>
+            <li>
+              <strong>Punctuality:</strong> Arrive at least 10 minutes before your scheduled time to prepare.
+            </li>
+            <li>
+              <strong>Leash and Harness Use:</strong> Use only shelter-provided leashes and harnesses. Ensure they are properly fitted before starting the walk.
+            </li>
+            <li>
+              <strong>Constant Supervision:</strong> Never leave the animal unattended during the walk.
+            </li>
+            <li>
+              <strong>No Off-Leash Activity:</strong> Animals must remain leashed at all times, regardless of the location.
+            </li>
+            <li>
+              <strong>Other Animals:</strong> Keep a safe distance from other animals to prevent aggressive behavior or the spread of diseases.
+            </li>
+            <li>
+              <strong>Designated Routes:</strong> Follow the shelter's approved walking paths and stay within the designated areas.
+            </li>
+            <li>
+              <strong>Positive Reinforcement:</strong> Use gentle commands and reward good behavior with praise. Do not yell at or punish the animal.
+            </li>
+            <li>
+              <strong>Incident Reporting:</strong> Immediately report any incidents such as bites, escapes, or injuries to shelter staff.
+            </li>
+            <li>
+              <strong>Illness:</strong> Do not volunteer if you are feeling unwell, especially with symptoms that could affect the animals.
+            </li>
+          </ol>
+        </div>
       </div>
+
+      <h2 className="text-4xl font-black text-center my-8">THANK YOU FOR YOUR TIME!</h2>
+      {/* Компонент Footer */}
+      <Footer />
     </div>
   );
 }
