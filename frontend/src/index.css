@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+
+/* Кастомный скролл */
+::-webkit-scrollbar {
+  width: 8px; /* Тонкий скроллбар */
+  background-color: transparent; /* Прозрачный фон для дорожки */
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Светло-серый цвет дорожки */
+  border-radius: 10px; /* Скругление дорожки */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cccccc; /* Серый цвет ползунка */
+  border-radius: 10px; /* Скругленные углы ползунка */
+  border: 2px solid #f0f0f0; /* Промежуток между ползунком и каналом */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #aaaaaa; /* Более темный серый цвет при наведении */
+}
+
+/* Убираем стрелочки сверху и снизу */
+::-webkit-scrollbar-button {
+  display: none; /* Полностью убираем кнопки со стрелками */
+}
+
+/* Для поддержки Firefox */
+* {
+  scrollbar-width: thin; /* Тонкий скролл */
+  scrollbar-color: #cccccc #f0f0f0; /* Серый ползунок и светло-серая дорожка */
+}
