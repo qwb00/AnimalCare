@@ -44,7 +44,6 @@ namespace Service
             _repository.Examination.CreateExamination(examinationEntity);
             await _repository.SaveAsync();
 
-            // Повторно загружаем запись для включения связанных сущностей
             var examinationFromDb = await _repository.Examination.GetExaminationByIdAsync(
                 examinationEntity.Id,
                 trackChanges: false,

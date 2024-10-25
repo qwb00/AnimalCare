@@ -29,6 +29,11 @@ namespace AnimalCare.Extensions
                 .WithExposedHeaders("X-Pagination"));
             });
 
+        public static void ConfigureIISIntegration(this IServiceCollection services) =>
+            services.Configure<IISOptions>(options =>
+            {
+            });
+
         public static void ConfigureRepositoryManager(this IServiceCollection services) =>
             services.AddScoped<IRepositoryManager, RepositoryManager>();
 

@@ -12,8 +12,8 @@ using Repositories;
 namespace AnimalCare.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241019161331_Added")]
-    partial class Added
+    [Migration("20241025001228_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,51 @@ namespace AnimalCare.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2cc9ebc1-e820-48be-9065-eac083d5f734",
+                            Name = "Caretaker",
+                            NormalizedName = "CARETAKER"
+                        },
+                        new
+                        {
+                            Id = "76715467-ed8d-4851-9d0c-326233d53874",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = "7673799f-c5e1-45e2-b6fa-c068c03f2847",
+                            Name = "Veterinarian",
+                            NormalizedName = "VETERINARIAN"
+                        },
+                        new
+                        {
+                            Id = "b43e80cd-7c0e-4519-93ce-e6878db7be42",
+                            Name = "Volunteer",
+                            NormalizedName = "VOLUNTEER"
+                        });
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
@@ -228,152 +273,6 @@ namespace AnimalCare.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Animals");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
-                            Age = 3,
-                            Breed = "Labrador Retriever",
-                            DateFound = new DateTime(2024, 9, 19, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1462),
-                            Health = 0,
-                            History = "Found near a lake.",
-                            IsAnimalFriendly = true,
-                            IsChipped = true,
-                            IsCommandsTaught = true,
-                            IsLeashTrained = true,
-                            IsPeopleFriendly = true,
-                            IsSterilized = false,
-                            IsVaccinated = true,
-                            LastExamination = new DateTime(2024, 10, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1451),
-                            Name = "Bella",
-                            Personality = "Friendly and energetic.",
-                            Photo = "http://example.com/photos/bella.jpg",
-                            Sex = 1,
-                            Size = 1,
-                            Species = 0,
-                            Weight = "25kg"
-                        },
-                        new
-                        {
-                            Id = new Guid("59fe555e-3bcc-4ace-b9fc-68b76805ac59"),
-                            Age = 5,
-                            Breed = "German Shepherd",
-                            DateFound = new DateTime(2024, 9, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1471),
-                            Health = 1,
-                            History = "Owner surrendered due to moving.",
-                            IsAnimalFriendly = true,
-                            IsChipped = false,
-                            IsCommandsTaught = true,
-                            IsLeashTrained = true,
-                            IsPeopleFriendly = true,
-                            IsSterilized = false,
-                            IsVaccinated = false,
-                            LastExamination = new DateTime(2024, 9, 29, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1469),
-                            Name = "Max",
-                            Personality = "Loyal and protective.",
-                            Photo = "http://example.com/photos/max.jpg",
-                            Sex = 0,
-                            Size = 2,
-                            Species = 0,
-                            Weight = "30kg"
-                        },
-                        new
-                        {
-                            Id = new Guid("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"),
-                            Age = 2,
-                            Breed = "Siamese",
-                            DateFound = new DateTime(2024, 9, 29, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1477),
-                            Health = 0,
-                            History = "Rescued from an abandoned building.",
-                            IsAnimalFriendly = false,
-                            IsChipped = true,
-                            IsCommandsTaught = false,
-                            IsLeashTrained = false,
-                            IsPeopleFriendly = true,
-                            IsSterilized = true,
-                            IsVaccinated = true,
-                            LastExamination = new DateTime(2024, 10, 14, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1476),
-                            Name = "Luna",
-                            Personality = "Calm and affectionate.",
-                            Photo = "http://example.com/photos/luna.jpg",
-                            Sex = 1,
-                            Size = 0,
-                            Species = 1,
-                            Weight = "4kg"
-                        },
-                        new
-                        {
-                            Id = new Guid("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"),
-                            Age = 4,
-                            Breed = "Bulldog",
-                            DateFound = new DateTime(2024, 9, 24, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1483),
-                            Health = 0,
-                            History = "Rescued from a busy highway.",
-                            IsAnimalFriendly = true,
-                            IsChipped = true,
-                            IsCommandsTaught = true,
-                            IsLeashTrained = true,
-                            IsPeopleFriendly = true,
-                            IsSterilized = true,
-                            IsVaccinated = true,
-                            LastExamination = new DateTime(2024, 10, 12, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1481),
-                            Name = "Charlie",
-                            Personality = "Energetic and friendly.",
-                            Photo = "http://example.com/photos/charlie.jpg",
-                            Sex = 0,
-                            Size = 1,
-                            Species = 0,
-                            Weight = "20kg"
-                        },
-                        new
-                        {
-                            Id = new Guid("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"),
-                            Age = 3,
-                            Breed = "Persian",
-                            DateFound = new DateTime(2024, 10, 4, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1488),
-                            Health = 0,
-                            History = "Found near a grocery store.",
-                            IsAnimalFriendly = false,
-                            IsChipped = true,
-                            IsCommandsTaught = false,
-                            IsLeashTrained = false,
-                            IsPeopleFriendly = true,
-                            IsSterilized = true,
-                            IsVaccinated = true,
-                            LastExamination = new DateTime(2024, 10, 16, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1487),
-                            Name = "Lucy",
-                            Personality = "Quiet and affectionate.",
-                            Photo = "http://example.com/photos/lucy.jpg",
-                            Sex = 1,
-                            Size = 0,
-                            Species = 1,
-                            Weight = "3.5kg"
-                        },
-                        new
-                        {
-                            Id = new Guid("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"),
-                            Age = 1,
-                            Breed = "Maine Coon",
-                            DateFound = new DateTime(2024, 10, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1494),
-                            Health = 0,
-                            History = "Abandoned kitten found in a box.",
-                            IsAnimalFriendly = true,
-                            IsChipped = false,
-                            IsCommandsTaught = false,
-                            IsLeashTrained = false,
-                            IsPeopleFriendly = true,
-                            IsSterilized = false,
-                            IsVaccinated = true,
-                            LastExamination = new DateTime(2024, 10, 17, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1492),
-                            Name = "Milo",
-                            Personality = "Playful and curious.",
-                            Photo = "http://example.com/photos/milo.jpg",
-                            Sex = 0,
-                            Size = 1,
-                            Species = 1,
-                            Weight = "5kg"
-                        });
                 });
 
             modelBuilder.Entity("Models.Entities.ExaminationRecord", b =>
@@ -388,23 +287,22 @@ namespace AnimalCare.Migrations
                     b.Property<Guid>("CareTakerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Notes")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("FinalDiagnosis")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("VeterinarianId")
                         .HasColumnType("uniqueidentifier");
