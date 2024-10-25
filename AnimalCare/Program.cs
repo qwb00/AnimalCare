@@ -21,6 +21,7 @@ builder.Services.ConfigureSwagger();
 
 //builder.Services.AddRazorPages();
 builder.Services.ConfigureCors();
+builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
