@@ -14,7 +14,7 @@ namespace AnimalCare.Factories
                 .Build();
 
             var builder = new DbContextOptionsBuilder<RepositoryContext>()
-                .UseSqlServer(configuration.GetConnectionString("sqlConnection"),
+                .UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING"),
                 b => b.MigrationsAssembly("AnimalCare"));
 
             return new RepositoryContext(builder.Options);

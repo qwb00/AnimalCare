@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AnimalCare.Migrations
 {
     /// <inheritdoc />
-    public partial class Added : Migration
+    public partial class Final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -84,6 +84,20 @@ namespace AnimalCare.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdentityRole",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityRole", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -197,11 +211,11 @@ namespace AnimalCare.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    FinalDiagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CareTakerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VeterinarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -258,16 +272,14 @@ namespace AnimalCare.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Animals",
-                columns: new[] { "Id", "Age", "Breed", "DateFound", "Health", "History", "IsAnimalFriendly", "IsChipped", "IsCommandsTaught", "IsLeashTrained", "IsPeopleFriendly", "IsSterilized", "IsVaccinated", "LastExamination", "Name", "Personality", "Photo", "Sex", "Size", "Species", "Weight" },
+                table: "IdentityRole",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("59fe555e-3bcc-4ace-b9fc-68b76805ac59"), 5, "German Shepherd", new DateTime(2024, 9, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1471), 1, "Owner surrendered due to moving.", true, false, true, true, true, false, false, new DateTime(2024, 9, 29, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1469), "Max", "Loyal and protective.", "http://example.com/photos/max.jpg", 0, 2, 0, "30kg" },
-                    { new Guid("5bc27217-6817-40e4-b8d1-60dc9aca3e83"), 3, "Labrador Retriever", new DateTime(2024, 9, 19, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1462), 0, "Found near a lake.", true, true, true, true, true, false, true, new DateTime(2024, 10, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1451), "Bella", "Friendly and energetic.", "http://example.com/photos/bella.jpg", 1, 1, 0, "25kg" },
-                    { new Guid("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"), 3, "Persian", new DateTime(2024, 10, 4, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1488), 0, "Found near a grocery store.", false, true, false, false, true, true, true, new DateTime(2024, 10, 16, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1487), "Lucy", "Quiet and affectionate.", "http://example.com/photos/lucy.jpg", 1, 0, 1, "3.5kg" },
-                    { new Guid("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"), 2, "Siamese", new DateTime(2024, 9, 29, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1477), 0, "Rescued from an abandoned building.", false, true, false, false, true, true, true, new DateTime(2024, 10, 14, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1476), "Luna", "Calm and affectionate.", "http://example.com/photos/luna.jpg", 1, 0, 1, "4kg" },
-                    { new Guid("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"), 1, "Maine Coon", new DateTime(2024, 10, 9, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1494), 0, "Abandoned kitten found in a box.", true, false, false, false, true, false, true, new DateTime(2024, 10, 17, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1492), "Milo", "Playful and curious.", "http://example.com/photos/milo.jpg", 0, 1, 1, "5kg" },
-                    { new Guid("fd3cdefe-4f69-40f4-86fa-b2a3ad0b02f8"), 4, "Bulldog", new DateTime(2024, 9, 24, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1483), 0, "Rescued from a busy highway.", true, true, true, true, true, true, true, new DateTime(2024, 10, 12, 16, 13, 30, 549, DateTimeKind.Utc).AddTicks(1481), "Charlie", "Energetic and friendly.", "http://example.com/photos/charlie.jpg", 0, 1, 0, "20kg" }
+                    { "2cc9ebc1-e820-48be-9065-eac083d5f734", null, "Caretaker", "CARETAKER" },
+                    { "76715467-ed8d-4851-9d0c-326233d53874", null, "Administrator", "ADMINISTRATOR" },
+                    { "7673799f-c5e1-45e2-b6fa-c068c03f2847", null, "Veterinarian", "VETERINARIAN" },
+                    { "b43e80cd-7c0e-4519-93ce-e6878db7be42", null, "Volunteer", "VOLUNTEER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -369,6 +381,9 @@ namespace AnimalCare.Migrations
 
             migrationBuilder.DropTable(
                 name: "ExaminationRecord");
+
+            migrationBuilder.DropTable(
+                name: "IdentityRole");
 
             migrationBuilder.DropTable(
                 name: "Reservations");
