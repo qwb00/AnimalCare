@@ -8,7 +8,7 @@ function Footer() {
         {/* Секция с контактной информацией */}
         <div className="w-1/2 pr-8 text-center">
           <h3 className="text-2xl font-bold mb-4">Contact info:</h3>
-          <p className="text-gray-600 mb-2"><span className="font-bold">Address:</span> Happy Paws Animal Shelter, 1234 Příběnická Street, 110 00 Prague</p>
+          <p className="text-gray-600 mb-2"><span className="font-bold">Address:</span> Happy Paws Animal Shelter, 1234 Příběnická, 110 00 Prague</p>
           <p className="text-gray-600 mb-2"><span className="font-bold">Phone:</span> +420 123 456 789</p>
           <p className="text-gray-600 mb-2"><span className="font-bold">Email:</span> contact@happypaws.cz</p>
           <p className="text-gray-600 mb-2"><span className="font-bold">Working hours:</span></p>
