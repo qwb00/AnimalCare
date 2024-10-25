@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import AnimalCard from '../components/AnimalCard';
 import axios from 'axios';
+import API_BASE_URL from '../config'; // Импортируем базовый URL
 
 function Animals() {
   const [animals, setAnimals] = useState([]);
@@ -9,24 +10,21 @@ function Animals() {
 
   // Функция загрузки всех животных
   const loadAnimals = async () => {
-    setIsLoading(true);
-
     try {
-      // Используем полный URL без прокси
-      const response = await axios.get('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/animals');
-      
-      // Лог данных для отладки
+      // Отправка CORS-запроса с использованием axios
+      const response = await axios.get('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/animals', {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+  
       console.log('Fetched animals:', response.data);
-
-      // Сохранение полученных данных в состоянии
       setAnimals(response.data);
     } catch (error) {
       console.error('Error fetching animals:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadAnimals();
   }, []);
