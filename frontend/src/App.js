@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
 import BackToTop from './components/BackToTop'; // Импортируем якорь
+import AnimalDetails from './pages/AnimalDetails';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/animals" element={<Animals />} />
         <Route path="/reservations" element={<Reservations />} />
+        <Route path="/animals/:id" element={<AnimalDetails />} /> {/* Используем element вместо component */}
       </Routes>
       <BackToTop /> {/* Добавляем якорь */}
     </Router>

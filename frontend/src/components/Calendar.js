@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
-import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours, isEqual} from 'date-fns';
-import Button from './Button'; // Импорт компонента Button
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours } from 'date-fns';
+import Button from './Button';
+import API_BASE_URL from '../config'; 
 
-function Calendar({ selectedAnimal }) {
+function Calendar({ selectedAnimalId  }) {
   const today = new Date();
-  const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 }); // Начало текущей недели
-  const [currentWeek, setCurrentWeek] = useState(startOfThisWeek); // Текущая неделя
-  const [selectedSlots, setSelectedSlots] = useState([]); // Храним выбранные интервалы
-  const [isModalOpen, setIsModalOpen] = useState(false); // Управление модальным окном
-  const MAX_SLOTS = 10; // Максимально допустимое количество слотов
+  const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
+  const [currentWeek, setCurrentWeek] = useState(startOfThisWeek);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [animalData, setAnimalData] = useState(null); // Данные о животном
+  const MAX_SLOTS = 10;
+
+  useEffect(() => {
+    const fetchAnimalData = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/animals/${selectedAnimalId}`);
+        if (response.data) {
+          setAnimalData(response.data);
+        } else {
+          setAnimalData(null); // Обработка случая, если данные не найдены
+        }
+      } catch (error) {
+        console.error('Error fetching animal data:', error);
+        setAnimalData(null); // Установите null в случае ошибки
+      }
+    };
+  
+    if (selectedAnimalId) {
+      fetchAnimalData();
+    }
+  }, [selectedAnimalId]);
+  
 
   // Функция для переключения на следующую неделю
   const handleNextWeek = () => {
@@ -64,7 +88,7 @@ function Calendar({ selectedAnimal }) {
   };
 
   // Путь к изображению животного
-  const animalImagePath = `/animals/${selectedAnimal}.png`;
+  const animalImagePath = animalData?.photo;
 
 // Функция для преобразования слота в интервал времени
 const formatTimeSlot = (slot) => {
@@ -140,13 +164,47 @@ const mergeTimeSlots = (selectedSlots) => {
     return mergedSlots;
   };
 
+  // Функция для отправки POST-запроса для создания резервации
+  const handleConfirmReservation = async () => {
+    try {
+      const randomVolunteerId = '7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98';
+  
+      for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
+        const reservationData = {
+          volunteerId: randomVolunteerId,
+          animalId: selectedAnimalId,
+          reservationDate: format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd'),
+          startTime: format(parse(startTime, 'hh:mm a', new Date()), 'HH:mm:ss'),
+          endTime: format(parse(endTime, 'hh:mm a', new Date()), 'HH:mm:ss'),
+        };
+  
+        // Добавим вывод для проверки данных перед отправкой
+        console.log('Reservation data being sent:', reservationData);
+  
+        const response = await axios.post(`${API_BASE_URL}/reservations`, reservationData);
+  
+        if (response.status === 201) {
+          console.log('Reservation created successfully:', response.data);
+        } else {
+          console.error('Failed to create reservation:', response.data);
+        }
+      }
+  
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+    }
+  };
+  
+
+
   return (
     <div className="w-full py-2">
       <div className="flex items-center justify-between mb-4">
         {/* Заголовок с переключением недель */}
         <h2 className="text-xl font-semibold">
           Check <span className="text-main-blue">available</span> 1-hour slots for the walks with{' '}
-          <span className="font-bold">{selectedAnimal}</span>:
+          <span className="font-bold">{animalData?.name}</span>:
         </h2>
         <div className="flex items-center bg-main-blue rounded-xl">
           {/* Кнопка влево пропадает, если мы находимся на текущей неделе */}
@@ -250,7 +308,7 @@ const mergeTimeSlots = (selectedSlots) => {
             <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">Confirm Your Reservation</h3>
             <div className="flex items-start">
                 <div className="flex-1">
-                <p className="text-lg mb-4 text-gray-700">Animal: <strong>{selectedAnimal}</strong></p>
+                <p className="text-lg mb-4 text-gray-700">Animal: <strong>{animalData?.name}</strong></p>
                 <p className="text-lg mb-4 text-gray-700">Selected Time Slots:</p>
                 <div className="flex flex-col gap-2 mb-6">
                     {mergeTimeSlots(selectedSlots).map(({ date, startTime, endTime }) => (
@@ -262,7 +320,7 @@ const mergeTimeSlots = (selectedSlots) => {
                 </div>
                 {/* Фото животного с черным бордером и закруглением */}
                 <div className="flex-shrink-0 ml-4">
-                <img src={animalImagePath} alt={selectedAnimal} className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg" />
+                <img src={animalImagePath} alt={animalData?.name} className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg" />
                 </div>
             </div>
             <div className="flex justify-center space-x-4 mt-6">
@@ -277,12 +335,12 @@ const mergeTimeSlots = (selectedSlots) => {
                 />
                 {/* Кнопка Confirm */}
                 <Button 
-                text="Confirm" 
-                variant="blue" 
-                icon="/icons/confirm_white.png" 
-                iconPosition="right" 
-                className="px-5 py-2" 
-                onClick={handleCloseModal} 
+                  text="Confirm" 
+                  variant="blue" 
+                  icon="/icons/confirm_white.png" 
+                  iconPosition="right" 
+                  className="px-5 py-2" 
+                  onClick={handleConfirmReservation} // Вызываем новый обработчик
                 />
             </div>
             </div>
