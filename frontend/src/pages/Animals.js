@@ -97,6 +97,7 @@ function Animals() {
           {animals.map((animal) => (
             <AnimalCard
               key={animal.id} // Используем уникальный идентификатор
+              id={animal.id}
               image={animal.photo} // Используем правильный ключ photo
               name={animal.name}
               age={`${animal.age} years`}
@@ -111,9 +112,6 @@ function Animals() {
           </div>
         )}
       </div>
-
-      {/* Заголовок над футером */}
-      <h2 className="text-4xl font-black text-center mt-12 mb-8">THANK YOU FOR YOUR TIME!</h2>
 
       {/* Футер */}
       <Footer />
