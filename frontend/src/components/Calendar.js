@@ -11,6 +11,7 @@ function Calendar({ selectedAnimalId  }) {
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animalData, setAnimalData] = useState(null); // Данные о животном
+  const [reservedSlots, setReservedSlots] = useState([]); // Для хранения зарезервированных интервалов
   const MAX_SLOTS = 10;
 
   useEffect(() => {
@@ -32,6 +33,46 @@ function Calendar({ selectedAnimalId  }) {
       fetchAnimalData();
     }
   }, [selectedAnimalId]);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        // Получаем токен из sessionStorage
+        const authToken = sessionStorage.getItem('token');
+  
+        // Получаем все резервации
+        const response = await axios.get(`${API_BASE_URL}/reservations`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+  
+        if (response.data) {
+          // Фильтруем резервации, чтобы получить только те, которые относятся к текущему животному
+          const filteredReservations = response.data.filter(
+            (reservation) => reservation.animalId === selectedAnimalId
+          );
+  
+          // Преобразуем резервации в формат `yyyy-MM-dd-hh:mm a` для сравнения
+          const occupiedSlots = filteredReservations.map((reservation) => {
+            const formattedDate = format(new Date(reservation.reservationDate), 'yyyy-MM-dd');
+            const formattedStartTime = format(parse(reservation.startTime, 'HH:mm:ss', new Date()), 'hh:mm a');
+            return `${formattedDate}-${formattedStartTime}`;
+          });
+  
+          // Сохраняем занятые слоты
+          setReservedSlots(occupiedSlots);
+        }
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    };
+  
+    if (selectedAnimalId) {
+      fetchReservations();
+    }
+  }, [selectedAnimalId]);
+  
   
 
   // Функция для переключения на следующую неделю
@@ -168,6 +209,9 @@ const mergeTimeSlots = (selectedSlots) => {
   const handleConfirmReservation = async () => {
     try {
       const randomVolunteerId = '7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98';
+      const authToken = sessionStorage.getItem('token');
+  
+      const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
   
       for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
         const reservationData = {
@@ -181,20 +225,39 @@ const mergeTimeSlots = (selectedSlots) => {
         // Добавим вывод для проверки данных перед отправкой
         console.log('Reservation data being sent:', reservationData);
   
-        const response = await axios.post(`${API_BASE_URL}/reservations`, reservationData);
+        const response = await axios.post(
+          `${API_BASE_URL}/reservations`,
+          reservationData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`, // Добавляем токен в заголовки
+            },
+          }
+        );
   
         if (response.status === 201) {
           console.log('Reservation created successfully:', response.data);
+  
+          // Добавляем зарезервированные слоты в список
+          const formattedDate = format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd');
+          const formattedStartTime = format(parse(startTime, 'hh:mm a', new Date()), 'hh:mm a');
+          const newSlotKey = `${formattedDate}-${formattedStartTime}`;
+          newReservedSlots.push(newSlotKey);
         } else {
           console.error('Failed to create reservation:', response.data);
         }
       }
+  
+      // Обновляем состояние зарезервированных слотов
+      setReservedSlots(newReservedSlots);
   
       handleCloseModal();
     } catch (error) {
       console.error('Error creating reservation:', error);
     }
   };
+  
   
 
 
@@ -260,15 +323,16 @@ const mergeTimeSlots = (selectedSlots) => {
               {timeSlots.map((slot) => {
                 const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого слота
                 const isSelected = selectedSlots.includes(slotKey); // Проверяем, выбран ли слот
-                const isInactive = inactiveTimes.includes(slot) || isPastDay; // Проверяем, неактивный ли слот
+                const isReserved = reservedSlots.includes(slotKey); // Проверяем, зарезервирован ли слот
+                const isInactive = inactiveTimes.includes(slot) || isPastDay || isReserved; // Проверяем, неактивный ли слот
 
                 return (
                   <button
                     key={slot}
                     onClick={() => !isInactive && handleSlotClick(day, slot)} // Игнорируем клик по неактивным слотам
-                    title={isInactive ? (isPastDay ? 'Past date' : 'Already reserved') : ''} // Всплывающий текст для неактивных ячеек
+                    title={isInactive ? (isPastDay ? 'Past date' : isReserved ? 'Already reserved' : 'Unavailable') : ''} // Всплывающий текст для неактивных ячеек
                     className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
-                      ${isInactive ? '!bg-gray-300 text-gray-600 !border-gray-300 cursor-default' : ''}
+                      ${isInactive ? '!bg-gray-300 text-white !border-gray-300 cursor-default' : ''}
                       ${isSelected ? 'bg-white text-black border border-black' : 'bg-main-blue text-white border border-main-blue'}
                       ${!isInactive ? 'hover:bg-white hover:text-black hover:border-black' : ''}
                     `}
