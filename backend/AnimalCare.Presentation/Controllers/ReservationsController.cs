@@ -1,4 +1,7 @@
 // ReservationsController.cs
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -24,6 +27,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Reservations
         [HttpPost(Name = "CreateReservation")]
+        [Authorize(Roles = "Volunteer, Administrator, Caretaker")]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
         {
             if (reservationRequest == null)
@@ -34,6 +38,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         // GET: api/Reservations/{id}
+        [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
         [HttpGet("{id:guid}", Name = "GetReservationById")]
         public async Task<IActionResult> GetReservationById(Guid id)
         {
@@ -45,18 +50,31 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         // PATCH: api/Reservations/{id}
-        [HttpPatch("{id:guid}", Name = "UpdateReservation")]
-        public async Task<IActionResult> UpdateReservation(Guid id, [FromBody] ReservationForUpdateDto reservationForUpdate)
+        [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
+        [Authorize(Roles = "Caretaker,Administrator")]
+        public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDto> patchDoc)
         {
-            if (reservationForUpdate == null)
-                return BadRequest("ReservationForUpdateDto object is null");
+            if (patchDoc == null)
+                return BadRequest("patchDoc object is null");
 
-            await _service.ReservationService.UpdateReservationAsync(id, reservationForUpdate, trackChanges: true);
+            var reservationToPatch = await _service.ReservationService.GetReservationForPatchAsync(id, trackChanges: true);
+
+            if (reservationToPatch == null)
+                return NotFound();
+
+            patchDoc.ApplyTo(reservationToPatch, ModelState);
+
+            if (!TryValidateModel(reservationToPatch))
+                return ValidationProblem(ModelState);
+
+            await _service.ReservationService.SavePatchedReservationAsync(id, reservationToPatch, trackChanges: true);
+
             return NoContent();
         }
 
         // DELETE: api/Reservations/{id}
         [HttpDelete("{id:guid}", Name = "DeleteReservation")]
+        [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> DeleteReservation(Guid id)
         {
             await _service.ReservationService.DeleteReservationAsync(id, trackChanges: false);

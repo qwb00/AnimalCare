@@ -7,13 +7,14 @@ namespace AnimalCare.Presentation.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IServiceManager _service;
         public UsersController(IServiceManager service) => _service = service;
 
         [HttpGet(Name = "GetUsers")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _service.UserService.GetAllUsersAsync();
@@ -22,13 +23,28 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpGet("{id:guid}", Name = "GetUserById")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GetUser(Guid id)
         {
             var user = await _service.UserService.GetUserAsync(id);
             return Ok(user);
         }
 
+        [HttpGet("me", Name = "GetCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var username = User.Identity.Name;
+
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("Username is not available in token");
+
+            var user = await _service.UserService.GetUserByUsernameAsync(username);
+
+            return Ok(user);
+        }
+
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateUser([FromBody] UserForCreateDTO user)
         {
             var result = await _service.AuthenticationService.RegisterUser(user);
@@ -48,6 +64,7 @@ namespace AnimalCare.Presentation.Controllers
 
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _service.UserService.DeleteUserAsync(id);

@@ -12,5 +12,6 @@ namespace Service.Contracts
         Task<IEnumerable<VolunteerListDTO>> GetVolunteersAsync();
         Task<(ChangeStatusForVolunteerDTO volunteerForPatch, Volunteer volunteerEntity)> GetVolunteerForPatchAsync(Guid id);
         Task<IdentityResult> SaveChangesForPatchAsync(ChangeStatusForVolunteerDTO patch, Volunteer user);
+        Task<UserDetailDTO> GetUserByUsernameAsync(string username);
     }
 }

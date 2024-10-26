@@ -8,7 +8,7 @@ namespace AnimalCare.Presentation.Controllers
 {
     [ApiController]
     [Route("api/volunteers")]
-    //[Authorize(Roles = "Caretaker,Administrator")]
+    [Authorize(Roles = "Caretaker,Administrator")]
     public class VolunteersController : ControllerBase
     {
         private readonly IServiceManager _service;
