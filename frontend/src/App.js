@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage'
 import BackToTop from './components/BackToTop'; // Импортируем якорь
 import AnimalDetails from './pages/AnimalDetails';
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/reservations" element={<Reservations />} />
         <Route path="/animals/:id" element={<AnimalDetails />} /> {/* Используем element вместо component */}
         <Route path="/login" element={<LoginPage />} /> 
+        <Route path="/signup" element={<RegisterPage />} />
       </Routes>
       <BackToTop /> {/* Добавляем якорь */}
     </>
