@@ -80,7 +80,9 @@ namespace AnimalCare
             CreateMap<User, UserDetailDTO>().MapMembers(
                 (dst => dst.Name, src => src.FullName)
                 );
-
+            CreateMap<UserForCreateDTO, User>().MapMembers(
+                (dest => dest.FullName, src => $"{src.FirstName} {src.LastName}".Trim())
+            );
 
             CreateMap<Volunteer, VolunteerListDTO>().MapMembers(
                 (dst => dst.Name, src => src.FullName)
