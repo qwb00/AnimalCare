@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.AnimalsDTO;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -35,6 +36,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> CreateAnimal([FromBody] AnimalForCreating animal)
         {
             var createdAnimal = await _service.AnimalService.CreateAnimalAsync(animal);
@@ -43,6 +45,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> DeleteAnimal(Guid id)
         {
             await _service.AnimalService.DeleteAnimalAsync(id, trackChanges: false);
@@ -50,6 +53,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> UpdateAnimal(Guid id, [FromBody] AnimalForUpdateDTO animal)
         {
             await _service.AnimalService.UpdateAnimalAsync(id, animal, trackChanges: true);
@@ -57,6 +61,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPatch("{id:guid}")]
+        [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid id,
        [FromBody] JsonPatchDocument<AnimalForUpdateDTO> patchDoc)
         {
