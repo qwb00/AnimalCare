@@ -14,5 +14,9 @@ namespace Service.Contracts
         Task DeleteReservationAsync(Guid reservationId, bool trackChanges);
         // Additional methods for getting user's reservations
         Task<IEnumerable<ReservationForUserDto>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges);
+        Task<ReservationForUpdateDto> GetReservationForPatchAsync(Guid reservationId, bool trackChanges);
+
+        Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDto reservationToPatch,
+            bool trackChanges);
     }
 }

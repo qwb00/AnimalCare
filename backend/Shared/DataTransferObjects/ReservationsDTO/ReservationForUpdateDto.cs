@@ -6,15 +6,10 @@ namespace Shared.DataTransferObjects.ReservationsDTO
 {
     public class ReservationForUpdateDto
     {
-        [Required]
         [DataType(DataType.DateTime)]
         public DateTime Date { get; set; }
-        
-        [Required]
         [DataType(DataType.Time)]
         public TimeSpan StartTime { get; set; }
-
-        [Required]
         [DataType(DataType.Time)]
         public TimeSpan EndTime { get; set; }
 

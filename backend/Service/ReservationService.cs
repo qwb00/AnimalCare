@@ -32,6 +32,23 @@ namespace Service
             var reservationDto = _mapper.Map<ReservationForConfirmationDto>(reservation);
             return reservationDto;
         }
+        
+        public async Task<ReservationForUpdateDto> GetReservationForPatchAsync(Guid reservationId, bool trackChanges)
+        {
+            var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
+
+            var reservationToPatch = _mapper.Map<ReservationForUpdateDto>(reservationEntity);
+            return reservationToPatch;
+        }
+        
+        public async Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDto reservationToPatch, bool trackChanges)
+        {
+            var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
+
+            _mapper.Map(reservationToPatch, reservationEntity);
+
+            await _repository.SaveAsync();
+        }
 
         public async Task<ReservationForConfirmationDto> CreateReservationAsync(ReservationForCreationDto reservationRequest)
         {

@@ -51,6 +51,13 @@ namespace AnimalCare
                     dest => dest.Status,
                     opt => opt.MapFrom(src => DetermineReservationStatus(src))
                 );
+
+            CreateMap<Reservation, ReservationForUpdateDto>()
+                .MapMembers(
+                    (dst => dst.Date, src => src.StartDate.Date),
+                    (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
+                    (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
+                );
             
             CreateMap<ReservationForUpdateDto, Reservation>()
                 .MapMembers(
