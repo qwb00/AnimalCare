@@ -74,15 +74,16 @@ function Home() {
             <div className="text-center">Loading...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              {animals.map((animal, index) => (
-                <AnimalCard 
-                  key={index} 
-                  image={animal.photo} // Измените на правильное поле с изображением, если оно отличается
-                  name={animal.name} 
-                  age={`${animal.age} years`} 
-                  breed={animal.breed} 
-                />
-              ))}
+              {animals.map((animal) => (
+              <AnimalCard
+                key={animal.id} // Используем уникальный идентификатор
+                id={animal.id}
+                image={animal.photo} // Используем правильный ключ photo
+                name={animal.name}
+                age={`${animal.age} years`}
+                breed={animal.breed}
+              />
+            ))}
             </div>
           )}
 
