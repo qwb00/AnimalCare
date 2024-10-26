@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects.AnimalsDTO
 {
-    public record AnimalForUpdateDTO
+    public record AnimalForUpdateDTO : AnimalForManipulationDTO
     {
     }
 }
