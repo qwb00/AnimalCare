@@ -32,6 +32,7 @@ function LoginPage() {
     const data = await response.json();
     const token = data.token;
     sessionStorage.setItem('token', token);
+    console.log('Token:', token);
 
     const decodedToken = jwtDecode(token);
     const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
