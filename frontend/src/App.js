@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {  useNavigate, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
@@ -8,8 +8,19 @@ import BackToTop from './components/BackToTop'; // Импортируем яко
 import AnimalDetails from './pages/AnimalDetails';
 
 function App() {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const expirationTime = sessionStorage.getItem('expirationTime');
+    
+    if (expirationTime && Date.now() > expirationTime) {
+      sessionStorage.clear();
+      alert("Your session has expired. Please log in again.");
+      navigate('/login');
+    }
+  }, [navigate]);
   return (
-    <Router>
+    <>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/animals" element={<Animals />} />
@@ -18,7 +29,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} /> 
       </Routes>
       <BackToTop /> {/* Добавляем якорь */}
-    </Router>
+    </>
   );
 }
 
