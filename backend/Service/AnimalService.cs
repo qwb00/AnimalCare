@@ -3,6 +3,8 @@ using Contracts;
 using Service.Contracts;
 using Models.Entities;
 using Shared.DataTransferObjects.AnimalsDTO;
+using Microsoft.AspNetCore.Identity;
+using Shared.DataTransferObjects.UsersDTO;
 
 namespace Service
 {
@@ -58,6 +60,20 @@ namespace Service
             var animalEntity = await GetAnimalAndCheckIfItExists(animalId, trackChanges);
 
             _mapper.Map(animalForUpdate, animalEntity);
+            await _repository.SaveAsync();
+        }
+
+        public async Task<(AnimalForUpdateDTO animalForPatch, Animal animalEntity)> GetAnimalForPatchAsync(Guid id)
+        {
+            var animal = await GetAnimalAndCheckIfItExists(id, true);
+    
+            var animalDTO = _mapper.Map<AnimalForUpdateDTO>(animal);
+            return (animalForPatch: animalDTO, animalEntity: animal);
+        }
+
+        public async Task SaveChangesForPatchAsync(AnimalForUpdateDTO patch, Animal animal)
+        {
+            _mapper.Map(patch, animal);
             await _repository.SaveAsync();
         }
 
