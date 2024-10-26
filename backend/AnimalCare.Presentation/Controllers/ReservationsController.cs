@@ -1,4 +1,6 @@
 // ReservationsController.cs
+
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -45,13 +47,24 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         // PATCH: api/Reservations/{id}
-        [HttpPatch("{id:guid}", Name = "UpdateReservation")]
-        public async Task<IActionResult> UpdateReservation(Guid id, [FromBody] ReservationForUpdateDto reservationForUpdate)
+        [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
+        public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDto> patchDoc)
         {
-            if (reservationForUpdate == null)
-                return BadRequest("ReservationForUpdateDto object is null");
+            if (patchDoc == null)
+                return BadRequest("patchDoc object is null");
 
-            await _service.ReservationService.UpdateReservationAsync(id, reservationForUpdate, trackChanges: true);
+            var reservationToPatch = await _service.ReservationService.GetReservationForPatchAsync(id, trackChanges: true);
+
+            if (reservationToPatch == null)
+                return NotFound();
+
+            patchDoc.ApplyTo(reservationToPatch, ModelState);
+
+            if (!TryValidateModel(reservationToPatch))
+                return ValidationProblem(ModelState);
+
+            await _service.ReservationService.SavePatchedReservationAsync(id, reservationToPatch, trackChanges: true);
+
             return NoContent();
         }
 
