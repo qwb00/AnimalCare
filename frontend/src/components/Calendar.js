@@ -1,14 +1,79 @@
-import React, { useState } from 'react';
-import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours, isEqual} from 'date-fns';
-import Button from './Button'; // Импорт компонента Button
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours } from 'date-fns';
+import Button from './Button';
+import API_BASE_URL from '../config'; 
 
-function Calendar({ selectedAnimal }) {
+function Calendar({ selectedAnimalId  }) {
   const today = new Date();
-  const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 }); // Начало текущей недели
-  const [currentWeek, setCurrentWeek] = useState(startOfThisWeek); // Текущая неделя
-  const [selectedSlots, setSelectedSlots] = useState([]); // Храним выбранные интервалы
-  const [isModalOpen, setIsModalOpen] = useState(false); // Управление модальным окном
-  const MAX_SLOTS = 10; // Максимально допустимое количество слотов
+  const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
+  const [currentWeek, setCurrentWeek] = useState(startOfThisWeek);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [animalData, setAnimalData] = useState(null); // Данные о животном
+  const [reservedSlots, setReservedSlots] = useState([]); // Для хранения зарезервированных интервалов
+  const MAX_SLOTS = 10;
+
+  useEffect(() => {
+    const fetchAnimalData = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/animals/${selectedAnimalId}`);
+        if (response.data) {
+          setAnimalData(response.data);
+        } else {
+          setAnimalData(null); // Обработка случая, если данные не найдены
+        }
+      } catch (error) {
+        console.error('Error fetching animal data:', error);
+        setAnimalData(null); // Установите null в случае ошибки
+      }
+    };
+  
+    if (selectedAnimalId) {
+      fetchAnimalData();
+    }
+  }, [selectedAnimalId]);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        // Получаем токен из sessionStorage
+        const authToken = sessionStorage.getItem('token');
+  
+        // Получаем все резервации
+        const response = await axios.get(`${API_BASE_URL}/reservations`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+  
+        if (response.data) {
+          // Фильтруем резервации, чтобы получить только те, которые относятся к текущему животному
+          const filteredReservations = response.data.filter(
+            (reservation) => reservation.animalId === selectedAnimalId
+          );
+  
+          // Преобразуем резервации в формат `yyyy-MM-dd-hh:mm a` для сравнения
+          const occupiedSlots = filteredReservations.map((reservation) => {
+            const formattedDate = format(new Date(reservation.reservationDate), 'yyyy-MM-dd');
+            const formattedStartTime = format(parse(reservation.startTime, 'HH:mm:ss', new Date()), 'hh:mm a');
+            return `${formattedDate}-${formattedStartTime}`;
+          });
+  
+          // Сохраняем занятые слоты
+          setReservedSlots(occupiedSlots);
+        }
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    };
+  
+    if (selectedAnimalId) {
+      fetchReservations();
+    }
+  }, [selectedAnimalId]);
+  
+  
 
   // Функция для переключения на следующую неделю
   const handleNextWeek = () => {
@@ -64,7 +129,7 @@ function Calendar({ selectedAnimal }) {
   };
 
   // Путь к изображению животного
-  const animalImagePath = `/animals/${selectedAnimal}.png`;
+  const animalImagePath = animalData?.photo;
 
 // Функция для преобразования слота в интервал времени
 const formatTimeSlot = (slot) => {
@@ -140,13 +205,69 @@ const mergeTimeSlots = (selectedSlots) => {
     return mergedSlots;
   };
 
+  // Функция для отправки POST-запроса для создания резервации
+  const handleConfirmReservation = async () => {
+    try {
+      const randomVolunteerId = '7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98';
+      const authToken = sessionStorage.getItem('token');
+  
+      const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
+  
+      for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
+        const reservationData = {
+          volunteerId: randomVolunteerId,
+          animalId: selectedAnimalId,
+          reservationDate: format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd'),
+          startTime: format(parse(startTime, 'hh:mm a', new Date()), 'HH:mm:ss'),
+          endTime: format(parse(endTime, 'hh:mm a', new Date()), 'HH:mm:ss'),
+        };
+  
+        // Добавим вывод для проверки данных перед отправкой
+        console.log('Reservation data being sent:', reservationData);
+  
+        const response = await axios.post(
+          `${API_BASE_URL}/reservations`,
+          reservationData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`, // Добавляем токен в заголовки
+            },
+          }
+        );
+  
+        if (response.status === 201) {
+          console.log('Reservation created successfully:', response.data);
+  
+          // Добавляем зарезервированные слоты в список
+          const formattedDate = format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd');
+          const formattedStartTime = format(parse(startTime, 'hh:mm a', new Date()), 'hh:mm a');
+          const newSlotKey = `${formattedDate}-${formattedStartTime}`;
+          newReservedSlots.push(newSlotKey);
+        } else {
+          console.error('Failed to create reservation:', response.data);
+        }
+      }
+  
+      // Обновляем состояние зарезервированных слотов
+      setReservedSlots(newReservedSlots);
+  
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+    }
+  };
+  
+  
+
+
   return (
     <div className="w-full py-2">
       <div className="flex items-center justify-between mb-4">
         {/* Заголовок с переключением недель */}
         <h2 className="text-xl font-semibold">
           Check <span className="text-main-blue">available</span> 1-hour slots for the walks with{' '}
-          <span className="font-bold">{selectedAnimal}</span>:
+          <span className="font-bold">{animalData?.name}</span>:
         </h2>
         <div className="flex items-center bg-main-blue rounded-xl">
           {/* Кнопка влево пропадает, если мы находимся на текущей неделе */}
@@ -193,36 +314,37 @@ const mergeTimeSlots = (selectedSlots) => {
       </div>
 
       {/* Места для записи времени (с 9:00 до 17:00) */}
-<div className="grid grid-cols-7 gap-2">
-  {daysOfWeek.map((day) => {
-    const isPastDay = isBefore(day, today) && !isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
-    
-    return (
-      <div key={day} className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl">
-        {timeSlots.map((slot) => {
-          const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого слота
-          const isSelected = selectedSlots.includes(slotKey); // Проверяем, выбран ли слот
-          const isInactive = inactiveTimes.includes(slot) || isPastDay; // Проверяем, неактивный ли слот
-
+      <div className="grid grid-cols-7 gap-2">
+        {daysOfWeek.map((day) => {
+          const isPastDay = isBefore(day, today) && !isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
+          
           return (
-            <button
-              key={slot}
-              onClick={() => !isInactive && handleSlotClick(day, slot)} // Игнорируем клик по неактивным слотам
-              title={isInactive ? (isPastDay ? 'Past date' : 'Already reserved') : ''} // Всплывающий текст для неактивных ячеек
-              className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
-                ${isInactive ? 'bg-gray-300 text-gray-600 !border-gray-300 cursor-default' : ''}
-                ${isSelected ? 'bg-white text-black border border-black' : 'bg-main-blue text-white border border-main-blue'}
-                ${!isInactive ? 'hover:bg-white hover:text-black hover:border-black' : ''}
-              `}
-            >
-              {slot}
-            </button>
+            <div key={day} className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl">
+              {timeSlots.map((slot) => {
+                const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого слота
+                const isSelected = selectedSlots.includes(slotKey); // Проверяем, выбран ли слот
+                const isReserved = reservedSlots.includes(slotKey); // Проверяем, зарезервирован ли слот
+                const isInactive = inactiveTimes.includes(slot) || isPastDay || isReserved; // Проверяем, неактивный ли слот
+
+                return (
+                  <button
+                    key={slot}
+                    onClick={() => !isInactive && handleSlotClick(day, slot)} // Игнорируем клик по неактивным слотам
+                    title={isInactive ? (isPastDay ? 'Past date' : isReserved ? 'Already reserved' : 'Unavailable') : ''} // Всплывающий текст для неактивных ячеек
+                    className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
+                      ${isInactive ? '!bg-gray-300 text-white !border-gray-300 cursor-default' : ''}
+                      ${isSelected ? 'bg-white text-black border border-black' : 'bg-main-blue text-white border border-main-blue'}
+                      ${!isInactive ? 'hover:bg-white hover:text-black hover:border-black' : ''}
+                    `}
+                  >
+                    {slot}
+                  </button>
+                );
+              })}
+            </div>
           );
         })}
       </div>
-    );
-  })}
-</div>
 
 
       {/* Кнопка создания бронирования */}
@@ -250,7 +372,7 @@ const mergeTimeSlots = (selectedSlots) => {
             <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">Confirm Your Reservation</h3>
             <div className="flex items-start">
                 <div className="flex-1">
-                <p className="text-lg mb-4 text-gray-700">Animal: <strong>{selectedAnimal}</strong></p>
+                <p className="text-lg mb-4 text-gray-700">Animal: <strong>{animalData?.name}</strong></p>
                 <p className="text-lg mb-4 text-gray-700">Selected Time Slots:</p>
                 <div className="flex flex-col gap-2 mb-6">
                     {mergeTimeSlots(selectedSlots).map(({ date, startTime, endTime }) => (
@@ -262,7 +384,7 @@ const mergeTimeSlots = (selectedSlots) => {
                 </div>
                 {/* Фото животного с черным бордером и закруглением */}
                 <div className="flex-shrink-0 ml-4">
-                <img src={animalImagePath} alt={selectedAnimal} className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg" />
+                <img src={animalImagePath} alt={animalData?.name} className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg" />
                 </div>
             </div>
             <div className="flex justify-center space-x-4 mt-6">
@@ -277,12 +399,12 @@ const mergeTimeSlots = (selectedSlots) => {
                 />
                 {/* Кнопка Confirm */}
                 <Button 
-                text="Confirm" 
-                variant="blue" 
-                icon="/icons/confirm_white.png" 
-                iconPosition="right" 
-                className="px-5 py-2" 
-                onClick={handleCloseModal} 
+                  text="Confirm" 
+                  variant="blue" 
+                  icon="/icons/confirm_white.png" 
+                  iconPosition="right" 
+                  className="px-5 py-2" 
+                  onClick={handleConfirmReservation} // Вызываем новый обработчик
                 />
             </div>
             </div>

@@ -42,6 +42,19 @@ namespace Service
             return volunteersDTO;
         }
 
+        public async Task<UserDetailDTO> GetUserByUsernameAsync(string username)
+        {
+            var user = await _repository.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                throw new Exception($"User with name {username} not found");
+            }
+
+            var userDTO = await user.MapUserToDTOAsync(_repository, _mapper);
+            return userDTO;
+        }
+
         public async Task<(ChangeStatusForVolunteerDTO volunteerForPatch, Volunteer volunteerEntity)> GetVolunteerForPatchAsync(Guid id)
         {
             var user = await GetUserAndCheckIfItExists(id);

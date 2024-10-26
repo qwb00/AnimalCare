@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Импортируем Link из React Router
 
-function AnimalCard({ image, name, age, breed }) {
+function AnimalCard({ id, image, name, age, breed }) {
   return (
-    <Link to="/animals" className="block"> {/* Оборачиваем карточку в Link */}
+    <Link to={`/animals/${id}`} className="block"> {/* Оборачиваем карточку в Link */}
       <div className="border-2 border-black rounded-2xl overflow-hidden transition-transform duration-300 ease-in-out transform hover:scale-105 cursor-pointer">
         {/* Верхняя часть с фото */}
         <div className="border-b-2 border-black h-1/2 overflow-hidden">

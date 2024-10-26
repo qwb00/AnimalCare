@@ -21,7 +21,8 @@ namespace AnimalCare
                 (dst => dst.Reservations, src => src.Reservations)
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
-            
+            CreateMap<Animal, AnimalForUpdateDTO>().ReverseMap();
+
             CreateMap<ReservationForCreationDto, Reservation>()
                 .MapMembers(
                     (dst => dst.StartDate, src => src.ReservationDate.Date + src.StartTime),
@@ -51,6 +52,13 @@ namespace AnimalCare
                     dest => dest.Status,
                     opt => opt.MapFrom(src => DetermineReservationStatus(src))
                 );
+
+            CreateMap<Reservation, ReservationForUpdateDto>()
+                .MapMembers(
+                    (dst => dst.Date, src => src.StartDate.Date),
+                    (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
+                    (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
+                );
             
             CreateMap<ReservationForUpdateDto, Reservation>()
                 .MapMembers(
@@ -72,7 +80,9 @@ namespace AnimalCare
             CreateMap<User, UserDetailDTO>().MapMembers(
                 (dst => dst.Name, src => src.FullName)
                 );
-
+            CreateMap<UserForCreateDTO, User>().MapMembers(
+                (dest => dest.FullName, src => $"{src.FirstName} {src.LastName}".Trim())
+            );
 
             CreateMap<Volunteer, VolunteerListDTO>().MapMembers(
                 (dst => dst.Name, src => src.FullName)

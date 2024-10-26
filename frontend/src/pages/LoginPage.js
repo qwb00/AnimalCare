@@ -31,13 +31,13 @@ function LoginPage() {
 
     const data = await response.json();
     const token = data.token;
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
 
     const decodedToken = jwtDecode(token);
     const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+    const expirationTime = decodedToken.exp * 1000; // Переводим в миллисекунды
+    sessionStorage.setItem('expirationTime', expirationTime);
 
-    // Логируем значение для проверки
-    console.log("Decoded Username:", username);
     const roles = decodedToken.role; // Роли пользователя, если они были добавлены
 
     localStorage.setItem('username', username);
@@ -97,6 +97,9 @@ function LoginPage() {
         >
           Login
         </button>
+        <Link to="/signup" className="text-blue-500 hover:underline">
+          Don't have an account? Sign Up
+        </Link>
       </form>
     </div>
   );
