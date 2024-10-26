@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../components/Button';
-import { Link } from 'react-router-dom'; // Импортируем Link
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Импортируем Link
 
 function Header() {
+  const [username, setUsername] = useState(null); // Состояние для имени пользователя
+  const navigate = useNavigate();
+
+  // Используем useEffect, чтобы проверить наличие имени пользователя в localStorage при монтировании компонента
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
   return (
     <header className="p-4">
       <div className="w-full max-w-[1024px] mx-auto flex justify-between items-center">
@@ -19,7 +29,16 @@ function Header() {
             <Button text="Animals" variant="white" icon="/icons/animals_button.svg" iconPosition="left" />
           </Link>
           <Link to="/reservations"> <Button text="Reservations" variant="white" icon="/icons/reservations_button.svg" iconPosition="left"/> </Link>
-          <Button text="Login" variant="blue" icon="/icons/login_button_white.svg" iconPosition="right" />
+          {username ? (
+            <Link to="/login">
+              <Button text={username} variant="blue" icon="/icons/left_arrow.svg" iconPosition="right" />
+            </Link>
+          ) : (
+            // Кнопка "Login" для неавторизованных пользователей
+            <Link to="/login">
+              <Button text="Login" variant="blue" icon="/icons/login_button_white.svg" iconPosition="right" />
+            </Link>
+          )}
         </nav>
       </div>
     </header>
