@@ -97,6 +97,9 @@ function LoginPage() {
         >
           Login
         </button>
+        <Link to="/signup" className="text-blue-500 hover:underline">
+          Don't have an account? Sign Up
+        </Link>
       </form>
     </div>
   );
