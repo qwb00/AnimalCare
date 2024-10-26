@@ -24,9 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalCare.Presentation", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{D129F340-8F7B-4DB4-A279-DA75E71E52DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{907D1ABE-1550-4DAC-A2F1-CE42F7DACAC0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{6006963B-DC71-460E-BAA9-B47264095CEE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения (2)", "Элементы решения (2)", "{6006963B-DC71-460E-BAA9-B47264095CEE}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 	EndProjectSection
@@ -45,7 +43,6 @@ Global
 		{907D1ABE-1550-4DAC-A2F1-CE42F7DACAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{907D1ABE-1550-4DAC-A2F1-CE42F7DACAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{907D1ABE-1550-4DAC-A2F1-CE42F7DACAC0}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB397D5D-C8D3-455D-8AA4-09161551C26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,7 +67,6 @@ Global
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D129F340-8F7B-4DB4-A279-DA75E71E52DF}.Release|Any CPU.Build.0 = Release|Any CPU
-
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,15 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from './Button'; // Импортируем компонент Button
+import axios from 'axios';
+import API_BASE_URL from '../config';
 
-// Массив с животными для выбора
-const animals = ['Lola', 'Peanut', 'Kelly'];
-
+// Компонент для поиска животного
 function Search({ placeholder, icon, onSearch }) {
   const [searchValue, setSearchValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Управляет состоянием выпадающего меню
-  const [searchResult, setSearchResult] = useState(null); // Хранит результат поиска
+  const [animals, setAnimals] = useState([]); // Хранит список животных из API
   const [isInputError, setIsInputError] = useState(false); // Управляет состоянием ошибки ввода
   const dropdownRef = useRef(null); // Ссылка на выпадающее меню для отслеживания кликов вне его
+
+  // Загрузка списка животных из API
+  useEffect(() => {
+    const loadAnimals = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/animals`);
+        const animalNames = response.data.map((animal) => animal.name);
+        setAnimals(animalNames); // Устанавливаем имена животных
+        console.log('Loaded animals from API:', animalNames);
+      } catch (error) {
+        console.error('Error fetching animals:', error);
+      }
+    };
+
+    loadAnimals();
+  }, []);
 
   // Функция для поиска животного
   const handleSearch = () => {
@@ -19,23 +35,21 @@ function Search({ placeholder, icon, onSearch }) {
     }
 
     if (animals.includes(searchValue)) {
-      setSearchResult(`Animal "${searchValue}" is selected!`);
-      onSearch(`Animal "${searchValue}" is selected!`);
+      setIsInputError(false);
+      onSearch(searchValue); // Передаем имя животного напрямую
     } else {
-      setSearchResult(`Animal "${searchValue}" not found.`);
-      onSearch(`Animal "${searchValue}" not found.`);
+      setIsInputError(true);
     }
+
     setIsDropdownOpen(false); // Закрыть выпадающее меню при нажатии на кнопку Search
-    setIsInputError(false); // Сбросить ошибку
   };
 
   // Функция для выбора животного из выпадающего меню
   const handleSelectAnimal = (animal) => {
     setSearchValue(animal);
     setIsDropdownOpen(false); // Закрыть меню при выборе
-    setSearchResult(`Animal "${animal}" is selected!`);
-    onSearch(`Animal "${animal}" is selected!`);
-    setIsInputError(false); // Сбросить ошибку при выборе животного
+    setIsInputError(false);
+    onSearch(animal); // Передаем имя животного напрямую
   };
 
   // Функция для закрытия выпадающего меню при клике вне его
@@ -58,20 +72,20 @@ function Search({ placeholder, icon, onSearch }) {
   return (
     <div className="relative flex items-center w-full max-w-[600px]" ref={dropdownRef}>
       {/* Поле ввода */}
-      <div className={`flex items-center  mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${isInputError ? 'border-red-500 bg-red-100' : 'border-black bg-white'}`}>
+      <div className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${isInputError ? 'border-red-500 bg-red-100' : 'border-black bg-white'}`}>
         <input
           type="text"
           placeholder={placeholder}
           value={searchValue}
-          className={`w-full px-4 py-2 focus:outline-none rounded-xl ${isInputError ? 'bg-red-100' : 'bg-white'}`} // Фон инпута
-          onChange={(e) => setSearchValue(e.target.value)} // Обновляем значение инпута
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Показать/скрыть выпадающее меню
+          className={`w-full px-4 py-2 focus:outline-none rounded-xl ${isInputError ? 'bg-red-100' : 'bg-white'}`}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         />
         <img src={icon} alt="Input icon" className="h-6 w-6 mr-2" />
       </div>
 
       {/* Кнопка поиска справа от инпута */}
-      <Button text="Search" variant="blue" icon="/icons/search_white.png" iconPosition="Search" onClick={handleSearch} /> {/* Добавляем обработчик клика */}
+      <Button text="Search" variant="blue" icon="/icons/search_white.png" iconPosition="Search" onClick={handleSearch} />
 
       {/* Выпадающее меню с именами животных */}
       {isDropdownOpen && (
@@ -80,7 +94,7 @@ function Search({ placeholder, icon, onSearch }) {
             <li
               key={animal}
               className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-              onClick={() => handleSelectAnimal(animal)} // Выбираем животное
+              onClick={() => handleSelectAnimal(animal)}
             >
               {animal}
             </li>
@@ -88,9 +102,11 @@ function Search({ placeholder, icon, onSearch }) {
         </ul>
       )}
 
-      {/* Вывод результата поиска под инпутом */}
-      {searchResult && (
-        <div className="mt-2 text-gray-600 text-sm absolute top-full left-0">{searchResult}</div>
+      {/* Вывод ошибки под инпутом */}
+      {isInputError && (
+        <div className="mt-2 text-red-600 text-sm absolute top-full left-0">
+          Animal not found.
+        </div>
       )}
     </div>
   );
