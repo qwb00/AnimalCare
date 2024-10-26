@@ -117,7 +117,7 @@ function AnimalDetails() {
             </div>
             <div className="mt-4">
               <Link to="/reservations"> 
-                <Button text={`WALK WITH ${animalData.name.toUpperCase()}`} variant="blue" icon="/icons/walk_with_animal.png" iconPosition="right" />
+                <Button text={`WALK WITH ${animalData.name.toUpperCase()}`} variant="blue" icon="/icons/walk_button_white.png" iconPosition="right" />
               </Link>
             </div>
           </div>

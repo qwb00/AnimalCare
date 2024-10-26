@@ -25,7 +25,7 @@ namespace Repositories.Configuration
                         Size = Size.Medium,
                         Health = Health.Good,
                         Weight = "25kg",
-                        Photo = "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                        Photo = "https://images.unsplash.com/photo-1516383074327-ac4841225abf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                         History = "Found near a lake.",
                         Personality = "Friendly and energetic.",
                         IsVaccinated = true,
