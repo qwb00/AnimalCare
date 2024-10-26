@@ -193,36 +193,36 @@ const mergeTimeSlots = (selectedSlots) => {
       </div>
 
       {/* Места для записи времени (с 9:00 до 17:00) */}
-<div className="grid grid-cols-7 gap-2">
-  {daysOfWeek.map((day) => {
-    const isPastDay = isBefore(day, today) && !isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
-    
-    return (
-      <div key={day} className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl">
-        {timeSlots.map((slot) => {
-          const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого слота
-          const isSelected = selectedSlots.includes(slotKey); // Проверяем, выбран ли слот
-          const isInactive = inactiveTimes.includes(slot) || isPastDay; // Проверяем, неактивный ли слот
-
+      <div className="grid grid-cols-7 gap-2">
+        {daysOfWeek.map((day) => {
+          const isPastDay = isBefore(day, today) && !isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
+          
           return (
-            <button
-              key={slot}
-              onClick={() => !isInactive && handleSlotClick(day, slot)} // Игнорируем клик по неактивным слотам
-              title={isInactive ? (isPastDay ? 'Past date' : 'Already reserved') : ''} // Всплывающий текст для неактивных ячеек
-              className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
-                ${isInactive ? 'bg-gray-300 text-gray-600 !border-gray-300 cursor-default' : ''}
-                ${isSelected ? 'bg-white text-black border border-black' : 'bg-main-blue text-white border border-main-blue'}
-                ${!isInactive ? 'hover:bg-white hover:text-black hover:border-black' : ''}
-              `}
-            >
-              {slot}
-            </button>
+            <div key={day} className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl">
+              {timeSlots.map((slot) => {
+                const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого слота
+                const isSelected = selectedSlots.includes(slotKey); // Проверяем, выбран ли слот
+                const isInactive = inactiveTimes.includes(slot) || isPastDay; // Проверяем, неактивный ли слот
+
+                return (
+                  <button
+                    key={slot}
+                    onClick={() => !isInactive && handleSlotClick(day, slot)} // Игнорируем клик по неактивным слотам
+                    title={isInactive ? (isPastDay ? 'Past date' : 'Already reserved') : ''} // Всплывающий текст для неактивных ячеек
+                    className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
+                      ${isInactive ? '!bg-gray-300 text-gray-600 !border-gray-300 cursor-default' : ''}
+                      ${isSelected ? 'bg-white text-black border border-black' : 'bg-main-blue text-white border border-main-blue'}
+                      ${!isInactive ? 'hover:bg-white hover:text-black hover:border-black' : ''}
+                    `}
+                  >
+                    {slot}
+                  </button>
+                );
+              })}
+            </div>
           );
         })}
       </div>
-    );
-  })}
-</div>
 
 
       {/* Кнопка создания бронирования */}

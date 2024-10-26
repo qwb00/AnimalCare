@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import HomeSlider from '../components/HomeSlider';
 import AnimalCard from '../components/AnimalCard'; // Импорт компонента AnimalCard
@@ -6,35 +6,34 @@ import Button from '../components/Button';
 import AchievementsSlider from '../components/AchievementsSlider';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom'; // Импортируем Link
+import axios from 'axios';
+import API_BASE_URL from '../config';
 
 function Home() {
-    const animals = [
-        {
-          name: 'Lola',
-          age: '2 years',
-          breed: 'Shiba Inu',
-          get image() {
-            return `/animals/${this.name.toLowerCase()}.png`;
-          }
-        },
-        {
-          name: 'Peanut',
-          age: '1 year',
-          breed: 'Maine Coon',
-          get image() {
-            return `/animals/${this.name.toLowerCase()}.png`;
-          }
-        },
-        {
-          name: 'Kelly',
-          age: '3 years',
-          breed: 'Border Collie',
-          get image() {
-            return `/animals/${this.name.toLowerCase()}.png`;
-          }
-        }
-      ];
+  const [animals, setAnimals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Функция для загрузки животных из API и случайного выбора 3
+  const fetchAnimals = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/animals`);
+      const allAnimals = response.data;
       
+      // Выбираем 3 случайных животных
+      const randomAnimals = allAnimals
+        .sort(() => 0.5 - Math.random()) // Перемешиваем массив
+        .slice(0, 3); // Берем первые 3 элемента
+
+      setAnimals(randomAnimals);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching animals:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnimals();
+  }, []);
 
   return (
     <div>
@@ -53,17 +52,16 @@ function Home() {
         </div>
 
         {/* Стрелочка вниз */}
-<div className="z-20 flex justify-center mb-6">
-  <button
-    onClick={() => document.getElementById('animals-section').scrollIntoView({ behavior: 'smooth' })}
-    className="w-12 h-12 rounded-full border-2 border-black flex justify-center items-center bg-white transform transition-transform duration-300 ease-in-out hover:translate-y-2 hover:scale-105" // Анимация подпрыгивания и увеличения
-  >
-    <svg width="24" height="24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  </button>
-</div>
-
+        <div className="z-20 flex justify-center mb-6">
+          <button
+            onClick={() => document.getElementById('animals-section').scrollIntoView({ behavior: 'smooth' })}
+            className="w-12 h-12 rounded-full border-2 border-black flex justify-center items-center bg-white transform transition-transform duration-300 ease-in-out hover:translate-y-2 hover:scale-105" // Анимация подпрыгивания и увеличения
+          >
+            <svg width="24" height="24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Секция с животными */}
@@ -71,24 +69,34 @@ function Home() {
         <div className="max-w-[1024px] mx-auto">
           <h2 className="text-4xl font-black text-center mb-12">OUR ANIMALS</h2>
 
-          {/* Карточки животных */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {animals.map((animal, index) => (
-              <AnimalCard key={index} image={animal.image} name={animal.name} age={animal.age} breed={animal.breed} />
-            ))}
-          </div>
+          {/* Показать сообщение о загрузке или карточки животных */}
+          {isLoading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {animals.map((animal, index) => (
+                <AnimalCard 
+                  key={index} 
+                  image={animal.photo} // Измените на правильное поле с изображением, если оно отличается
+                  name={animal.name} 
+                  age={`${animal.age} years`} 
+                  breed={animal.breed} 
+                />
+              ))}
+            </div>
+          )}
 
           {/* Кнопка для полного списка животных */}
-      <div className="flex justify-center">
-        <Link to="/animals">
-          <Button
-            text="FULL LIST OF ANIMALS"
-            variant="blue"
-            icon="/icons/full_list_of_animals_button.png"
-            iconPosition="right"
-          />
-        </Link>
-      </div>
+          <div className="flex justify-center">
+            <Link to="/animals">
+              <Button
+                text="FULL LIST OF ANIMALS"
+                variant="blue"
+                icon="/icons/full_list_of_animals_button.png"
+                iconPosition="right"
+              />
+            </Link>
+          </div>
         </div>
       </div>
 
