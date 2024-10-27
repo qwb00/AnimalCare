@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Button from '../components/Button'; // Импортируем компонент Button
 
 function RegisterPage() {
   const [firstName, setFirstName] = useState('');
@@ -14,7 +15,7 @@ function RegisterPage() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError(null);
-  const roles = ["Volunteer"];
+    const roles = ["Volunteer"];
     try {
       const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/authentication', {
         method: 'POST',
@@ -35,85 +36,101 @@ function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleSignUp} className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
-        
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="flex justify-center items-center h-screen bg-light-blue">
+      <form onSubmit={handleSignUp} className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm relative">
+        {/* Кнопка закрытия */}
+        <Link to="/">
+          <button type="button" className="absolute top-3 right-3 bg-main-blue rounded-full p-2" aria-label="Close" style={{ transform: 'rotate(45deg)' }}>
+            <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
+          </button>
+        </Link>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">Sign Up</h2>
 
-        <div className="mb-4">
-          <label className="block text-gray-700">First Name</label>
+        {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">First Name</label>
           <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="First Name"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Last Name</label>
+
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">Last Name</label>
           <input
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="Last Name"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Username</label>
+
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">Username</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="Username"
             required
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700">Email</label>
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        
-        <div className="mb-6">
-          <label className="block text-gray-700">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="Email"
             required
           />
         </div>
 
-        <div className="mb-8">
-          <label className="block text-gray-700">Phone number</label>
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="Password"
+            required
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 mb-1 text-sm font-medium">Phone Number</label>
           <input
             type="phone"
             value={phoneNumber}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-blue"
+            placeholder="Phone Number"
             required
           />
         </div>
-        
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          Sign Up
-        </button>
-        <div className="text-center mt-4">
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Already have account? Sign In
+
+        {/* Кнопка регистрации через компонент Button */}
+        <Button 
+          text="Sign Up" 
+          variant="blue" 
+          className="w-full py-2 rounded-lg text-sm font-semibold"
+        />
+
+        <div className="text-center mt-4 text-gray-700 text-sm">
+          Already have an account?{' '}
+          <Link to="/login" className="text-main-blue font-semibold hover:underline">
+            Sign In
           </Link>
         </div>
       </form>
