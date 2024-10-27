@@ -214,6 +214,8 @@ const mergeTimeSlots = (selectedSlots) => {
     try {
       const authToken = sessionStorage.getItem('token');
       const userID = sessionStorage.getItem('userID');
+
+      console.log(userID);
   
       const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
       let successfullyReservedSlots = []; // Для хранения успешно зарезервированных слотов

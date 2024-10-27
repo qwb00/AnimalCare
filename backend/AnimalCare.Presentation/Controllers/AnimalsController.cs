@@ -41,7 +41,7 @@ namespace AnimalCare.Presentation.Controllers
         {
             var createdAnimal = await _service.AnimalService.CreateAnimalAsync(animal);
 
-            return CreatedAtRoute("AnimalById", new { id = createdAnimal.Name }, createdAnimal);
+            return CreatedAtRoute("AnimalById", new { id = createdAnimal.Id }, createdAnimal);
         }
 
         [HttpDelete("{id:guid}")]
@@ -62,7 +62,7 @@ namespace AnimalCare.Presentation.Controllers
 
         [HttpPatch("{id:guid}")]
         [Authorize(Roles = "Caretaker,Administrator")]
-        public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid id,
+        public async Task<IActionResult> PartiallyUpdateAnimal(Guid id,
        [FromBody] JsonPatchDocument<AnimalForUpdateDTO> patchDoc)
         {
             if (patchDoc is null)

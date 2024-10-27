@@ -27,7 +27,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Reservations
         [HttpPost(Name = "CreateReservation")]
-        [Authorize(Roles = "Volunteer, Administrator, Caretaker")]
+        [Authorize(Roles = "Volunteer,Administrator,Caretaker")]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
         {
             if (reservationRequest == null)
