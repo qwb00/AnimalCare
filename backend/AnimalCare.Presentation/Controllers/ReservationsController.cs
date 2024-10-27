@@ -74,7 +74,7 @@ namespace AnimalCare.Presentation.Controllers
         
         // GET: api/Reservations/User/{userId}
         [HttpGet("User/{userId:guid}", Name = "GetReservationsByUserId")]
-        [Authorize(Roles = "Volunteer,Caretaker,Administrator")]
+        //[Authorize(Roles = "Volunteer,Caretaker,Administrator")]
         public async Task<IActionResult> GetReservationsByUserId(Guid userId)
         {
             var reservations = await _service.ReservationService.GetReservationsByVolunteerIdAsync(userId, trackChanges: false);
