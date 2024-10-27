@@ -43,7 +43,7 @@ function LoginPage() {
     console.log("Decoded Username:", username);
     const roles = decodedToken.role; // Роли пользователя, если они были добавлены
 
-    localStorage.setItem('username', username);
+    sessionStorage.setItem('username', username);
     setAuthToken(token);
     setUsername(username); // Устанавливаем состояние имени пользователя
 
@@ -58,7 +58,7 @@ function LoginPage() {
     if (userResponse.ok) {
       const userData = await userResponse.json();
       const userID = userData.id; // Assuming 'id' is the property in the response for the user ID
-      localStorage.setItem('userID', userID);
+      sessionStorage.setItem('userID', userID);
       console.log("Fetched User ID:", userID);
     } else {
       console.error('Failed to fetch user ID');
