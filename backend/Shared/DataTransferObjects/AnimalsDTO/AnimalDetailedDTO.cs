@@ -7,6 +7,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO;
 // dto for a detailed animal page
 public record AnimalDetailedDto : AnimalForCreating
 {
+    public Guid Id { get; set; }
     public List<ExaminationRecordDto> ExaminationRecords { get; set;}
     public List<ReservationForUserDto> Reservations { get; set;}
 }
