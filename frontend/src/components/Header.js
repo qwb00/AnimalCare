@@ -5,12 +5,18 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'; // Импор
 function Header() {
   const [username, setUsername] = useState(null); // Состояние для имени пользователя
   const navigate = useNavigate();
+  const [userID, setUserID] = useState(null);
 
   // Используем useEffect, чтобы проверить наличие имени пользователя в localStorage при монтировании компонента
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
+    const storedUserID = localStorage.getItem('userID');
+
     if (storedUsername) {
       setUsername(storedUsername);
+    }
+    if (storedUserID) {
+      setUserID(storedUserID);
     }
   }, []);
   return (
@@ -30,7 +36,7 @@ function Header() {
           </Link>
           <Link to="/reservations"> <Button text="Reservations" variant="white" icon="/icons/reservations_button.svg" iconPosition="left"/> </Link>
           {username ? (
-            <Link to="/login">
+              <Link to={`/${userID}/general`}>
               <Button text={username} variant="blue" icon="/icons/left_arrow.svg" iconPosition="right" />
             </Link>
           ) : (

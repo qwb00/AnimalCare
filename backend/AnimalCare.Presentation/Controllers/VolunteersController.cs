@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
 

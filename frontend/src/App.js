@@ -4,8 +4,10 @@ import Home from './pages/Home';
 import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import BackToTop from './components/BackToTop';
+import RegisterPage from './pages/RegisterPage'
+import BackToTop from './components/BackToTop'; // Импортируем якорь
+
+import UserGeneral from './pages/UserGeneral';
 import AnimalDetails from './pages/AnimalDetails';
 
 function App() {
@@ -27,7 +29,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/animals" element={<Animals />} />
         <Route path="/reservations" element={<Reservations />} />
-        <Route path="/animals/:id" element={<AnimalDetails />} />
+        <Route path="/:userID/general" element={<UserGeneral />} />
+        <Route path="/animals/:id" element={<AnimalDetails />} /> {/* Используем element вместо component */}
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/signup" element={<RegisterPage />} />
       </Routes>
