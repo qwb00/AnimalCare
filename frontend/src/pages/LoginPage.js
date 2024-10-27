@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import API_BASE_URL from '../config';
 
 
 function LoginPage() {
@@ -17,7 +18,7 @@ function LoginPage() {
     setError(null);
 
     try {
-      const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/authentication/login', {
+      const response = await fetch(`${API_BASE_URL}/authentication/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ function LoginPage() {
     setUsername(username); // Устанавливаем состояние имени пользователя
 
     // Fetch user ID from the /api/users/me endpoint using the token
-    const userResponse = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/users/me', {
+    const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

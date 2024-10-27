@@ -19,6 +19,15 @@ function Header() {
       setUserID(storedUserID);
     }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('userID');
+    sessionStorage.removeItem('token'); // Удалите токен, если он используется
+    setUsername(null);
+    setUserID(null);
+    navigate('/login');
+  };
   return (
     <header className="p-4">
       <div className="w-full max-w-[1024px] mx-auto flex justify-between items-center">
@@ -36,9 +45,12 @@ function Header() {
           </Link>
           <Link to="/reservations"> <Button text="Reservations" variant="white" icon="/icons/reservations_button.svg" iconPosition="left"/> </Link>
           {username ? (
+              <div className="flex items-center space-x-2">
               <Link to={`/${userID}/general`}>
-              <Button text={username} variant="blue" icon="/icons/left_arrow.svg" iconPosition="right" />
-            </Link>
+                <Button text={username} variant="blue" icon="/icons/left_arrow.svg" iconPosition="right" />
+              </Link>
+              <Button text="Logout" variant="white" icon="/icons/login_button_black.svg" onClick={handleLogout} />
+            </div>
           ) : (
             // Кнопка "Login" для неавторизованных пользователей
             <Link to="/login">
