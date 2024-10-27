@@ -8,7 +8,7 @@ public class UsersConfiguration
 {
     public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
     {
-        var roles = new[] { "Administrator", "Veterinarian", "CareTaker", "Volunteer" };
+        var roles = new[] { "Administrator", "Veterinarian", "Caretaker", "Volunteer" };
         foreach (var roleName in roles)
         {
             if (await roleManager.FindByNameAsync(roleName) == null)
@@ -114,7 +114,7 @@ public class UsersConfiguration
             var result = await userManager.CreateAsync(caretaker, "CareTaker123!");
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(caretaker, "CareTaker");
+                await userManager.AddToRoleAsync(caretaker, "Caretaker");
             }
             else
             {
