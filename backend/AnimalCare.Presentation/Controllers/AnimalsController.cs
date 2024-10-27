@@ -41,7 +41,7 @@ namespace AnimalCare.Presentation.Controllers
         {
             var createdAnimal = await _service.AnimalService.CreateAnimalAsync(animal);
 
-            return CreatedAtRoute("AnimalById", new { id = createdAnimal.Name }, createdAnimal);
+            return CreatedAtRoute("AnimalById", new { id = createdAnimal.Id }, createdAnimal);
         }
 
         [HttpDelete("{id:guid}")]

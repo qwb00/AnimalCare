@@ -22,6 +22,7 @@ namespace AnimalCare
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
             CreateMap<Animal, AnimalForUpdateDTO>().ReverseMap();
+            CreateMap<AnimalForCreating, Animal>();
 
             CreateMap<ReservationForCreationDto, Reservation>()
                 .MapMembers(
