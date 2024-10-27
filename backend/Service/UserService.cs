@@ -64,10 +64,29 @@ namespace Service
             return (volunteerToPatch: volunteerDTO, volunteerEntity: volunteer);
         }
 
-        public async Task<IdentityResult> SaveChangesForPatchAsync(ChangeStatusForVolunteerDTO patch, Volunteer user)
+        public async Task<(UserForUpdateDTO userForPatch, User userEntity)> GetUserForPatchAsync(string name)
+        {
+            var user = await _repository.FindByNameAsync(name);
+
+            if (user == null)
+            {
+                throw new Exception($"User with name {name} not found");
+            }
+
+            var userDTO = _mapper.Map<UserForUpdateDTO>(user);
+            return (volunteerToPatch: userDTO, userEntity: user);
+        }
+
+        public async Task<IdentityResult> SaveChangesForPatchAsync(UserForUpdateDTO patch, User user)
         {
             _mapper.Map(patch, user);
             return await _repository.UpdateAsync(user);
+        }
+
+        public async Task<IdentityResult> SaveChangesForPatchAsync(ChangeStatusForVolunteerDTO patch, Volunteer volunteer)
+        {
+            _mapper.Map(patch, volunteer);
+            return await _repository.UpdateAsync(volunteer);
         }
 
         public async Task DeleteUserAsync(Guid userId)

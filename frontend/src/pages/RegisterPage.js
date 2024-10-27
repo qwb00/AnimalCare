@@ -2,24 +2,26 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 function RegisterPage() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phoneNumber, setPhone] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError(null);
-
+  const roles = ["Volunteer"];
     try {
       const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/authentication', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, username, phone }),
+        body: JSON.stringify({ firstName, lastName, email, password, username, phoneNumber, roles }),
       });
 
       if (!response.ok) throw new Error('Registration failed');
@@ -39,6 +41,26 @@ function RegisterPage() {
         
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
+        <div className="mb-4">
+          <label className="block text-gray-700">First Name</label>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Last Name</label>
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
         <div className="mb-4">
           <label className="block text-gray-700">Username</label>
           <input
@@ -76,7 +98,7 @@ function RegisterPage() {
           <label className="block text-gray-700">Phone number</label>
           <input
             type="phone"
-            value={phone}
+            value={phoneNumber}
             onChange={(e) => setPhone(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             required
