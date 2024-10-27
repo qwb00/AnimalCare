@@ -83,7 +83,7 @@ namespace Service
             _repository.Reservation.Delete(reservation);
             await _repository.SaveAsync();
         }
-
+        
         public async Task<IEnumerable<ReservationForUserDto>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges)
         {
             var reservations = await _repository.Reservation.GetReservationsByVolunteerIdAsync(volunteerId, trackChanges);

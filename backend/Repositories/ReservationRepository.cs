@@ -34,7 +34,7 @@ namespace Repositories
         {
 	        return await GetByCondition(r => r.VolunteerId == volunteerId, trackChanges)
 		        .Include(r => r.Animal)
-		        .OrderBy(r => r.StartDate)
+		        .OrderByDescending(r => r.StartDate)
 		        .ToListAsync();
         }
         
