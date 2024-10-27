@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 
@@ -31,13 +31,16 @@ function LoginPage() {
 
     const data = await response.json();
     const token = data.token;
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
+    console.log('Token:', token);
 
     const decodedToken = jwtDecode(token);
     const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-
-    // Логируем значение для проверки
+    const expirationTime = decodedToken.exp * 1000; // Переводим в миллисекунды
+    sessionStorage.setItem('expirationTime', expirationTime);
+      
     console.log("Decoded Username:", username);
+    const roles = decodedToken.role; // Роли пользователя, если они были добавлены
 
     localStorage.setItem('username', username);
     setAuthToken(token);
@@ -113,6 +116,11 @@ function LoginPage() {
         >
           Login
         </button>
+        <div className="text-center mt-4">
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Don't have an account? Sign Up
+          </Link>
+        </div>
       </form>
     </div>
   );

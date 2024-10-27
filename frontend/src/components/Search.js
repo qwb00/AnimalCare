@@ -16,9 +16,12 @@ function Search({ placeholder, icon, onSearch }) {
     const loadAnimals = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/animals`);
-        const animalNames = response.data.map((animal) => animal.name);
-        setAnimals(animalNames); // Устанавливаем имена животных
-        console.log('Loaded animals from API:', animalNames);
+        const animalData = response.data.map((animal) => ({
+          name: animal.name,
+          id: animal.id,
+        }));
+        setAnimals(animalData); // Устанавливаем объекты животных (с name и id)
+        console.log('Loaded animals from API:', animalData);
       } catch (error) {
         console.error('Error fetching animals:', error);
       }
@@ -34,9 +37,11 @@ function Search({ placeholder, icon, onSearch }) {
       return;
     }
 
-    if (animals.includes(searchValue)) {
+    const foundAnimal = animals.find((animal) => animal.name.toLowerCase() === searchValue.toLowerCase());
+
+    if (foundAnimal) {
       setIsInputError(false);
-      onSearch(searchValue); // Передаем имя животного напрямую
+      onSearch(foundAnimal.id); // Передаем id животного
     } else {
       setIsInputError(true);
     }
@@ -46,10 +51,10 @@ function Search({ placeholder, icon, onSearch }) {
 
   // Функция для выбора животного из выпадающего меню
   const handleSelectAnimal = (animal) => {
-    setSearchValue(animal);
+    setSearchValue(animal.name); // Отображаем выбранное имя в инпуте
     setIsDropdownOpen(false); // Закрыть меню при выборе
     setIsInputError(false);
-    onSearch(animal); // Передаем имя животного напрямую
+    onSearch(animal.id); // Передаем id животного
   };
 
   // Функция для закрытия выпадающего меню при клике вне его
@@ -92,11 +97,11 @@ function Search({ placeholder, icon, onSearch }) {
         <ul className="absolute top-full left-0 w-[240px] bg-white border-2 border-black rounded-xl mt-1 max-h-48 overflow-auto z-10">
           {animals.map((animal) => (
             <li
-              key={animal}
+              key={animal.id}
               className="px-4 py-2 cursor-pointer hover:bg-gray-100"
               onClick={() => handleSelectAnimal(animal)}
             >
-              {animal}
+              {animal.name}
             </li>
           ))}
         </ul>
