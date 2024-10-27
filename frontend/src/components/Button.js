@@ -8,9 +8,16 @@ function Button({ text, variant, icon, iconPosition = 'left', iconSize = 'h-6 w-
       ? 'bg-main-blue text-white'
       : 'bg-white text-black border border-black hover:bg-gray-100 hover:text-gray-800';
 
-  const content = icon && iconPosition === 'left'
-    ? (<><img src={icon} alt="" className={`mr-2 ${iconSize}`} /> {text}</>)
-    : (<>{text} <img src={icon} alt="" className={`ml-2 ${iconSize}`} /></>);
+  // Проверка на наличие иконки
+  const content = icon ? (
+    iconPosition === 'left' ? (
+      <><img src={icon} alt="" className={`mr-2 ${iconSize}`} /> {text}</>
+    ) : (
+      <>{text} <img src={icon} alt="" className={`ml-2 ${iconSize}`} /></>
+    )
+  ) : (
+    <>{text}</>
+  );
 
   return (
     <button
