@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
 
@@ -60,6 +62,26 @@ namespace AnimalCare.Presentation.Controllers
             }
 
             return StatusCode(201);
+        }
+
+        [HttpPatch("me", Name = "UpdateCurrentUser")]
+        public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserForUpdateDTO> patchDoc)
+        {
+            var username = User.Identity.Name;
+
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("Username is not available in token");
+
+            var result = await _service.UserService.GetUserForPatchAsync(username);
+
+            patchDoc.ApplyTo(result.userForPatch, ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _service.UserService.SaveChangesForPatchAsync(result.userForPatch, result.userEntity);
+
+            return NoContent();
         }
 
 
