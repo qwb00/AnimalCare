@@ -10,7 +10,7 @@ function UserGeneral() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             navigate('/login'); // Redirect to login if user is not authenticated
             return;
