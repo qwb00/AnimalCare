@@ -30,7 +30,7 @@ function App() {
         <Route path="/animals" element={<Animals />} />
         <Route path="/reservations" element={<Reservations />} />
         <Route path="/:userID/general" element={<UserGeneral />} />
-        <Route path="/animals/:id" element={<AnimalDetails />} /> {/* Используем element вместо component */}
+        <Route path="/animals/:animalID" element={<AnimalDetails />} />
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/signup" element={<RegisterPage />} />
       </Routes>

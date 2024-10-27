@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import API_BASE_URL from '../config';
 import Button from '../components/Button'; // Импортируем компонент Button
 
 function RegisterPage() {
@@ -17,7 +18,7 @@ function RegisterPage() {
     setError(null);
     const roles = ["Volunteer"];
     try {
-      const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/authentication', {
+      const response = await fetch(`${API_BASE_URL}/authentication`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
