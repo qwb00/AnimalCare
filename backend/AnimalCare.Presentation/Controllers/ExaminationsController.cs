@@ -6,6 +6,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
+using Microsoft.AspNetCore.JsonPatch;
+using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -52,14 +54,23 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         // PATCH: api/Examinations/{id}
-        [HttpPatch("{id:guid}", Name = "UpdateExamination")]
+        [HttpPatch("{id:guid}", Name = "PatchExamination")]
         [Authorize(Roles = "Administrator,Veterinarian")]
-        public async Task<IActionResult> UpdateExamination(Guid id, [FromBody] ExaminationRecordForUpdateDto examinationForUpdate)
+        public async Task<IActionResult> UpdateExamination(Guid id, [FromBody] JsonPatchDocument<ExaminationRecordForUpdateDto> patchDoc)
         {
-            if (examinationForUpdate == null)
-                return BadRequest("ExaminationRecordForUpdateDto object is null");
+            if (patchDoc is null)
+                return BadRequest("patchDoc object sent from client is null.");
 
-            await _service.ExaminationService.UpdateExaminationAsync(id, examinationForUpdate, trackChanges: true);
+            var result = await _service.ExaminationService.GetExaminationForPatchAsync(id);
+
+            patchDoc.ApplyTo(result.examinationForPatch, ModelState);
+            // validate correct objects before to save in db
+            TryValidateModel(result.examinationForPatch);
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            await _service.ExaminationService.SaveChangesForPatchAsync(result.examinationForPatch, result.examinationEntity);
 
             return NoContent();
         }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
+using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace Service
 {
@@ -60,6 +61,20 @@ namespace Service
 
             _mapper.Map(examinationForUpdate, examinationEntity);
 
+            await _repository.SaveAsync();
+        }
+
+        public async Task<(ExaminationRecordForUpdateDto examinationForPatch, ExaminationRecord examinationEntity)> GetExaminationForPatchAsync(Guid id)
+        {
+            var examination = await GetExaminationAndCheckIfItExists(id, true);
+
+            var examinationDTO = _mapper.Map<ExaminationRecordForUpdateDto>(examination);
+            return (examinationForPatch: examinationDTO, examinationEntity: examination);
+        }
+
+        public async Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDto patch, ExaminationRecord examination)
+        {
+            _mapper.Map(patch, examination);
             await _repository.SaveAsync();
         }
 
