@@ -9,8 +9,8 @@ function Header() {
 
   // Используем useEffect, чтобы проверить наличие имени пользователя в localStorage при монтировании компонента
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    const storedUserID = localStorage.getItem('userID');
+    const storedUsername = sessionStorage.getItem('username');
+    const storedUserID = sessionStorage.getItem('userID');
 
     if (storedUsername) {
       setUsername(storedUsername);
@@ -21,12 +21,12 @@ function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('userID');
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('userID');
     sessionStorage.removeItem('token'); // Удалите токен, если он используется
     setUsername(null);
     setUserID(null);
-    navigate('/login');
+    navigate('/');
   };
   return (
     <header className="p-4">
