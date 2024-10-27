@@ -62,7 +62,7 @@ namespace AnimalCare.Presentation.Controllers
 
         [HttpPatch("{id:guid}")]
         [Authorize(Roles = "Caretaker,Administrator")]
-        public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid id,
+        public async Task<IActionResult> PartiallyUpdateAnimal(Guid id,
        [FromBody] JsonPatchDocument<AnimalForUpdateDTO> patchDoc)
         {
             if (patchDoc is null)
