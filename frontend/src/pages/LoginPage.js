@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import API_BASE_URL from '../config';
 import Button from '../components/Button'; // Импортируем компонент Button
 
 function LoginPage() {
@@ -17,7 +18,7 @@ function LoginPage() {
     setError(null);
 
     try {
-      const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/authentication/login', {
+      const response = await fetch(`${API_BASE_URL}/authentication/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,29 +40,29 @@ function LoginPage() {
       const expirationTime = decodedToken.exp * 1000; // Переводим в миллисекунды
       sessionStorage.setItem('expirationTime', expirationTime);
       
-      console.log("Decoded Username:", username);
-      const roles = decodedToken.role; // Роли пользователя, если они были добавлены
+    console.log("Decoded Username:", username);
+    const roles = decodedToken.role; // Роли пользователя, если они были добавлены
 
-      localStorage.setItem('username', username);
-      setAuthToken(token);
-      setUsername(username); // Устанавливаем состояние имени пользователя
+    localStorage.setItem('username', username);
+    setAuthToken(token);
+    setUsername(username); // Устанавливаем состояние имени пользователя
 
-      // Fetch user ID from the /api/users/me endpoint using the token
-      const userResponse = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/users/me', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+    // Fetch user ID from the /api/users/me endpoint using the token
+    const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        const userID = userData.id; // Assuming 'id' is the property in the response for the user ID
-        localStorage.setItem('userID', userID);
-        console.log("Fetched User ID:", userID);
-      } else {
-        console.error('Failed to fetch user ID');
-      }
+    if (userResponse.ok) {
+      const userData = await userResponse.json();
+      const userID = userData.id; // Assuming 'id' is the property in the response for the user ID
+      localStorage.setItem('userID', userID);
+      console.log("Fetched User ID:", userID);
+    } else {
+      console.error('Failed to fetch user ID');
+    }
 
       // Перенаправление на предыдущую страницу или на главную страницу, если URL не указан
       const from = location.state?.from?.pathname || '/';
