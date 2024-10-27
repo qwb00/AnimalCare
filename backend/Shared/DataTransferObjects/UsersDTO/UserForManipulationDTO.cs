@@ -11,6 +11,7 @@ namespace Shared.DataTransferObjects.UsersDTO
     {
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
+        public string? Username { get; init; }
 
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; init; }
