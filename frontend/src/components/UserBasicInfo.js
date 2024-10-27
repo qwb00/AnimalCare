@@ -1,6 +1,15 @@
 import React from 'react';
 
 function UserBasicInfo({ user }) {
+    // Format the registration date
+    const formattedDate = user.registrationDate
+        ? new Date(user.registrationDate).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        })
+        : 'Invalid date';
+
     return (
         <div className="p-6 border-2 border-gray-200 rounded-lg mt-6 ml-8 md:ml-12">
             <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
@@ -79,7 +88,7 @@ function UserBasicInfo({ user }) {
                     </div>
                     <div className="ml-4">
                         <div className="text-gray-500 font-semibold">Registration Date</div>
-                        <div className="text-black text-md -mt-1">{user.registrationDate}</div>
+                        <div className="text-black text-md -mt-1">{formattedDate}</div>
                     </div>
                 </div>
             </div>

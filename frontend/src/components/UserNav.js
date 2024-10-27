@@ -18,18 +18,18 @@ function UserNav({ role }) {
     return (
         <div className="flex space-x-8 mt-6 mb-8 ml-16 md:ml-24 xl:ml-36 text-gray-500 text-lg">
             {itemsToShow.includes("General") && (
-                <span className="text-blue-500 font-semibold border-b-2 border-blue-500 cursor-pointer">
+                <span className="text-main-blue font-semibold border-b-2 border-main-blue cursor-pointer">
                     General
                 </span>
             )}
             {itemsToShow.includes("Volunteers") && (
-                <span className="cursor-pointer hover:text-blue-500">Volunteers</span>
+                <span className="cursor-pointer hover:text-main-blue">Volunteers</span>
             )}
             {itemsToShow.includes("Reservations") && (
-                <span className="cursor-pointer hover:text-blue-500">Reservations</span>
+                <span className="cursor-pointer hover:text-main-blue">Reservations</span>
             )}
             {itemsToShow.includes("Medical Treatments") && (
-                <span className="cursor-pointer hover:text-blue-500">Medical Treatments</span>
+                <span className="cursor-pointer hover:text-main-blue">Medical Treatments</span>
             )}
         </div>
     );
