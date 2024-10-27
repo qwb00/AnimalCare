@@ -4,6 +4,7 @@ namespace Shared.DataTransferObjects.UsersDTO;
 
 public record UserDetailDTO : IRole
 {
+    public Guid Id { get; init; }
     public string Name { get; init; }
     public string Email { get; init; }
     public string PhoneNumber { get; init; }

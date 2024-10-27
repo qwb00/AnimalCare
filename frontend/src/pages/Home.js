@@ -38,7 +38,7 @@ function Home() {
   return (
     <div>
       {/* Блок с фоном на первом экране и Хедером внутри */}
-      <div className="min-h-screen bg-light-blue flex flex-col relative">
+      <div className="min-h-screen bg-light-blue flex flex-col relative z-10">
         {/* Хедер */}
         <Header />
 
@@ -90,12 +90,7 @@ function Home() {
           {/* Кнопка для полного списка животных */}
           <div className="flex justify-center">
             <Link to="/animals">
-              <Button
-                text="FULL LIST OF ANIMALS"
-                variant="blue"
-                icon="/icons/full_list_of_animals_button.png"
-                iconPosition="right"
-              />
+              <Button text="FULL LIST OF ANIMALS" variant="blue" icon="/icons/full_list_of_animals_button.png" iconPosition="right" />
             </Link>
           </div>
         </div>
