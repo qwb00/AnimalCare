@@ -216,6 +216,7 @@ const mergeTimeSlots = (selectedSlots) => {
       const authToken = sessionStorage.getItem('token');
   
       const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
+      let successfullyReservedSlots = []; // Для хранения успешно зарезервированных слотов
   
       for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
         const reservationData = {
@@ -250,6 +251,9 @@ const mergeTimeSlots = (selectedSlots) => {
             const newSlotKey = `${formattedDate}-${formattedStartTime}`;
             newReservedSlots.push(newSlotKey);
   
+            // Добавляем успешно зарезервированный слот в список
+            successfullyReservedSlots.push(newSlotKey);
+  
             showNotification('Reservation created successfully!', true);
           } else {
             showNotification('Failed to create reservation. Please try again.', false);
@@ -265,12 +269,18 @@ const mergeTimeSlots = (selectedSlots) => {
       // Обновляем состояние зарезервированных слотов
       setReservedSlots(newReservedSlots);
   
+      // Удаляем успешно зарезервированные слоты из selectedSlots
+      setSelectedSlots((prevSelectedSlots) =>
+        prevSelectedSlots.filter((slot) => !successfullyReservedSlots.includes(slot))
+      );
+  
       handleCloseModal();
     } catch (error) {
       showNotification('Unexpected error. Please try again.', false);
       console.error('Error creating reservation:', error);
     }
   };
+  
   
   
 
@@ -448,7 +458,7 @@ const mergeTimeSlots = (selectedSlots) => {
         <Button
           text="Close"
           variant="blue"
-          icon="/icons/close_white.png"
+          icon="/icons/cancel_white.png"
           iconPosition="right"
           className="px-5 py-2"
           onClick={() => setIsNotificationOpen(false)}
