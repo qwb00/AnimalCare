@@ -5,6 +5,7 @@ import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
 import LoginPage from './pages/LoginPage';
 import BackToTop from './components/BackToTop'; // Импортируем якорь
+import UserGeneral from './pages/UserGeneral';
 
 function App() {
   return (
@@ -13,8 +14,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/animals" element={<Animals />} />
         <Route path="/reservations" element={<Reservations />} />
-        <Route path="/login" element={<LoginPage />} /> 
-       
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/:userID/general" element={<UserGeneral />} />
       </Routes>
       <BackToTop /> {/* Добавляем якорь */}
     </Router>
