@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../components/Button';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Импортируем Link
+import { Link, useNavigate } from 'react-router-dom'; // Импортируем Link
 
 function Header() {
   const [username, setUsername] = useState(null); // Состояние для имени пользователя
@@ -47,7 +47,7 @@ function Header() {
           {username ? (
               <div className="flex items-center space-x-2">
               <Link to={`/${userID}/general`}>
-                <Button text={username} variant="blue" icon="/icons/left_arrow.svg" iconPosition="right" />
+                <Button text={`Hey, ${username}!`} variant="blue" icon="/icons/account_white.png" iconPosition="right" />
               </Link>
               <Button text="Logout" variant="white" icon="/icons/login_button_black.svg" onClick={handleLogout} />
             </div>
