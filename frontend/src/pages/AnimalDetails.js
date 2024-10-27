@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import AnimalCard from '../components/AnimalCard'; // Импорт компонента AnimalCard для отображения животных
 
 function AnimalDetails() {
-  const { id } = useParams(); // Получаем ID из URL
+  const { animalID } = useParams(); // Получаем ID из URL
   const [animalData, setAnimalData] = useState(null);
   const [otherAnimals, setOtherAnimals] = useState([]); // Храним 3 случайных животных
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +17,7 @@ function AnimalDetails() {
   // Функция для получения данных о животном
   const fetchAnimalDetails = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/animals/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/animals/${animalID}`);
       setAnimalData(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -30,7 +30,7 @@ function AnimalDetails() {
   const fetchOtherAnimals = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals`);
-      const allAnimals = response.data.filter((animal) => animal.id !== id);
+      const allAnimals = response.data.filter((animal) => animal.id !== animalID);
       
       // Выбираем 3 случайных животных
       const randomAnimals = allAnimals
@@ -46,7 +46,7 @@ function AnimalDetails() {
   useEffect(() => {
     fetchAnimalDetails();
     fetchOtherAnimals();
-  }, [id]);
+  }, [animalID]);
 
   // Функции для отображения информации о животном
   const getAnimalSize = (size) => {

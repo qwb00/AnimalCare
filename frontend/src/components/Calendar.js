@@ -212,15 +212,15 @@ const mergeTimeSlots = (selectedSlots) => {
 
   const handleConfirmReservation = async () => {
     try {
-      const randomVolunteerId = '7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98';
       const authToken = sessionStorage.getItem('token');
+      const userID = sessionStorage.getItem('userID');
   
       const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
       let successfullyReservedSlots = []; // Для хранения успешно зарезервированных слотов
   
       for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
         const reservationData = {
-          volunteerId: randomVolunteerId,
+          volunteerId: userID,
           animalId: selectedAnimalId,
           reservationDate: format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd'),
           startTime: format(parse(startTime, 'hh:mm a', new Date()), 'HH:mm:ss'),
