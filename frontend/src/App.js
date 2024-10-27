@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import {  useNavigate, Route, Routes } from 'react-router-dom';
+import { useNavigate, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Animals from './pages/Animals';
 import Reservations from './pages/Reservations';
@@ -22,6 +22,7 @@ function App() {
       navigate('/login');
     }
   }, [navigate]);
+
   return (
     <>
       <Routes>
@@ -33,7 +34,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/signup" element={<RegisterPage />} />
       </Routes>
-      <BackToTop /> {/* Добавляем якорь */}
+      <BackToTop />
     </>
   );
 }

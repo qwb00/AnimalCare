@@ -12,6 +12,8 @@ function Calendar({ selectedAnimalId  }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animalData, setAnimalData] = useState(null); // Данные о животном
   const [reservedSlots, setReservedSlots] = useState([]); // Для хранения зарезервированных интервалов
+  const [notification, setNotification] = useState({ message: '', isSuccess: null });
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const MAX_SLOTS = 10;
 
   useEffect(() => {
@@ -73,7 +75,10 @@ function Calendar({ selectedAnimalId  }) {
     }
   }, [selectedAnimalId]);
   
-  
+  const showNotification = (message, isSuccess) => {
+    setNotification({ message, isSuccess });
+    setIsNotificationOpen(true);
+  };  
 
   // Функция для переключения на следующую неделю
   const handleNextWeek = () => {
@@ -205,13 +210,13 @@ const mergeTimeSlots = (selectedSlots) => {
     return mergedSlots;
   };
 
-  // Функция для отправки POST-запроса для создания резервации
   const handleConfirmReservation = async () => {
     try {
       const randomVolunteerId = '7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98';
       const authToken = sessionStorage.getItem('token');
   
       const newReservedSlots = [...reservedSlots]; // Создаем копию текущих зарезервированных слотов
+      let successfullyReservedSlots = []; // Для хранения успешно зарезервированных слотов
   
       for (const { date, startTime, endTime } of mergeTimeSlots(selectedSlots)) {
         const reservationData = {
@@ -225,38 +230,57 @@ const mergeTimeSlots = (selectedSlots) => {
         // Добавим вывод для проверки данных перед отправкой
         console.log('Reservation data being sent:', reservationData);
   
-        const response = await axios.post(
-          `${API_BASE_URL}/reservations`,
-          reservationData,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${authToken}`, // Добавляем токен в заголовки
-            },
+        try {
+          const response = await axios.post(
+            `${API_BASE_URL}/reservations`,
+            reservationData,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`, // Добавляем токен в заголовки
+              },
+            }
+          );
+  
+          if (response.status === 201) {
+            console.log('Reservation created successfully:', response.data);
+  
+            // Добавляем зарезервированные слоты в список
+            const formattedDate = format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd');
+            const formattedStartTime = format(parse(startTime, 'hh:mm a', new Date()), 'hh:mm a');
+            const newSlotKey = `${formattedDate}-${formattedStartTime}`;
+            newReservedSlots.push(newSlotKey);
+  
+            // Добавляем успешно зарезервированный слот в список
+            successfullyReservedSlots.push(newSlotKey);
+  
+            showNotification('Reservation created successfully!', true);
+          } else {
+            showNotification('Failed to create reservation. Please try again.', false);
+            console.error('Failed to create reservation:', response.data);
           }
-        );
-  
-        if (response.status === 201) {
-          console.log('Reservation created successfully:', response.data);
-  
-          // Добавляем зарезервированные слоты в список
-          const formattedDate = format(parse(date, 'MMM dd yyyy', new Date()), 'yyyy-MM-dd');
-          const formattedStartTime = format(parse(startTime, 'hh:mm a', new Date()), 'hh:mm a');
-          const newSlotKey = `${formattedDate}-${formattedStartTime}`;
-          newReservedSlots.push(newSlotKey);
-        } else {
-          console.error('Failed to create reservation:', response.data);
+        } catch (error) {
+          const errorMessage = error.response?.data?.message || 'Error creating reservation. Please try again.';
+          showNotification(errorMessage, false);
+          console.error('Error creating reservation:', error);
         }
       }
   
       // Обновляем состояние зарезервированных слотов
       setReservedSlots(newReservedSlots);
   
+      // Удаляем успешно зарезервированные слоты из selectedSlots
+      setSelectedSlots((prevSelectedSlots) =>
+        prevSelectedSlots.filter((slot) => !successfullyReservedSlots.includes(slot))
+      );
+  
       handleCloseModal();
     } catch (error) {
+      showNotification('Unexpected error. Please try again.', false);
       console.error('Error creating reservation:', error);
     }
   };
+  
   
   
 
@@ -410,6 +434,39 @@ const mergeTimeSlots = (selectedSlots) => {
             </div>
         </div>
         )}
+
+{isNotificationOpen && (
+  <div
+    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    onClick={() => setIsNotificationOpen(false)} // Закрываем модальное окно по клику
+  >
+    <div
+      className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
+        notification.isSuccess ? 'border-green-600' : 'border-red-600'
+      }`}
+      onClick={(e) => e.stopPropagation()} // Останавливаем клик внутри модального окна, чтобы не закрыть его
+    >
+      <h3
+        className={`text-2xl font-bold mb-6 text-center ${
+          notification.isSuccess ? 'text-green-600' : 'text-red-600'
+        }`}
+      >
+        {notification.isSuccess ? 'Success!' : 'Error'}
+      </h3>
+      <p className="text-lg mb-6 text-center text-gray-800">{notification.message}</p>
+      <div className="flex justify-center">
+        <Button
+          text="Close"
+          variant="blue"
+          icon="/icons/cancel_white.png"
+          iconPosition="right"
+          className="px-5 py-2"
+          onClick={() => setIsNotificationOpen(false)}
+        />
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );
