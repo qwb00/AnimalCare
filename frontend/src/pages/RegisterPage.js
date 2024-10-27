@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ function RegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, username }),
+        body: JSON.stringify({ email, password, username, phone }),
       });
 
       if (!response.ok) throw new Error('Registration failed');
@@ -70,6 +71,17 @@ function RegisterPage() {
             required
           />
         </div>
+
+        <div className="mb-8">
+          <label className="block text-gray-700">Phone number</label>
+          <input
+            type="phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
         
         <button
           type="submit"
@@ -77,9 +89,14 @@ function RegisterPage() {
         >
           Sign Up
         </button>
+        <div className="text-center mt-4">
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Already have account? Sign In
+          </Link>
+        </div>
       </form>
     </div>
   );
 }
 
-export default SignUpPage;
+export default RegisterPage;

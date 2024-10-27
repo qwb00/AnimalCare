@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 
@@ -97,9 +97,11 @@ function LoginPage() {
         >
           Login
         </button>
-        <Link to="/signup" className="text-blue-500 hover:underline">
-          Don't have an account? Sign Up
-        </Link>
+        <div className="text-center mt-4">
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Don't have an account? Sign Up
+          </Link>
+        </div>
       </form>
     </div>
   );
