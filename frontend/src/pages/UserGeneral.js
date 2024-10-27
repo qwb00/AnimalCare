@@ -45,7 +45,7 @@ function UserGeneral() {
     }
 
     return (
-        <div className="container mx-auto p-8">
+        <div className="container mx-auto">
             <Header/>
             <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
                 <div className="md:ml-12 lg:ml-20 xl:ml-32">
