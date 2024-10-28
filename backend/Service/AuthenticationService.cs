@@ -28,7 +28,10 @@ namespace Service
 
         public async Task<IdentityResult> RegisterUser(UserForCreateDTO userForRegistration)
         {
-            var user = _mapper.Map<User>(userForRegistration);
+            var isVolunteer = userForRegistration.Roles.Contains("Volunteer");
+
+            var user = isVolunteer ? _mapper.Map<Volunteer>(userForRegistration) : _mapper.Map<User>(userForRegistration);
+
             var result = await _userManager.CreateAsync(user, userForRegistration.Password);
             if (result.Succeeded)
                 await _userManager.AddToRolesAsync(user, userForRegistration.Roles);
