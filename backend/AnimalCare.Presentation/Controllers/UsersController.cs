@@ -16,7 +16,7 @@ namespace AnimalCare.Presentation.Controllers
         public UsersController(IServiceManager service) => _service = service;
 
         [HttpGet(Name = "GetUsers")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator,Caretaker")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _service.UserService.GetAllUsersAsync();
