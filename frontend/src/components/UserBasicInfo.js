@@ -1,6 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Button from '../components/Button';
+import API_BASE_URL from "../config";
 
-function UserBasicInfo({ user }) {
+function UserBasicInfo({ user, updateUser }) {
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState({
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+    });
+
+    // Toggle edit mode
+    const toggleEditMode = () => setEditMode(!editMode);
+
+    // Handle input changes
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    // Function to send PATCH request
+    const updateUserInfo = async () => {
+        const patchData = [
+            { op: "replace", path: "/FirstName", value: formData.name.split(" ")[0] || user.name.split(" ")[0] },
+            { op: "replace", path: "/LastName", value: formData.name.split(" ")[1] || user.name.split(" ")[1] },
+            { op: "replace", path: "/Email", value: formData.email },
+            { op: "replace", path: "/PhoneNumber", value: formData.phoneNumber },
+        ];
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/me`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
+                },
+                body: JSON.stringify(patchData),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to update user information: ${errorText}`);
+            }
+
+            console.log('User information updated successfully');
+
+            // Update user info in the parent component
+            updateUser({
+                name: formData.name,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+            });
+
+            toggleEditMode(); // Exit edit mode
+        } catch (error) {
+            console.error('Error updating user information:', error);
+        }
+    };
+
     // Format the registration date
     const formattedDate = user.registrationDate
         ? new Date(user.registrationDate).toLocaleDateString('en-GB', {
@@ -11,87 +71,103 @@ function UserBasicInfo({ user }) {
         : 'Invalid date';
 
     return (
-        <div className="p-6 border-2 border-gray-200 rounded-lg mt-6 ml-8 md:ml-12">
-            <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+        <div className="p-6 border-2 border-gray-200 rounded-lg mt-6 ml-8 md:ml-12 relative">
+            <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+                <img
+                    src="/icons/pen.png"
+                    alt="Edit Icon"
+                    className="h-6 w-6 cursor-pointer"
+                    onClick={toggleEditMode}
+                />
+            </div>
             <div className="space-y-3">
                 {/* Full Name */}
                 <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/name.png" alt="User Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="flex items-center">
-                            <span className="text-gray-500 font-semibold">Full Name</span>
-                            <img src="/icons/pen.png" alt="Edit Icon" className="h-4 w-4 ml-2 text-gray-400" />
-                        </div>
-                        <div className="text-black text-md -mt-1">{user.name}</div>
+                    <img src="/icons/name.png" alt="User Icon" className="h-8 w-8 mr-4" />
+                    <div>
+                        <p className="text-gray-500 font-semibold">Full Name</p>
+                        {editMode ? (
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="text-black text-md border-b border-gray-300 outline-none focus:border-main-blue"
+                            />
+                        ) : (
+                            <p className="text-black text-md">{user.name}</p>
+                        )}
                     </div>
                 </div>
 
-                {/* Role */}
+                {/* Role - Not Editable */}
                 <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/role.png" alt="Role Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="text-gray-500 font-semibold">Role</div>
-                        <div className="text-black text-md -mt-1">{user.role}</div>
+                    <img src="/icons/role.png" alt="Role Icon" className="h-8 w-8 mr-4" />
+                    <div>
+                        <p className="text-gray-500 font-semibold">Role</p>
+                        <p className="text-black text-md">{user.role}</p>
                     </div>
                 </div>
 
                 {/* E-mail */}
                 <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/e-mail.png" alt="Email Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="flex items-center">
-                            <span className="text-gray-500 font-semibold">E-mail</span>
-                            <img src="/icons/pen.png" alt="Edit Icon" className="h-4 w-4 ml-2 text-gray-400" />
-                        </div>
-                        <div className="text-black text-md -mt-1">{user.email}</div>
-                    </div>
-                </div>
-
-                {/* Password */}
-                <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/password.png" alt="Password Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="flex items-center">
-                            <span className="text-gray-500 font-semibold">Password</span>
-                            <img src="/icons/pen.png" alt="Edit Icon" className="h-4 w-4 ml-2 text-gray-400" />
-                        </div>
-                        <div className="text-black text-md -mt-1">************</div>
+                    <img src="/icons/e-mail.png" alt="Email Icon" className="h-8 w-8 mr-4" />
+                    <div>
+                        <p className="text-gray-500 font-semibold">E-mail</p>
+                        {editMode ? (
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="text-black text-md border-b border-gray-300 outline-none focus:border-main-blue"
+                            />
+                        ) : (
+                            <p className="text-black text-md">{user.email}</p>
+                        )}
                     </div>
                 </div>
 
                 {/* Phone Number */}
                 <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/phone.png" alt="Phone Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="flex items-center">
-                            <span className="text-gray-500 font-semibold">Phone Number</span>
-                            <img src="/icons/pen.png" alt="Edit Icon" className="h-4 w-4 ml-2 text-gray-400" />
-                        </div>
-                        <div className="text-black text-md -mt-1">{user.phoneNumber}</div>
+                    <img src="/icons/phone.png" alt="Phone Icon" className="h-8 w-8 mr-4" />
+                    <div>
+                        <p className="text-gray-500 font-semibold">Phone Number</p>
+                        {editMode ? (
+                            <input
+                                type="tel"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                className="text-black text-md border-b border-gray-300 outline-none focus:border-main-blue"
+                            />
+                        ) : (
+                            <p className="text-black text-md">{user.phoneNumber}</p>
+                        )}
                     </div>
                 </div>
 
-                {/* Registration Date */}
+                {/* Registration Date - Not Editable */}
                 <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                        <img src="/icons/calendar_black.png" alt="Registration Date Icon" className="h-8 w-8 text-black" />
-                    </div>
-                    <div className="ml-4">
-                        <div className="text-gray-500 font-semibold">Registration Date</div>
-                        <div className="text-black text-md -mt-1">{formattedDate}</div>
+                    <img src="/icons/calendar_black.png" alt="Registration Date Icon" className="h-8 w-8 mr-4" />
+                    <div>
+                        <p className="text-gray-500 font-semibold">Registration Date</p>
+                        <p className="text-black text-md">{formattedDate}</p>
                     </div>
                 </div>
             </div>
+
+            {/* Finish Editing Button */}
+            {editMode && (
+                <div className="mt-6">
+                    <Button
+                        text="Finish Editing"
+                        variant="blue"
+                        onClick={updateUserInfo}
+                    />
+                </div>
+            )}
         </div>
     );
 }
