@@ -71,6 +71,15 @@ namespace AnimalCare.Presentation.Controllers
 
             return NoContent();
         }
+        
+        // GET: api/Reservations/User/{userId}
+        [HttpGet("User/{userId:guid}", Name = "GetReservationsByUserId")]
+        //[Authorize(Roles = "Volunteer,Caretaker,Administrator")]
+        public async Task<IActionResult> GetReservationsByUserId(Guid userId)
+        {
+            var reservations = await _service.ReservationService.GetReservationsByVolunteerIdAsync(userId, trackChanges: false);
+            return Ok(reservations);
+        }
 
         // DELETE: api/Reservations/{id}
         [HttpDelete("{id:guid}", Name = "DeleteReservation")]

@@ -49,9 +49,9 @@ function HomeSlider() {
             <p className="text-2xl font-normal mb-10">
               Join our dedicated team and make a meaningful impact on the lives of our little friends!
             </p>
-            <div className="mt-6">
+            <Link to="/signup" className="mt-6">
               <Button text="BECOME A VOLUNTEER" variant="white" icon="/icons/volunteer_button.png" iconPosition="left" />
-            </div>
+            </Link>
           </div>
         </div>
       </div>

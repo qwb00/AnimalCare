@@ -12,6 +12,10 @@ import API_BASE_URL from '../config';
 function Home() {
   const [animals, setAnimals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDonateModalOpen, setIsDonateModalOpen] = useState(false); // Для управления модальным окном
+
+  const openDonateModal = () => setIsDonateModalOpen(true);
+  const closeDonateModal = () => setIsDonateModalOpen(false);
 
   // Функция для загрузки животных из API и случайного выбора 3
   const fetchAnimals = async () => {
@@ -113,13 +117,10 @@ function Home() {
               </div>
               <p className="text-justify text-gray-600 m-4">Sign up online to become a volunteer at our shelter and help animals in need</p>
             </div>
-            <Button 
-              text="SIGN UP" 
-              variant="blue" 
-              icon="/icons/sign_up_button.png" 
-              iconPosition="right" 
-              className="w-[300px] mt-4" 
-            />
+            <Link to="/signup" >
+              <Button text="SIGN UP" variant="blue" icon="/icons/sign_up_button.png" iconPosition="right" className="w-[300px] mt-4" 
+              />
+            </Link>
           </div>
 
           {/* Вторая карточка и кнопка */}
@@ -157,10 +158,40 @@ function Home() {
               icon="/icons/donate_button.png" 
               iconPosition="right" 
               className="w-[300px] mt-4" 
+              onClick={openDonateModal} // Открываем модальное окно
             />
           </div>
         </div>
       </div>
+
+      {isDonateModalOpen && (
+  <div 
+    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    onClick={closeDonateModal}
+  >
+    <div 
+      className="bg-white p-8 rounded-3xl shadow-lg max-w-md w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black"
+      onClick={(e) => e.stopPropagation()} // Останавливаем клик внутри модального окна, чтобы не закрыть его
+    >
+      <h3 className="text-3xl font-semibold mb-6 text-center text-gray-900">Support Our Shelter</h3>
+      <p className="text-gray-700 mb-8 text-center">
+        Prosím vás dejte nám fulku bodů za projekt :D
+      </p>
+      <div className="flex justify-center space-x-4 mt-6">
+        {/* Кнопка закрытия */}
+        <Button 
+          text="Close" 
+          variant="blue"
+          icon="/icons/cancel_white.png"
+          iconPosition="right"
+          className="px-5 py-2" 
+          onClick={closeDonateModal} 
+        />
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Заголовок над футером */}
       <h2 className="text-4xl font-black text-center my-8">THANK YOU FOR YOUR TIME!</h2>

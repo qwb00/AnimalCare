@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import UserBasicInfo from "../components/UserBasicInfo";
 import UserHeader from "../components/UserHeader";
 import UserNav from "../components/UserNav";
+import UserReservations from "../components/UserReservations";
 
 function UserGeneral() {
     const [user, setUser] = useState(null);
@@ -16,7 +17,6 @@ function UserGeneral() {
             return;
         }
 
-        // Fetch user information from API
         const fetchUser = async () => {
             try {
                 const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/users/me', {
@@ -45,11 +45,12 @@ function UserGeneral() {
     }
 
     return (
+
         <div className="container mx-auto">
             <Header/>
             <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
                 <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    <UserHeader user={user}/>
+                    <UserHeader user={user} />
                 </div>
             </div>
 
@@ -57,8 +58,13 @@ function UserGeneral() {
             <UserNav role={user.role} />
 
             {/* User Basic Info */}
-            <div className="ml-16 md:ml-24 xl:ml-30 w-full lg:w-1/4 xl:w-1/3">
-                <UserBasicInfo user={user}/>
+            <div className="ml-16 md:ml-24 xl:ml-30 flex flex-col lg:flex-row gap-8 mt-8">
+                <div className="lg:w-1/2 xl:w-2/5">
+                    <UserBasicInfo user={user}/>
+                </div>
+                <div className="lg:w-1/2 xl:w-2/3">
+                    <UserReservations userId={user.id}/>
+                </div>
             </div>
         </div>
     );

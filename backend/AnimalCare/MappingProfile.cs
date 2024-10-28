@@ -46,8 +46,9 @@ namespace AnimalCare
             
             CreateMap<Reservation, ReservationForUserDto>()
                 .MapMembers(
-                    (dst => dst.AnimalName, src => src.Animal.Name),
-                    (dst => dst.AnimalBreed, src => src.Animal.Breed)
+                    (dst => dst.Date, src => src.StartDate.Date),
+                    (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
+                    (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
                 )
                 .ForMember(
                     dest => dest.Status,
