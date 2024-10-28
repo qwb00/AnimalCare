@@ -19,8 +19,8 @@ function UserNav({ role }) {
 
     const getLinkClass = (pathSegment) => {
         return location.pathname.includes(pathSegment)
-            ? "text-blue-500 font-semibold border-b-2 border-blue-500 cursor-pointer" 
-            : "cursor-pointer hover:text-blue-500"; 
+            ? "text-main-blue font-semibold border-b-2 border-main-blue cursor-pointer"
+            : "cursor-pointer hover:text-main-blue";
     };
 
     return (
