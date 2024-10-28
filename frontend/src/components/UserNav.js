@@ -31,7 +31,9 @@ function UserNav({ role }) {
                 </Link>
             )}
             {itemsToShow.includes("Volunteers") && (
-                <span className="cursor-pointer hover:text-main-blue">Volunteers</span>
+                <Link to="/:userID/volunteers" className={getLinkClass(`/volunteers`)}>
+                    Volunteers
+                </Link>
             )}
             {itemsToShow.includes("Reservations") && (
                 <span className="cursor-pointer hover:text-main-blue">Reservations</span>

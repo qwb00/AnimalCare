@@ -5,6 +5,7 @@ import UserBasicInfo from "../components/UserBasicInfo";
 import UserHeader from "../components/UserHeader";
 import UserNav from "../components/UserNav";
 import UserReservations from "../components/UserReservations";
+import API_BASE_URL from "../config";
 
 function UserGeneral() {
     const [user, setUser] = useState(null);
@@ -19,7 +20,7 @@ function UserGeneral() {
 
         const fetchUser = async () => {
             try {
-                const response = await fetch('https://animalcaredb-3c73ac350ab8.herokuapp.com/api/users/me', {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
