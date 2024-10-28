@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../components/Button';
 
-const RequestCard = ({ request }) => {
+const RequestCard = ({ request, showActions }) => {
   return (
     <div className="border rounded-lg p-6 shadow-lg bg-white w-full max-w-md mx-auto hover:shadow-xl transition-shadow duration-300">
       <div className="flex items-center justify-between mb-4">
@@ -30,10 +30,12 @@ const RequestCard = ({ request }) => {
         <p><span className="font-semibold">Final diagnosis:</span> <span className="text-green-500 font-semibold">{request.finalDiagnosis}</span></p>
       </div>
       
-      <div className="flex justify-between mt-4">
-        <Button text="Decline" variant="red" className="w-5/12" />
-        <Button text="Approve" variant="blue" className="w-5/12" />
-      </div>
+      {showActions && (
+                <div className="flex justify-between mt-4">
+                    <Button text="Decline" variant="red" className="w-1/2 mr-2" />
+                    <Button text="Approve" variant="blue" className="w-1/2 ml-2" />
+                </div>
+            )}
     </div>
   );
 };

@@ -10,6 +10,7 @@ function LoginPage() {
   const [error, setError] = useState(null);
   const [authToken, setAuthToken] = useState(null); // Для хранения токена
   const [username, setUsername] = useState(null); // Для хранения имени пользователя
+  const [role, setRole] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,15 +38,18 @@ function LoginPage() {
 
       const decodedToken = jwtDecode(token);
       const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+      const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      console.log("Role:", role);
       const expirationTime = decodedToken.exp * 1000; // Переводим в миллисекунды
       sessionStorage.setItem('expirationTime', expirationTime);
       
     console.log("Decoded Username:", username);
-    const roles = decodedToken.role; // Роли пользователя, если они были добавлены
 
     sessionStorage.setItem('username', username);
+    sessionStorage.setItem('role', role);
     setAuthToken(token);
     setUsername(username); // Устанавливаем состояние имени пользователя
+    setRole(role);
 
     // Fetch user ID from the /api/users/me endpoint using the token
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
