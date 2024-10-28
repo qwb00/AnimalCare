@@ -127,7 +127,9 @@ namespace AnimalCare
                     dst => dst.Date,
                     dst => dst.Description
                 );
-            
+
+            CreateMap<ExaminationRecord, ExaminationRecordForUpdateDto>();
+
             CreateMap<ExaminationRecord, ExaminationRecordDto>()
                 .MapMembers(
                     (dst => dst.Id, src => src.Id),
