@@ -54,9 +54,6 @@ function AnimalDetails() {
   const userRole = sessionStorage.getItem('role');
   const isEditable = userRole === 'Caretaker' || userRole === 'Administrator';
 
-  console.log('User role:', userRole);
-  console.log('Is editable:', isEditable);
-
   // Функция для получения данных о животном
   const fetchAnimalDetails = async () => {
     try {
@@ -118,8 +115,6 @@ function AnimalDetails() {
         console.error(`Error updating ${path}:`, error);
     }
 }
-
-  
 
   // Функция для переключения режима редактирования
   const handleEditGeneralToggle = () => {
@@ -211,8 +206,6 @@ function AnimalDetails() {
   const toDateInputFormat = (dateString) => {
     return dateString ? dateString.split("T")[0] : "";
   };
-
-
 
   const handleEditMedicalToggle = () => {
     setIsEditingMedical(true);
@@ -386,24 +379,6 @@ function AnimalDetails() {
             )}
           </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           {/* Секция с основной информацией */}
 <div className="w-full md:w-1/2">
   <div className="flex items-center">
@@ -570,19 +545,6 @@ function AnimalDetails() {
 </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-        
-
         {/* Секция с историей и дополнительной информацией */}
         <div className="mt-8">
           <h3 className="text-4xl text-center font-black mb-4">STORY & DETAILED INFORMATION</h3>
@@ -628,32 +590,6 @@ function AnimalDetails() {
     <p>{editedHistory ? editedHistory : animalData.history}</p>
   )}
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
           {/* Медицинские данные */}
 <div className="mb-6">
@@ -743,23 +679,6 @@ function AnimalDetails() {
     </ul>
   )}
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
           {/* Секция с поведением и обучением */}
 <div className="mb-6">
@@ -868,20 +787,6 @@ function AnimalDetails() {
   )}
 </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         {/* Секция с другими животными */}
         <div className="mt-12">
