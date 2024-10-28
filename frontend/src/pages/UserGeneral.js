@@ -41,12 +41,19 @@ function UserGeneral() {
         fetchUser();
     }, [navigate]);
 
+    // Function to update the user data after editing
+    const updateUser = (updatedUserData) => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            ...updatedUserData,
+        }));
+    };
+
     if (!user) {
         return null; // Return null if user data is not available
     }
 
     return (
-
         <div className="container mx-auto">
             <Header/>
             <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
@@ -59,9 +66,9 @@ function UserGeneral() {
             <UserNav role={user.role} />
 
             {/* User Basic Info */}
-            <div className="ml-16 md:ml-24 xl:ml-30 flex flex-col lg:flex-row gap-8 mt-8">
+            <div className="ml-16 md:ml-24 xl:ml-30 flex flex-col lg:flex-row gap-8 mt-8 mb-14">
                 <div className="lg:w-1/2 xl:w-2/5">
-                    <UserBasicInfo user={user}/>
+                    <UserBasicInfo user={user} updateUser={updateUser} />
                 </div>
                 <div className="lg:w-1/2 xl:w-2/3">
                     <UserReservations userId={user.id}/>

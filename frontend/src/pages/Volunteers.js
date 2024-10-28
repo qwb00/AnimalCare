@@ -164,7 +164,7 @@ function Volunteers() {
             </div>
             <UserNav role={user.role}/>
 
-            <div className="ml-12 md:ml-20 xl:ml-36">
+            <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
                 {/* New Requests */}
                 <h2 className="text-lg font-semibold mt-8">New Requests</h2>
                 <div className="flex flex-wrap gap-20 mt-4">
