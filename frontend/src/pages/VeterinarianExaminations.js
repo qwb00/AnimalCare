@@ -6,11 +6,13 @@ import Button from '../components/Button';
 import API_BASE_URL from '../config';
 import RequestCard from '../components/TreatmentRequest';
 import Header from '../components/Header';
+import AddRequestForm from '../components/AddRequestForm';
 
 function VeterinarianExaminations() {
     const [user, setUser] = useState(null);
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showAddRequestForm, setShowAddRequestForm] = useState(false);
     const navigate = useNavigate();
   
     useEffect(() => {
@@ -69,38 +71,55 @@ function VeterinarianExaminations() {
     const newRequests = requests.filter(request => request.status === 1); // Новый статус
     const completedRequests = requests.filter(request => request.status === 2); // Завершённый статус
     if (loading || !user) return <p>Loading...</p>;
+    const handleAddRequestClick = () => {
+      setShowAddRequestForm(true);
+    };
+    const handleFormSubmit = (formData) => {
+      // Здесь выполняется логика отправки POST запроса для создания нового запроса
+      console.log("Form submitted with data:", formData);
+      setShowAddRequestForm(false);
+    };
     return (
       <div className="container mx-auto">
         <Header/>
         <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-  <div className="md:ml-12 lg:ml-20 xl:ml-32">
-    <UserHeader user={user} />
-  </div>
-</div>
-
-<div className="flex flex-col md:ml-12 lg:ml-20 xl:ml-32">
-  <UserNav role={user.role} />
-
-  <h2 className="text-2xl font-bold mb-4 mt-4">New Requests</h2> {/* Добавляем отступ сверху для разделения */}
-</div>
-
-  
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {newRequests.map((request) => (
-            <RequestCard key={request.id} request={request} />
-          ))}
+          <div className="md:ml-12 lg:ml-20 xl:ml-32">
+            <UserHeader user={user} />
+          </div>
         </div>
+          <UserNav role={user.role} />
+
+          {user.role === 'Caretaker' && (
+                <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                    <Button text="+ New Request" variant="blue" onClick={handleAddRequestClick} />
+                </div>
+            )}
+        
+          {user.role === 'Veterinarian' && (
+                <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">New Requests</h2>
+            )}
   
-        <div className="flex justify-center mb-8">
-          <Button text="..." variant="white" />
-        </div>
-  
-        <h2 className="text-2xl font-bold mb-4">Completed Treatments</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {completedRequests.map((request) => (
-            <RequestCard key={request.id} request={request} />
-          ))}
-        </div>
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {newRequests.map((request) => (
+                <RequestCard key={request.id} request={request} />
+              ))}
+            </div>
+          </div>
+
+        {user.role === 'Veterinarian' && (
+          <>
+          <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">Completed treatments</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {completedRequests.map((request) => (
+              <RequestCard key={request.id} request={request} />
+            ))}
+          </div>
+          </>
+        )}
+        {showAddRequestForm && (
+                <AddRequestForm onSubmit={handleFormSubmit} onClose={() => setShowAddRequestForm(false)} />
+            )}
       </div>
     );
   };
