@@ -68,9 +68,10 @@ function VeterinarianExaminations() {
     }, [navigate]);
   
     // Фильтруем реквесты по статусу
-    const newRequests = requests.filter(request => request.status === 1); // Новый статус
-    const completedRequests = requests.filter(request => request.status === 2); // Завершённый статус
     if (loading || !user) return <p>Loading...</p>;
+    const userRequests = requests.filter(request => request.veterinarianName === user.name);
+    const newRequests = userRequests.filter(request => request.status === 1); // Новый статус
+    const completedRequests = userRequests.filter(request => request.status === 0); // Завершённый статус
     const handleAddRequestClick = () => {
       setShowAddRequestForm(true);
     };
@@ -79,6 +80,19 @@ function VeterinarianExaminations() {
       console.log("Form submitted with data:", formData);
       setShowAddRequestForm(false);
     };
+    const handleApprove = (requestId) => {
+      setRequests(prevRequests =>
+          prevRequests.map(request =>
+              request.id === requestId ? { ...request, status: 0 } : request
+          )
+      );
+  };
+  const handleDecline = (requestId) => {
+      setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
+  };
+  const handleDelete = (requestId) => {
+    setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
+  };
     return (
       <div className="container mx-auto">
         <Header/>
@@ -90,30 +104,44 @@ function VeterinarianExaminations() {
           <UserNav role={user.role} />
 
           {user.role === 'Caretaker' && (
+            <>
                 <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
                     <Button text="+ New Request" variant="blue" onClick={handleAddRequestClick} />
                 </div>
-            )}
+                    <div className="flex justify-center">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        {requests.map((request) => (
+                          <RequestCard key={request.id} request={request} showActions={'Caretaker'} onDelete={handleDelete}/>
+                        ))}
+                      </div>
+                  </div>
+            </>
+          )}
         
           {user.role === 'Veterinarian' && (
+            <>
                 <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">New Requests</h2>
-            )}
-  
-          <div className="flex justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {newRequests.map((request) => (
-                <RequestCard key={request.id} request={request} />
-              ))}
-            </div>
-          </div>
+              <div className="flex justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {newRequests.map((request) => (
+                    <RequestCard key={request.id} request={request} showActions={'Veterinarian'}
+                    onApprove={handleApprove}
+                    onDecline={handleDecline} />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
         {user.role === 'Veterinarian' && (
           <>
           <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">Completed treatments</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {completedRequests.map((request) => (
-              <RequestCard key={request.id} request={request} />
-            ))}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {completedRequests.map((request) => (
+                <RequestCard key={request.id} request={request} />
+              ))}
+            </div>
           </div>
           </>
         )}

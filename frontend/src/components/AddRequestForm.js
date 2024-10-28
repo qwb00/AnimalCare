@@ -3,12 +3,11 @@ import API_BASE_URL from '../config';
 
 const AddRequestForm = ({ onSubmit, onClose }) => {
     const [formData, setFormData] = useState({
-        animalName: '',
-        veterinarianName: '',
+        animalId: '',
+        veterinarianId: '',
+        examinationDate: '',
         type: '',
         description: '',
-        status: '',
-        finalDiagnosis: ''
     });
     
     const [animals, setAnimals] = useState([]);
@@ -37,6 +36,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                 });
                 const data = await response.json();
                 const veterinarians = data.filter(user => user.role === "Veterinarian");
+                console.log("veterinarians", veterinarians)
                 setVeterinarians(veterinarians);
             } catch (error) {
                 console.error("Error fetching veterinarians:", error);
@@ -52,9 +52,39 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit(formData);
+
+        const careTakerId = sessionStorage.getItem('userID');
+
+        // Данные для отправки
+        const dataToSubmit = {
+            ...formData,
+            careTakerId,
+            type: formData.type === 'Planned treatment' ? 0 : 1,
+        };
+        
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await fetch(`${API_BASE_URL}/examinations`, { 
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSubmit),
+   
+            });
+            console.log("Body", JSON.stringify(dataToSubmit));
+            if (!response.ok) {
+                throw new Error('Failed to create new request');
+            }
+
+            alert('Request created successfully');
+            onClose(); 
+        } catch (error) {
+            console.error("Error submitting request:", error);
+        }
     };
 
     return (
@@ -66,14 +96,14 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                 <div className="mb-4">
                     <label className="block text-gray-600 mb-2">Animal</label>
                     <select
-                        name="animalName"
-                        value={formData.animalName}
+                        name="animalId"
+                        value={formData.animalId}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
                     >
                         <option value="" disabled>Select an animal</option>
                         {animals.map((animal) => (
-                            <option key={animal.id} value={animal.name}>
+                            <option key={animal.id} value={animal.id}>
                                 {animal.name} ({animal.breed})
                             </option>
                         ))}
@@ -84,18 +114,30 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                 <div className="mb-4">
                     <label className="block text-gray-600 mb-2">Veterinarian</label>
                     <select
-                        name="veterinarianName"
-                        value={formData.veterinarianName}
+                        name="veterinarianId"
+                        value={formData.veterinarianId}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
                     >
                         <option value="" disabled>Select a veterinarian</option>
                         {veterinarians.map((vet) => (
-                            <option key={vet.id} value={vet.name}>
+                            <option key={vet.id} value={vet.id}>
                                 {vet.name}
                             </option>
                         ))}
                     </select>
+                </div>
+
+                {/* Examination Date Field */}
+                <div className="mb-4">
+                    <label className="block text-gray-600 mb-2">Examination Date</label>
+                    <input
+                        type="date"
+                        name="examinationDate"
+                        value={formData.examinationDate}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
                 </div>
 
                 {/* Type Field */}
@@ -125,34 +167,6 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                     />
                 </div>
 
-                {/* Status Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Status</label>
-                    <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>Select status</option>
-                        <option value="In progress">In progress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-
-                {/* Final Diagnosis Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Final Diagnosis</label>
-                    <input
-                        type="text"
-                        name="finalDiagnosis"
-                        value={formData.finalDiagnosis}
-                        onChange={handleChange}
-                        placeholder="Enter final diagnosis"
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-
                 {/* Action Buttons */}
                 <div className="flex justify-end">
                     <button
@@ -175,4 +189,3 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
 };
 
 export default AddRequestForm;
-
