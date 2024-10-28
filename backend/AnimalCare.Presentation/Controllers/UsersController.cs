@@ -86,7 +86,7 @@ namespace AnimalCare.Presentation.Controllers
 
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator,Caretaker")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _service.UserService.DeleteUserAsync(id);
