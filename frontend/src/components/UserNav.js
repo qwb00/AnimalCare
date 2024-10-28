@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function UserNav({ role }) {
     // Default to an empty role if undefined
@@ -18,9 +19,10 @@ function UserNav({ role }) {
     return (
         <div className="flex space-x-8 mt-6 mb-8 ml-16 md:ml-24 xl:ml-36 text-gray-500 text-lg">
             {itemsToShow.includes("General") && (
-                <span className="text-main-blue font-semibold border-b-2 border-main-blue cursor-pointer">
+                 <Link to="/:userID/veterinarian-examinations" className="text-blue-500 font-semibold border-b-2 border-blue-500 cursor-pointer">
+
                     General
-                </span>
+                </Link>
             )}
             {itemsToShow.includes("Volunteers") && (
                 <span className="cursor-pointer hover:text-main-blue">Volunteers</span>
@@ -29,7 +31,10 @@ function UserNav({ role }) {
                 <span className="cursor-pointer hover:text-main-blue">Reservations</span>
             )}
             {itemsToShow.includes("Medical Treatments") && (
-                <span className="cursor-pointer hover:text-main-blue">Medical Treatments</span>
+                <Link to="/:userID/veterinarian-examinations" className="cursor-pointer hover:text-blue-500">
+                    Medical Treatments
+                </Link>
+
             )}
         </div>
     );
