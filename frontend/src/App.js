@@ -10,6 +10,7 @@ import BackToTop from './components/BackToTop'; // Импортируем яко
 
 import UserGeneral from './pages/UserGeneral';
 import AnimalDetails from './pages/AnimalDetails';
+import Volunteers from './pages/Volunteers';
 
 function App() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/signup" element={<RegisterPage />} />
         <Route path="/:userID/veterinarian-examinations" element={<VeterinarianExaminations />} />
+        <Route path="/:userID/volunteers" element={<Volunteers />} />
       </Routes>
       <BackToTop />
     </>
