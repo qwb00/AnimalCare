@@ -4,7 +4,6 @@
   import AnimalCard from '../components/AnimalCard';
   import axios, { all } from 'axios';
   import API_BASE_URL from '../config';
-  import { CLOUDINARY_UPLOAD_URL, CLOUDINARY_UPLOAD_PRESET } from '../cloudinaryConfig';
   import Button from '../components/Button'; // Импортируем кнопку Button
   import FileUploader from '../components/FileUploader';
 
@@ -16,6 +15,7 @@
     const [notification, setNotification] = useState({ isSuccess: true, message: '' }); // Состояние уведомления
     const [photoUrl, setPhotoUrl] = useState(''); // Состояние для хранения URL фотографии
     const [userRole, setUserRole] = useState(''); // Состояние для роли пользователя
+    const [visibleCount, setVisibleCount] = useState(6);
 
     // Состояния для каждого инпута
     const [name, setName] = useState('');
@@ -61,6 +61,10 @@
       // Загружаем всех животных при монтировании компонента
       loadAllAnimals();
     }, []);
+
+    const showMoreAnimals = () => {
+      setVisibleCount((prevCount) => prevCount + 6);
+    };
     
       
       
@@ -161,16 +165,16 @@
 
         <div className="container mx-auto p-8">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {allAnimals.map((animal, index) => (
-      <AnimalCard
-        key={`${animal.id}-${index}`} // Комбинируем id и индекс для уникального ключа
-        id={animal.id}
-        image={animal.photo}
-        name={animal.name}
-        age={`${animal.age} years`}
-        breed={animal.breed}
-      />
-    ))}
+      {allAnimals.slice(0, visibleCount).map((animal, index) => (
+        <AnimalCard
+          key={`${animal.id}-${index}`} 
+          id={animal.id}
+          image={animal.photo}
+          name={animal.name}
+          age={`${animal.age} years`}
+          breed={animal.breed}
+        />
+      ))}
 
       {/* Кнопка для добавления нового животного с той же высотой, что и карточки животных */}
       {userRole && (userRole === 'Caretaker' || userRole === 'Administrator') && (
@@ -184,8 +188,18 @@
           </div>
         </div>
       )}
-
     </div>
+
+    {visibleCount < allAnimals.length && (
+      <div className="flex justify-center my-4">
+        <button
+            onClick={showMoreAnimals}
+            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+        >
+            <span className="text-lg font-bold">...</span>
+        </button>
+      </div>
+    )}
 
     {isLoading && (
       <div className="text-center mt-4">
