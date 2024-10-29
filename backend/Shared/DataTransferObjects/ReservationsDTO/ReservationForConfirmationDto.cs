@@ -1,5 +1,7 @@
 // Shared/DataTransferObjects/ReservationForConfirmationDto.cs
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
     public class ReservationForConfirmationDto
@@ -14,5 +16,6 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public string Photo { get; set; }
+        public bool IsApproved { get; set; }
     }
 }
