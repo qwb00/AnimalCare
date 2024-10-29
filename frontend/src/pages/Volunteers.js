@@ -10,8 +10,8 @@ function Volunteers() {
     const [user, setUser] = useState(null);
     const [newRequests, setNewRequests] = useState([]);
     const [currentVolunteers, setCurrentVolunteers] = useState([]);
-    const [showMoreRequests, setShowMoreRequests] = useState(false);
-    const [showMoreVolunteers, setShowMoreVolunteers] = useState(false);
+    const [displayCountRequests, setDisplayCountRequests] = useState(2); // Counter for new requests
+    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2); // Counter for current volunteers
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -152,6 +152,24 @@ function Volunteers() {
         }
     };
 
+    // Handle "Show More" logic for new requests
+    const handleShowMoreRequests = () => {
+        if (displayCountRequests >= newRequests.length) {
+            setDisplayCountRequests(2); // Reset if at the end
+        } else {
+            setDisplayCountRequests(displayCountRequests + 2); // Show next 2
+        }
+    };
+
+    // Handle "Show More" logic for current volunteers
+    const handleShowMoreVolunteers = () => {
+        if (displayCountVolunteers >= currentVolunteers.length) {
+            setDisplayCountVolunteers(2); // Reset if at the end
+        } else {
+            setDisplayCountVolunteers(displayCountVolunteers + 2); // Show next 2
+        }
+    };
+
     if (!user) return <div>Loading...</div>;
 
     return (
@@ -168,7 +186,7 @@ function Volunteers() {
                 {/* New Requests */}
                 <h2 className="text-lg font-semibold mt-8">New Requests</h2>
                 <div className="flex flex-wrap gap-20 mt-4">
-                    {(showMoreRequests ? newRequests : newRequests.slice(0, 2)).map(volunteer => (
+                    {newRequests.slice(0, displayCountRequests).map(volunteer => (
                         <VolunteerCard
                             key={volunteer.id}
                             volunteer={volunteer}
@@ -181,7 +199,7 @@ function Volunteers() {
                 {newRequests.length > 2 && (
                     <div className="flex justify-center my-4">
                         <button
-                            onClick={() => setShowMoreRequests(!showMoreRequests)}
+                            onClick={handleShowMoreRequests}
                             className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
                         >
                             <span className="text-lg font-bold">...</span>
@@ -192,7 +210,7 @@ function Volunteers() {
                 {/* Current Volunteers */}
                 <h2 className="text-lg font-semibold mt-8">Current Volunteers</h2>
                 <div className="flex flex-wrap gap-8 mt-4">
-                    {(showMoreVolunteers ? currentVolunteers : currentVolunteers.slice(0, 2)).map(volunteer => (
+                    {currentVolunteers.slice(0, displayCountVolunteers).map(volunteer => (
                         <VolunteerCard
                             key={volunteer.id}
                             volunteer={volunteer}
@@ -205,7 +223,7 @@ function Volunteers() {
                 {currentVolunteers.length > 2 && (
                     <div className="flex justify-center my-4">
                         <button
-                            onClick={() => setShowMoreVolunteers(!showMoreVolunteers)}
+                            onClick={handleShowMoreVolunteers}
                             className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
                         >
                             <span className="text-lg font-bold">...</span>
