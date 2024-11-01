@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2cc9ebc1-e820-48be-9065-eac083d5f734",
+                            Id = "11b8eb83-04c8-4dcc-83de-e922df46c111",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "76715467-ed8d-4851-9d0c-326233d53874",
+                            Id = "84dea500-93e3-45cf-a67c-a00d4d537f59",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "7673799f-c5e1-45e2-b6fa-c068c03f2847",
+                            Id = "e4873a5c-63e7-42f3-97e0-dfef16fc73ee",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "b43e80cd-7c0e-4519-93ce-e6878db7be42",
+                            Id = "a7273efd-7c42-4fe3-b8bb-7f4448516b4c",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -332,6 +332,9 @@ namespace AnimalCare.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("VolunteerId")
                         .HasColumnType("uniqueidentifier");

@@ -156,9 +156,7 @@ namespace AnimalCare
                 return ReservationStatus.UPCOMING;
             else if (reservation.IsEnded && DateTime.Now > reservation.EndDate)
                 return ReservationStatus.COMPLETED;
-            else if (reservation is { isAproved: false, IsEnded: true })
-                return ReservationStatus.CANCELED;
-            else if (!reservation.IsEnded && DateTime.Now > reservation.EndDate)
+            else if (reservation is { isAproved: true, IsEnded: false } && DateTime.Now > reservation.EndDate)
                 return ReservationStatus.MISSED;
             else
                 return ReservationStatus.NOTDECIDED;
