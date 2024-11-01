@@ -1,17 +1,20 @@
+// src/pages/Volunteers.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import UserHeader from "../components/UserHeader";
-import UserNav from "../components/UserNav";
-import API_BASE_URL from "../config";
-import VolunteerCard from "../components/VolunteerCard";
+import UserHeader from '../components/UserHeader';
+import UserNav from '../components/UserNav';
+import API_BASE_URL from '../config';
+import Card from '../components/Card';
+import ShowMoreButton from '../components/ShowMoreButton';
+import { icons } from '../components/icons';
 
 function Volunteers() {
     const [user, setUser] = useState(null);
     const [newRequests, setNewRequests] = useState([]);
     const [currentVolunteers, setCurrentVolunteers] = useState([]);
-    const [displayCountRequests, setDisplayCountRequests] = useState(2); // Counter for new requests
-    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2); // Counter for current volunteers
+    const [displayCountRequests, setDisplayCountRequests] = useState(2);
+    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,7 +27,7 @@ function Volunteers() {
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (!response.ok) throw new Error('Failed to fetch user information');
@@ -40,14 +43,14 @@ function Volunteers() {
         const fetchVolunteers = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/volunteers`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (!response.ok) throw new Error('Failed to fetch volunteers');
 
                 const data = await response.json();
-                setNewRequests(data.filter(volunteer => !volunteer.isVerified));
-                setCurrentVolunteers(data.filter(volunteer => volunteer.isVerified));
+                setNewRequests(data.filter((volunteer) => !volunteer.isVerified));
+                setCurrentVolunteers(data.filter((volunteer) => volunteer.isVerified));
             } catch (error) {
                 console.error('Error fetching volunteers:', error);
             }
@@ -59,20 +62,19 @@ function Volunteers() {
 
     const handleApprove = async (id) => {
         try {
-            console.log(`Sending PATCH request to approve volunteer ${id}`);
             const response = await fetch(`${API_BASE_URL}/volunteers/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'Content-Type': 'application/json-patch+json'
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
                     {
-                        "op": "replace",
-                        "path": "/isVerified",
-                        "value": true
-                    }
-                ])
+                        op: 'replace',
+                        path: '/isVerified',
+                        value: true,
+                    },
+                ]),
             });
 
             if (!response.ok) {
@@ -80,14 +82,10 @@ function Volunteers() {
                 throw new Error(`Failed to approve volunteer: ${errorText}`);
             }
 
-            console.log('Volunteer approved successfully');
-
-            // Move volunteer from newRequests to currentVolunteers with updated details
-            setNewRequests(prev => prev.filter(volunteer => volunteer.id !== id));
-            setCurrentVolunteers(prev => [
-                ...prev,
-                { ...newRequests.find(volunteer => volunteer.id === id), isVerified: true }
-            ]);
+            // Move volunteer from newRequests to currentVolunteers
+            setNewRequests((prev) => prev.filter((volunteer) => volunteer.id !== id));
+            const approvedVolunteer = newRequests.find((volunteer) => volunteer.id === id);
+            setCurrentVolunteers((prev) => [...prev, { ...approvedVolunteer, isVerified: true }]);
         } catch (error) {
             console.error('Error approving volunteer:', error);
         }
@@ -95,20 +93,43 @@ function Volunteers() {
 
     const handleDecline = async (id) => {
         try {
-            console.log(`Sending PATCH request to delete volunteer ${id}`);
             const response = await fetch(`${API_BASE_URL}/volunteers/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'Content-Type': 'application/json-patch+json'
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
                     {
-                        "op": "replace",
-                        "path": "/isVerified",
-                        "value": false
-                    }
-                ])
+                        op: 'replace',
+                        path: '/isVerified',
+                        value: false,
+                    },
+                ]),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to unverify volunteer: ${errorText}`);
+            }
+
+            // Move volunteer from currentVolunteers to newRequests
+            setCurrentVolunteers((prev) => prev.filter((volunteer) => volunteer.id !== id));
+            const unverifiedVolunteer = currentVolunteers.find((volunteer) => volunteer.id === id);
+            setNewRequests((prev) => [...prev, { ...unverifiedVolunteer, isVerified: false }]);
+        } catch (error) {
+            console.error('Error unverifying volunteer:', error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'X-Request-Type': 'DeleteUser',
+                },
             });
 
             if (!response.ok) {
@@ -116,58 +137,21 @@ function Volunteers() {
                 throw new Error(`Failed to delete volunteer: ${errorText}`);
             }
 
-            console.log('Volunteer marked for deletion successfully');
-
-            // Move volunteer from currentVolunteers to newRequests
-            setCurrentVolunteers(prev => prev.filter(volunteer => volunteer.id !== id));
-            setNewRequests(prev => [
-                ...prev,
-                { ...currentVolunteers.find(volunteer => volunteer.id === id), isVerified: false }
-            ]);
+            // Remove volunteer from both lists
+            setNewRequests((prev) => prev.filter((v) => v.id !== id));
+            setCurrentVolunteers((prev) => prev.filter((v) => v.id !== id));
         } catch (error) {
             console.error('Error deleting volunteer:', error);
         }
     };
 
-    const handleDelete = async (id) => {
-        try {
-            console.log(`Sending DELETE request to decline volunteer ${id}`);
-            const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'X-Request-Type': 'DeleteUser'
-                }
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to decline volunteer: ${errorText}`);
-            }
-
-            console.log('Volunteer declined and deleted successfully');
-            setNewRequests(prev => prev.filter(v => v.id !== id));
-        } catch (error) {
-            console.error('Error declining volunteer:', error);
-        }
-    };
-
-    // Handle "Show More" logic for new requests
+    // Show more logic
     const handleShowMoreRequests = () => {
-        if (displayCountRequests >= newRequests.length) {
-            setDisplayCountRequests(2); // Reset if at the end
-        } else {
-            setDisplayCountRequests(displayCountRequests + 2); // Show next 2
-        }
+        setDisplayCountRequests((prev) => (prev >= newRequests.length ? 2 : prev + 2));
     };
 
-    // Handle "Show More" logic for current volunteers
     const handleShowMoreVolunteers = () => {
-        if (displayCountVolunteers >= currentVolunteers.length) {
-            setDisplayCountVolunteers(2); // Reset if at the end
-        } else {
-            setDisplayCountVolunteers(displayCountVolunteers + 2); // Show next 2
-        }
+        setDisplayCountVolunteers((prev) => (prev >= currentVolunteers.length ? 2 : prev + 2));
     };
 
     if (!user) return <div>Loading...</div>;
@@ -177,59 +161,101 @@ function Volunteers() {
             <Header />
             <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
                 <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    <UserHeader user={user}/>
+                    <UserHeader user={user} />
                 </div>
             </div>
-            <UserNav role={user.role}/>
+            <UserNav role={user.role} />
 
             <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
                 {/* New Requests */}
                 <h2 className="text-lg font-semibold mt-8">New Requests</h2>
                 <div className="flex flex-wrap gap-20 mt-4">
-                    {newRequests.slice(0, displayCountRequests).map(volunteer => (
-                        <VolunteerCard
+                    {newRequests.slice(0, displayCountRequests).map((volunteer) => (
+                        <Card
                             key={volunteer.id}
-                            volunteer={volunteer}
-                            onApprove={handleApprove}
-                            onDelete={handleDelete}
-                            isRequest={true}
+                            imageSrc={volunteer.photo || icons.placeholder}
+                            infoItems={[
+                                {
+                                    icon: icons.name,
+                                    label: 'Full Name',
+                                    value: volunteer.name,
+                                },
+                                {
+                                    icon: icons.phone,
+                                    label: 'Phone Number',
+                                    value: volunteer.phoneNumber,
+                                },
+                                {
+                                    icon: icons.email,
+                                    label: 'E-mail',
+                                    value: volunteer.email,
+                                },
+                            ]}
+                            buttons={[
+                                {
+                                    text: 'Delete',
+                                    variant: 'red',
+                                    icon: icons.cancel,
+                                    onClick: () => handleDelete(volunteer.id),
+                                    className: 'px-6 py-2.5 text-sm',
+                                },
+                                {
+                                    text: 'Approve',
+                                    variant: 'blue',
+                                    icon: icons.approve,
+                                    onClick: () => handleApprove(volunteer.id),
+                                    className: 'px-6 py-2.5 text-sm',
+                                },
+                            ]}
                         />
                     ))}
                 </div>
-                {newRequests.length > 2 && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMoreRequests}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
-                    </div>
-                )}
+                {newRequests.length > 2 && <ShowMoreButton onClick={handleShowMoreRequests} />}
 
                 {/* Current Volunteers */}
                 <h2 className="text-lg font-semibold mt-8">Current Volunteers</h2>
                 <div className="flex flex-wrap gap-20 mt-4">
-                    {currentVolunteers.slice(0, displayCountVolunteers).map(volunteer => (
-                        <VolunteerCard
+                    {currentVolunteers.slice(0, displayCountVolunteers).map((volunteer) => (
+                        <Card
                             key={volunteer.id}
-                            volunteer={volunteer}
-                            onUnverify={handleDecline}
-                            onDelete={handleDelete}
-                            isRequest={false}
+                            imageSrc={volunteer.photo || icons.placeholder}
+                            infoItems={[
+                                {
+                                    icon: icons.name,
+                                    label: 'Full Name',
+                                    value: volunteer.name,
+                                },
+                                {
+                                    icon: icons.phone,
+                                    label: 'Phone Number',
+                                    value: volunteer.phoneNumber,
+                                },
+                                {
+                                    icon: icons.email,
+                                    label: 'E-mail',
+                                    value: volunteer.email,
+                                },
+                            ]}
+                            buttons={[
+                                {
+                                    text: 'Delete',
+                                    variant: 'red',
+                                    icon: icons.cancel,
+                                    onClick: () => handleDelete(volunteer.id),
+                                    className: 'px-6 py-2.5 text-sm',
+                                },
+                                {
+                                    text: 'Unverify',
+                                    variant: 'yellow',
+                                    icon: icons.unverify,
+                                    onClick: () => handleDecline(volunteer.id),
+                                    className: 'px-6 py-2.5 text-sm',
+                                },
+                            ]}
                         />
                     ))}
                 </div>
-                {currentVolunteers.length > 2 && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMoreVolunteers}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
-                    </div>
-                )}
+                {currentVolunteers.length > 2 && <ShowMoreButton onClick={handleShowMoreVolunteers} />}
             </div>
         </div>
     );
