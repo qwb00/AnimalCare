@@ -17,7 +17,6 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public string Photo { get; set; }
-        public bool IsApproved { get; set; }
         public ReservationStatus Status { get; set; }
     }
 }

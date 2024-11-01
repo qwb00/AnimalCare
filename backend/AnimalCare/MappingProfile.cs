@@ -29,9 +29,7 @@ namespace AnimalCare
                     (dst => dst.StartDate, src => src.ReservationDate.Date + src.StartTime),
                     (dst => dst.EndDate, src => src.ReservationDate.Date + src.EndTime)
                 )
-                .UseValue(dst => dst.isReserved, true)
-                .UseValue(dst => dst.isAproved, false)
-                .UseValue(dst => dst.IsEnded, false);
+                .UseValue(dst => dst.Status, ReservationStatus.NOTDECIDED);
             
             CreateMap<Reservation, ReservationForConfirmationDto>()
                 .MapMembers(
@@ -43,18 +41,14 @@ namespace AnimalCare
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay),
                     (dst => dst.Photo, src => src.Animal.Photo)
                 );
-            
+
             CreateMap<Reservation, ReservationForUserDto>()
                 .MapMembers(
                     (dst => dst.Date, src => src.StartDate.Date),
                     (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
-                )
-                .ForMember(
-                    dest => dest.Status,
-                    opt => opt.MapFrom(src => DetermineReservationStatus(src))
                 );
-
+            
             CreateMap<Reservation, ReservationForUpdateDto>()
                 .MapMembers(
                     (dst => dst.Date, src => src.StartDate.Date),
@@ -65,10 +59,7 @@ namespace AnimalCare
             CreateMap<ReservationForUpdateDto, Reservation>()
                 .MapMembers(
                     (dst => dst.StartDate, src => src.Date.Date + src.StartTime),
-                    (dst => dst.EndDate, src => src.Date.Date + src.EndTime),
-                    (dst => dst.IsEnded, src => src.IsEnded),
-                    (dst => dst.isReserved, src => src.IsReserved),
-                    (dst => dst.isAproved, src => src.IsApproved)
+                    (dst => dst.EndDate, src => src.Date.Date + src.EndTime)
                 )
                 .Ignore(
                     dst => dst.Id,
@@ -148,18 +139,6 @@ namespace AnimalCare
                     (dst => dst.Description, src => src.Description),
                     (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
                 );
-        }
-        
-        private ReservationStatus DetermineReservationStatus(Reservation reservation)
-        {
-            if (reservation.isAproved && DateTime.Now < reservation.StartDate)
-                return ReservationStatus.UPCOMING;
-            else if (reservation.IsEnded && DateTime.Now > reservation.EndDate)
-                return ReservationStatus.COMPLETED;
-            else if (reservation is { isAproved: true, IsEnded: false } && DateTime.Now > reservation.EndDate)
-                return ReservationStatus.MISSED;
-            else
-                return ReservationStatus.NOTDECIDED;
         }
     }
 }

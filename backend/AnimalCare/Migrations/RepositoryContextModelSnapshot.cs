@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "11b8eb83-04c8-4dcc-83de-e922df46c111",
+                            Id = "9f4a3c8e-b1c2-4914-a567-d5d68b75085a",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "84dea500-93e3-45cf-a67c-a00d4d537f59",
+                            Id = "0da2debd-d921-49cb-b00a-9a653e05f1e4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "e4873a5c-63e7-42f3-97e0-dfef16fc73ee",
+                            Id = "ea6cb402-18dc-4c86-a17b-6e4f754e053b",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "a7273efd-7c42-4fe3-b8bb-7f4448516b4c",
+                            Id = "d3c49d16-6d30-4768-8cff-2d9ec71fe2fb",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -327,9 +327,6 @@ namespace AnimalCare.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsEnded")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -338,12 +335,6 @@ namespace AnimalCare.Migrations
 
                     b.Property<Guid>("VolunteerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isAproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isReserved")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

@@ -2,9 +2,9 @@ namespace Shared.Enums;
 
 public enum ReservationStatus
 {
-    UPCOMING,
-    COMPLETED,
-    MISSED,
-    CANCELED,
-    NOTDECIDED
+    NOTDECIDED = 0,
+    UPCOMING = 1,
+    COMPLETED = 2,
+    MISSED = 3,
+    CANCELED = 4
 }

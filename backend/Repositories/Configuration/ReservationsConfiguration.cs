@@ -16,8 +16,7 @@ public static class ReservationsConfiguration
                     AnimalId = Guid.Parse("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
                     VolunteerId = Guid.Parse("7d5a7f7b-4a0d-41b6-9b9f-02c68c5d8b98"),
                     StartDate = new DateTime(2023, 10, 1, 10, 0, 0),
-                    EndDate = new DateTime(2023, 10, 1, 11, 0, 0),
-                    IsEnded = false
+                    EndDate = new DateTime(2023, 10, 1, 11, 0, 0)
                 },
                 new Reservation
                 {
@@ -25,8 +24,7 @@ public static class ReservationsConfiguration
                     AnimalId = Guid.Parse("59fe555e-3bcc-4ace-b9fc-68b76805ac59"),
                     VolunteerId = Guid.Parse("c60e1c3e-4632-499f-b948-103558d91c5e"),
                     StartDate = new DateTime(2023, 10, 2, 14, 0, 0),
-                    EndDate = new DateTime(2023, 10, 2, 15, 30, 0),
-                    IsEnded = false
+                    EndDate = new DateTime(2023, 10, 2, 15, 30, 0)
                 },
                 new Reservation
                 {
@@ -34,8 +32,7 @@ public static class ReservationsConfiguration
                     AnimalId = Guid.Parse("5bc27217-6817-40e4-b8d1-60dc9aca3e83"),
                     VolunteerId = Guid.Parse("c60e1c3e-4632-499f-b948-103558d91c5e"),
                     StartDate = new DateTime(2023, 10, 3, 9, 0, 0),
-                    EndDate = new DateTime(2023, 10, 3, 11, 0, 0),
-                    IsEnded = false
+                    EndDate = new DateTime(2023, 10, 3, 11, 0, 0)
                 },
                 new Reservation
                 {
@@ -43,8 +40,7 @@ public static class ReservationsConfiguration
                     AnimalId = Guid.Parse("b4e645e1-4a28-45a2-9aa3-3b76af8a5f12"),
                     VolunteerId = Guid.Parse("c60e1c3e-4632-499f-b948-103558d91c5e"),
                     StartDate = new DateTime(2023, 10, 4, 11, 0, 0),
-                    EndDate = new DateTime(2023, 10, 4, 12, 0, 0),
-                    IsEnded = false
+                    EndDate = new DateTime(2023, 10, 4, 12, 0, 0)
                 }
             );
             await context.SaveChangesAsync();
