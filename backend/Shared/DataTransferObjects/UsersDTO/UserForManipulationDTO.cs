@@ -22,7 +22,7 @@ namespace Shared.DataTransferObjects.UsersDTO
         public string? Email { get; init; }
 
         [Required(ErrorMessage = "Phone number is required")]
-        [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "Invalid phone number format")]
+        [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "Invalid phone number format. Must be from 10 to 15 digits")]
         public string? PhoneNumber { get; init; }
         public ICollection<string>? Roles { get; init; }
     }
