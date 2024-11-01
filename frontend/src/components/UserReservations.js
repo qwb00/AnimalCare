@@ -61,7 +61,7 @@ function UserReservations({ userId }) {
                     const startTime = reservation.startTime ? reservation.startTime.slice(0, 5) : 'N/A';
                     const endTime = reservation.endTime ? reservation.endTime.slice(0, 5) : 'N/A';
 
-                    const statusInfo = statusMap[reservation.status] || { text: "Unknown", colorClass: "bg-gray-200 text-gray-700" };
+                    const statusInfo = statusMap[reservation.status] || { text: "Not decided", colorClass: "bg-gray-200 text-gray-700" };
 
                     return (
                         <div

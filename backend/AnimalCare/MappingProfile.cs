@@ -161,7 +161,7 @@ namespace AnimalCare
             else if (!reservation.IsEnded && DateTime.Now > reservation.EndDate)
                 return ReservationStatus.MISSED;
             else
-                return ReservationStatus.UPCOMING;
+                return ReservationStatus.NOTDECIDED;
         }
     }
 }

@@ -5,5 +5,6 @@ public enum ReservationStatus
     UPCOMING,
     COMPLETED,
     MISSED,
-    CANCELED
+    CANCELED,
+    NOTDECIDED
 }

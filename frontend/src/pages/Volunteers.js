@@ -209,7 +209,7 @@ function Volunteers() {
 
                 {/* Current Volunteers */}
                 <h2 className="text-lg font-semibold mt-8">Current Volunteers</h2>
-                <div className="flex flex-wrap gap-8 mt-4">
+                <div className="flex flex-wrap gap-20 mt-4">
                     {currentVolunteers.slice(0, displayCountVolunteers).map(volunteer => (
                         <VolunteerCard
                             key={volunteer.id}
