@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API_BASE_URL from '../config';
 import Button from '../components/Button'; 
+import ErrorMessages from '../components/ErrorMessages';
 
 function RegisterPage() {
   const [firstName, setFirstName] = useState('');
@@ -10,36 +11,12 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhone] = useState('');
-  const [error, setError] = useState(null);
+  const [errorData, setErrorData] = useState(null);
   const navigate = useNavigate();
-
-  const extractErrorMessages = (errorData) => {
-    const errorMessages = [];
-
-    const recursiveExtract = (data) => {
-        if (typeof data === 'string' && !data.startsWith('http') && !data.includes("traceId") && !data.includes("title")) {
-            // Добавляем строку, если это сообщение об ошибке и она не является URL, traceId или title
-            errorMessages.push(data);
-        } else if (Array.isArray(data)) {
-            data.forEach((item) => recursiveExtract(item));
-        } else if (typeof data === 'object' && data !== null) {
-            Object.entries(data).forEach(([key, value]) => {
-                // Пропускаем поля "traceId", "title", и подобные
-                if (!["traceId", "type", "title", "status"].includes(key)) {
-                    recursiveExtract(value);
-                }
-            });
-        }
-    };
-
-    recursiveExtract(errorData);
-    return errorMessages;
-};
-
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError(null);
+    setErrorData(null);
     const roles = ["Volunteer"];
     try {
       const response = await fetch(`${API_BASE_URL}/authentication`, {
@@ -51,9 +28,8 @@ function RegisterPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessages = extractErrorMessages(errorData);
-        setError(errorMessages.join(" | "));
+        const errorResponse = await response.json();
+        setErrorData(errorResponse);
         return;
     }
 
@@ -61,14 +37,13 @@ function RegisterPage() {
       navigate('/login');
 
     } catch (error) {
-      setError(error.message);
+      setErrorData(error.message);
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-light-blue">
       <form onSubmit={handleSignUp} className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm relative">
-        {/* Кнопка закрытия */}
         <Link to="/">
           <button type="button" className="absolute top-3 right-3 bg-main-blue rounded-full p-2" aria-label="Close" style={{ transform: 'rotate(45deg)' }}>
             <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
@@ -76,7 +51,7 @@ function RegisterPage() {
         </Link>
         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">Sign Up</h2>
 
-        {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+        {errorData && <ErrorMessages errorData={errorData} />}
 
         <div className="mb-3">
           <label className="block text-gray-700 mb-1 text-sm font-medium">First Name</label>
@@ -150,7 +125,6 @@ function RegisterPage() {
           />
         </div>
 
-        {/* Кнопка регистрации через компонент Button */}
         <Button 
           text="Sign Up" 
           variant="blue" 

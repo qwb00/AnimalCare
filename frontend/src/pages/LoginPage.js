@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import API_BASE_URL from '../config';
-import Button from '../components/Button'; // Импортируем компонент Button
+import Button from '../components/Button';
+import ErrorMessages from '../components/ErrorMessages';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [authToken, setAuthToken] = useState(null); // Для хранения токена
-  const [username, setUsername] = useState(null); // Для хранения имени пользователя
+  const [authToken, setAuthToken] = useState(null); 
+  const [username, setUsername] = useState(null); 
   const [role, setRole] = useState(null);
+  const [errorData, setErrorData] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null);
+    setErrorData(null);
 
     try {
       const response = await fetch(`${API_BASE_URL}/authentication/login`, {
@@ -28,13 +29,13 @@ function LoginPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        setErrorData("Wrong password or email. Please try again.");
+        return;
       }
 
       const data = await response.json();
       const token = data.token;
       sessionStorage.setItem('token', token);
-      console.log('Token:', token);
 
       const decodedToken = jwtDecode(token);
       const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
@@ -48,7 +49,7 @@ function LoginPage() {
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('role', role);
     setAuthToken(token);
-    setUsername(username); // Устанавливаем состояние имени пользователя
+    setUsername(username); 
     setRole(role);
 
     // Fetch user ID from the /api/users/me endpoint using the token
@@ -73,7 +74,7 @@ function LoginPage() {
       navigate(from, { replace: true });
 
     } catch (error) {
-      setError(error.message);
+      setErrorData(error.message);
     }
   };
 
@@ -89,7 +90,7 @@ function LoginPage() {
         <h2 className="text-3xl font-semibold mb-8 text-center text-gray-900">Login to your account</h2>
 
         {/* Сообщение об ошибке */}
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {errorData && <ErrorMessages errorData={errorData} />}
 
         {/* Отображение токена при успешном логине */}
         {authToken && (
