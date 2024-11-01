@@ -7,6 +7,7 @@ using Repositories.Configuration;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
+using AnimalCare.Presentation.ActionFilters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 var app = builder.Build();
 
