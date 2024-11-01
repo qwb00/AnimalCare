@@ -1,4 +1,5 @@
-﻿using Shared.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using Shared.Enums;
 
 namespace Shared.DataTransferObjects.UsersDTO
 {
@@ -9,5 +10,7 @@ namespace Shared.DataTransferObjects.UsersDTO
         public string Email { get; init; }
         public string PhoneNumber { get; init; }
         public string Role { get; set; }
+        [Url]
+        public string? Photo { get; set; }
     }
 }
