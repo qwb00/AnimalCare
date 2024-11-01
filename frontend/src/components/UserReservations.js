@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from "../config";
 
-// Status Mapping
+// Status Mapping according to ReservationStatus enum
 const statusMap = {
-    0: { text: "Upcoming", colorClass: "bg-yellow-200 text-yellow-700" },
-    1: { text: "Completed", colorClass: "bg-green-200 text-green-700" },
-    2: { text: "Missed", colorClass: "bg-red-200 text-red-700" },
-    3: { text: "Canceled", colorClass: "bg-gray-200 text-gray-700" },
+    0: { text: "Not Decided", colorClass: "bg-gray-200 text-gray-700" },    // NOTDECIDED
+    1: { text: "Upcoming", colorClass: "bg-yellow-200 text-yellow-700" },   // UPCOMING
+    2: { text: "Completed", colorClass: "bg-green-200 text-green-700" },    // COMPLETED
+    3: { text: "Missed", colorClass: "bg-red-200 text-red-700" },           // MISSED
+    4: { text: "Canceled", colorClass: "bg-red-400 text-red-800" },       // CANCELED
 };
 
 function UserReservations({ userId }) {
@@ -46,7 +47,7 @@ function UserReservations({ userId }) {
     if (!reservations.length) return null;
 
     return (
-        <div className="max-w-md mx-auto"> {/* Set max-width for narrower container */}
+        <div className="max-w-md mx-auto">
             <h3 className="text-lg font-semibold mb-4">Your Reservations</h3>
             <div className="relative">
                 {reservations.slice(0, visibleReservations).map((reservation, index) => {
@@ -61,28 +62,27 @@ function UserReservations({ userId }) {
                     const startTime = reservation.startTime ? reservation.startTime.slice(0, 5) : 'N/A';
                     const endTime = reservation.endTime ? reservation.endTime.slice(0, 5) : 'N/A';
 
-                    const statusInfo = statusMap[reservation.status] || { text: "Not decided", colorClass: "bg-gray-200 text-gray-700" };
+                    const statusInfo = statusMap[reservation.status] || { text: "Unknown", colorClass: "bg-gray-200 text-gray-700" };
 
                     return (
                         <div
                             key={reservation.id}
                             className="relative flex items-start"
-                            style={{ marginTop: 0 }} // Remove margin-top for the first item
+                            style={{ marginTop: 0 }}
                         >
                             {/* Circle with Dashed Line */}
                             <div className="flex flex-col items-center mr-4">
                                 <div className="relative w-6 h-6 bg-white border-2 border-main-blue rounded-full flex items-center justify-center">
                                     <div className="w-2 h-2 bg-main-blue rounded-full"></div>
                                 </div>
-                                {/* Render bottom dashed line if it's not the last item */}
                                 {index < reservations.length - 1 && (
                                     <div
                                         className="w-0"
                                         style={{
-                                            height: '120px', // Adjust to reach the next circle
+                                            height: '120px',
                                             borderLeft: '2px solid transparent',
-                                            backgroundImage: 'linear-gradient(to bottom, #4BD4FF 30%, transparent 50%)', // using main-blue hex
-                                            backgroundSize: '2px 14px', // Adjust dash spacing slightly
+                                            backgroundImage: 'linear-gradient(to bottom, #4BD4FF 30%, transparent 50%)',
+                                            backgroundSize: '2px 14px',
                                         }}
                                     ></div>
                                 )}
