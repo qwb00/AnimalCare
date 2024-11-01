@@ -213,7 +213,7 @@ function UserReservationsConfirm() {
                             <Card
                                 key={reservation.id}
                                 title={`Walk with ${reservation.animalName} on ${reservationDate}`}
-                                imageSrc={reservation.volunteerPhoto || icons.placeholder}
+                                imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
@@ -243,13 +243,12 @@ function UserReservationsConfirm() {
                             <Card
                                 key={reservation.id}
                                 title={`Walk with ${reservation.animalName} on ${reservationDate}`}
-                                imageSrc={reservation.volunteerPhoto || icons.placeholder}
+                                imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
-                                    { icon: icons.status, label: 'Status', value: statusLabels[reservation.status] || 'UNKNOWN' },
                                 ]}
                                 buttons={[
                                     { text: 'Missed', variant: 'red', icon: icons.decline, onClick: () => handleMarkAsMissed(reservation.id), className: 'px-5 py-2 w-full' },
