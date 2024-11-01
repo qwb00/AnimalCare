@@ -25,5 +25,8 @@ namespace Shared.DataTransferObjects.UsersDTO
         [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "Invalid phone number format. Must be from 10 to 15 digits")]
         public string? PhoneNumber { get; init; }
         public ICollection<string>? Roles { get; init; }
+        
+        [Url]
+        public string? Photo { get; set; }
     }
 }
