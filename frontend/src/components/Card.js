@@ -27,7 +27,7 @@ function Card({ title, imageSrc, infoItems, buttons, children }) {
                 {/* Image on the right */}
                 {imageSrc && (
                     <div className="flex-shrink-0 flex items-center ml-4">
-                        <img src={imageSrc} alt="Image" className="w-24 h-24 rounded-2xl object-cover" />
+                        <img src={imageSrc} alt="Image" className="w-36 h-36 rounded-2xl object-cover" />
                     </div>
                 )}
             </div>
