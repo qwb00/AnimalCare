@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../config";
-import Header from "../components/Header";
-import UserHeader from "../components/UserHeader";
-import UserNav from "../components/UserNav";
-import UserReservationCard from "../components/UserReservationCard";
+// src/pages/UserReservationsConfirm.js
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
+import Header from '../components/Header';
+import UserHeader from '../components/UserHeader';
+import UserNav from '../components/UserNav';
+import Card from '../components/Card';
+import ShowMoreButton from '../components/ShowMoreButton';
+import { icons } from '../components/icons';
 
 function UserReservationsConfirm() {
     const [user, setUser] = useState(null);
@@ -24,7 +27,7 @@ function UserReservationsConfirm() {
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) throw new Error('Failed to fetch user information');
                 const userData = await response.json();
@@ -38,13 +41,13 @@ function UserReservationsConfirm() {
         const fetchReservations = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/reservations`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) throw new Error('Failed to fetch reservations');
                 const data = await response.json();
 
-                setNewRequests(data.filter(reservation => reservation.isApproved === false));
-                setPlannedWalks(data.filter(reservation => reservation.isApproved === true));
+                setNewRequests(data.filter((reservation) => reservation.isApproved === false));
+                setPlannedWalks(data.filter((reservation) => reservation.isApproved === true));
             } catch (error) {
                 console.error('Error fetching reservations:', error);
             }
@@ -59,26 +62,24 @@ function UserReservationsConfirm() {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'Content-Type': 'application/json-patch+json'
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
                     {
-                        "op": "replace",
-                        "path": "/isApproved",
-                        "value": true
-                    }
-                ])
+                        op: 'replace',
+                        path: '/isApproved',
+                        value: true,
+                    },
+                ]),
             });
 
             if (!response.ok) throw new Error(`Failed to approve reservation: ${await response.text()}`);
 
-            // Update the UI
-            setNewRequests(prev => prev.filter(reservation => reservation.id !== id));
-            setPlannedWalks(prev => [
-                ...prev,
-                { ...newRequests.find(reservation => reservation.id === id), isApproved: true }
-            ]);
+            // Move reservation from newRequests to plannedWalks
+            setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
+            const approvedReservation = newRequests.find((reservation) => reservation.id === id);
+            setPlannedWalks((prev) => [...prev, { ...approvedReservation, isApproved: true }]);
         } catch (error) {
             console.error('Error approving reservation:', error);
         }
@@ -89,22 +90,22 @@ function UserReservationsConfirm() {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'Content-Type': 'application/json-patch+json'
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
                     {
-                        "op": "replace",
-                        "path": "/status",
-                        "value": "CANCELED"
-                    }
-                ])
+                        op: 'replace',
+                        path: '/status',
+                        value: 'CANCELED',
+                    },
+                ]),
             });
 
             if (!response.ok) throw new Error(`Failed to decline reservation: ${await response.text()}`);
 
-            // Update the UI
-            setNewRequests(prev => prev.filter(reservation => reservation.id !== id));
+            // Remove reservation from newRequests
+            setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
             console.error('Error declining reservation:', error);
         }
@@ -115,35 +116,37 @@ function UserReservationsConfirm() {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                    'Content-Type': 'application/json-patch+json'
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
                     {
-                        "op": "replace",
-                        "path": "/status",
-                        "value": "DELETED"
-                    }
-                ])
+                        op: 'replace',
+                        path: '/status',
+                        value: 'DELETED',
+                    },
+                ]),
             });
 
             if (!response.ok) throw new Error(`Failed to delete reservation: ${await response.text()}`);
 
-            // Update the UI
-            setPlannedWalks(prev => prev.filter(reservation => reservation.id !== id));
+            // Remove reservation from plannedWalks
+            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
             console.error('Error deleting reservation:', error);
         }
     };
 
-    // Show more cards logic for new requests and planned walks
+    // Show more logic
     const handleShowMoreRequests = () => {
-        setDisplayCountRequests(prev => (prev >= newRequests.length ? 2 : prev + 2));
+        setDisplayCountRequests((prev) => (prev >= newRequests.length ? 2 : prev + 2));
     };
 
     const handleShowMorePlanned = () => {
-        setDisplayCountPlanned(prev => (prev >= plannedWalks.length ? 2 : prev + 2));
+        setDisplayCountPlanned((prev) => (prev >= plannedWalks.length ? 2 : prev + 2));
     };
+
+    if (!user) return <div>Loading...</div>;
 
     return (
         <div className="container mx-auto">
@@ -156,50 +159,114 @@ function UserReservationsConfirm() {
             {user && <UserNav role={user.role} />}
 
             <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
+                {/* New Requests */}
                 <h2 className="text-2xl font-semibold mb-6">New Requests</h2>
                 <div className="flex flex-wrap gap-20">
-                    {newRequests.slice(0, displayCountRequests).map(reservation => (
-                        <UserReservationCard
-                            key={reservation.id}
-                            reservation={reservation}
-                            onApprove={handleApprove}
-                            onDecline={handleDecline}
-                            isNewRequest={true}
-                        />
-                    ))}
-                </div>
-                {newRequests.length > 2 && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMoreRequests}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
-                    </div>
-                )}
+                    {newRequests.slice(0, displayCountRequests).map((reservation) => {
+                        const reservationDate = new Date(reservation.reservationDate).toLocaleDateString();
+                        const startTime = reservation.startTime.slice(0, 5);
+                        const endTime = reservation.endTime.slice(0, 5);
+                        const timeRange = `${startTime} - ${endTime}`;
 
+                        return (
+                            <Card
+                                key={reservation.id}
+                                title={`Walk with ${reservation.animalName} on ${reservationDate}`}
+                                imageSrc={reservation.volunteerphoto || icons.placeholder}
+                                infoItems={[
+                                    {
+                                        icon: icons.volunteer,
+                                        label: 'Volunteer',
+                                        value: reservation.volunteerName,
+                                    },
+                                    {
+                                        icon: icons.animal,
+                                        label: 'Animal',
+                                        value: `${reservation.animalName} (${reservation.animalBreed})`,
+                                    },
+                                    {
+                                        icon: icons.date,
+                                        label: 'Date',
+                                        value: reservationDate,
+                                    },
+                                    {
+                                        icon: icons.time,
+                                        label: 'Time',
+                                        value: timeRange,
+                                    },
+                                ]}
+                                buttons={[
+                                    {
+                                        text: 'Decline',
+                                        variant: 'red',
+                                        icon: icons.decline,
+                                        onClick: () => handleDecline(reservation.id),
+                                        className: 'px-5 py-2',
+                                    },
+                                    {
+                                        text: 'Approve',
+                                        variant: 'blue',
+                                        icon: icons.approve,
+                                        onClick: () => handleApprove(reservation.id),
+                                        className: 'px-5 py-2',
+                                    },
+                                ]}
+                            />
+                        );
+                    })}
+                </div>
+                {newRequests.length > 2 && <ShowMoreButton onClick={handleShowMoreRequests} />}
+
+                {/* Planned Walks */}
                 <h2 className="text-2xl font-semibold mb-6 mt-10">Planned Walks</h2>
                 <div className="flex flex-wrap gap-6">
-                    {plannedWalks.slice(0, displayCountPlanned).map(reservation => (
-                        <UserReservationCard
-                            key={reservation.id}
-                            reservation={reservation}
-                            onDelete={handleDelete}
-                            isNewRequest={false}
-                        />
-                    ))}
+                    {plannedWalks.slice(0, displayCountPlanned).map((reservation) => {
+                        const reservationDate = new Date(reservation.reservationDate).toLocaleDateString();
+                        const startTime = reservation.startTime.slice(0, 5);
+                        const endTime = reservation.endTime.slice(0, 5);
+                        const timeRange = `${startTime} - ${endTime}`;
+
+                        return (
+                            <Card
+                                key={reservation.id}
+                                title={`Walk with ${reservation.animalName} on ${reservationDate}`}
+                                imageSrc={reservation.volunteerphoto || icons.placeholder}
+                                infoItems={[
+                                    {
+                                        icon: icons.volunteer,
+                                        label: 'Volunteer',
+                                        value: reservation.volunteerName,
+                                    },
+                                    {
+                                        icon: icons.animal,
+                                        label: 'Animal',
+                                        value: `${reservation.animalName} (${reservation.animalBreed})`,
+                                    },
+                                    {
+                                        icon: icons.date,
+                                        label: 'Date',
+                                        value: reservationDate,
+                                    },
+                                    {
+                                        icon: icons.time,
+                                        label: 'Time',
+                                        value: timeRange,
+                                    },
+                                ]}
+                                buttons={[
+                                    {
+                                        text: 'Delete',
+                                        variant: 'red',
+                                        icon: icons.decline,
+                                        onClick: () => handleDelete(reservation.id),
+                                        className: 'px-5 py-2 w-full',
+                                    },
+                                ]}
+                            />
+                        );
+                    })}
                 </div>
-                {plannedWalks.length > 2 && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMorePlanned}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
-                    </div>
-                )}
+                {plannedWalks.length > 2 && <ShowMoreButton onClick={handleShowMorePlanned} />}
             </div>
         </div>
     );
