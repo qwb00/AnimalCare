@@ -17,52 +17,52 @@ function VeterinarianExaminations() {
     const navigate = useNavigate();
   
     useEffect(() => {
-      const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
 
-      const fetchUser = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/me`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
+        const fetchUser = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user information');
                 }
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch user information');
+                const userData = await response.json();
+                setUser(userData);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                navigate('/login');
             }
+        };
 
-            const userData = await response.json();
-            setUser(userData);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            navigate('/login');
-        }
-    };
-
-      const fetchRequests = async () => {
-        try {
-          const response = await fetch(`${API_BASE_URL}/examinations`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+        const fetchRequests = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/examinations`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Failed to fetch records');
+                }
+        
+                const data = await response.json();
+                setRequests(data);
+            } catch (error) {
+                console.error('Error fetching records:', error);
+            } finally {
+                setLoading(false);
             }
-          });
-  
-          if (!response.ok) {
-            throw new Error('Failed to fetch records');
-          }
-  
-          const data = await response.json();
-          setRequests(data);
-        } catch (error) {
-          console.error('Error fetching records:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUser();
-      fetchRequests();
+        };
+        fetchUser();
+        fetchRequests();
     }, [navigate]);
   
     // Фильтруем реквесты по статусу
@@ -72,23 +72,23 @@ function VeterinarianExaminations() {
     const completedRequests = userRequests.filter(request => request.status === 0);
     
     const handleAddRequestClick = () => {
-      setShowAddRequestForm(true);
+        setShowAddRequestForm(true);
     };
     const handleFormSubmit = (formData) => {
-      setShowAddRequestForm(false);
+        setShowAddRequestForm(false);
     };
     const handleApprove = (requestId) => {
-      setRequests(prevRequests =>
-          prevRequests.map(request =>
-              request.id === requestId ? { ...request, status: 0 } : request
-          )
-      );
+        setRequests(prevRequests =>
+            prevRequests.map(request =>
+                request.id === requestId ? { ...request, status: 0 } : request
+            )
+        );
     };
     const handleDecline = (requestId) => {
-      setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
+        setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
     };
     const handleDelete = (requestId) => {
-      setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
+        setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
     };
 
     const handleShowMoreRequests = () => {
@@ -96,92 +96,103 @@ function VeterinarianExaminations() {
     };
 
     return (
-      <div className="container mx-auto">
-        <Header/>
-        <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-          <div className="md:ml-12 lg:ml-20 xl:ml-32">
-            <UserHeader user={user} />
-          </div>
-        </div>
-          <UserNav role={user.role} />
+        <div className="container mx-auto">
+            <Header />
+            <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
+                <div className="md:ml-12 lg:ml-20 xl:ml-32">
+                    <UserHeader user={user} />
+                </div>
+            </div>
+            <UserNav role={user.role} />
 
-          {user.role === 'Caretaker' && (
-            <>
-                <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
-                    <Button text="+ New Request" variant="blue" onClick={handleAddRequestClick} />
-                </div>
-                <div className="flex justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {user.role === 'Caretaker' && (
+                <>
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                        <Button text="+ New Request" variant="blue" onClick={handleAddRequestClick} />
+                    </div>
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                      <div className="flex flex-wrap gap-6">
+                  
                         {requests.slice(0, visibleRequests).map((request) => (
-                          <RequestCard key={request.id} request={request} showActions={'Caretaker'} onDelete={handleDelete} />
+                            <RequestCard key={request.id} request={request} showActions={'Caretaker'} onDelete={handleDelete} />
                         ))}
+                    
+                      </div>
                     </div>
-                </div>
-                {requests.length > visibleRequests && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMoreRequests}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
+                      {requests.length > visibleRequests && (
+                          <div className="flex justify-center my-4">
+                              <button
+                                  onClick={handleShowMoreRequests}
+                                  className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                              >
+                                  <span className="text-lg font-bold">...</span>
+                              </button>
+                          </div>
+                    )}
+                </>
+            )}
+
+            {user.role === 'Veterinarian' && (
+                <>
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                        <h2 className="text-2xl font-bold">New Requests</h2>
                     </div>
-                )}
-            </>
-          )}
-        
-          {user.role === 'Veterinarian' && (
-            <>
-                <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">New Requests</h2>
-                <div className="flex justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                      <div className="flex flex-wrap gap-6">
                         {newRequests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} showActions={'Veterinarian'}
-                            onApprove={handleApprove} onDecline={handleDecline} />
+                                onApprove={handleApprove} onDecline={handleDecline} />
                         ))}
+                  
+                      </div>
                     </div>
-                </div>
-                {newRequests.length > visibleRequests && (
-                    <div className="flex justify-center my-4">
-                        <button
-                            onClick={handleShowMoreRequests}
-                            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                        >
-                            <span className="text-lg font-bold">...</span>
-                        </button>
-                    </div>
-                )}
-            </>
-          )}
+                    {newRequests.length > visibleRequests && (
+                        <div className="flex justify-center my-4">
+                            <button
+                                onClick={handleShowMoreRequests}
+                                className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                            >
+                                <span className="text-lg font-bold">...</span>
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
 
-        {user.role === 'Veterinarian' && (
-          <>
-          <h2 className="text-2xl font-bold mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">Completed treatments</h2>
-          <div className="flex justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {completedRequests.slice(0, visibleRequests).map((request) => (
-                <RequestCard key={request.id} request={request} />
-              ))}
-            </div>
-          </div>
-          {completedRequests.length > visibleRequests && (
-              <div className="flex justify-center my-4">
-                  <button
-                      onClick={handleShowMoreRequests}
-                      className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                  >
-                      <span className="text-lg font-bold">...</span>
-                  </button>
-              </div>
-          )}
-          </>
-        )}
-        {showAddRequestForm && (
-            <AddRequestForm onSubmit={handleFormSubmit} onClose={() => setShowAddRequestForm(false)} />
-        )}
-      </div>
+            {user.role === 'Veterinarian' && (
+                <>
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                        <h2 className="text-2xl font-bold">Completed Treatments</h2>
+                    </div>
+                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                      <div className="flex flex-wrap gap-6">
+                      
+                        {completedRequests.slice(0, visibleRequests).map((request) => (
+                            <RequestCard key={request.id} request={request} />
+                        ))}
+                      
+                      </div>
+                    </div>
+                    {completedRequests.length > visibleRequests && (
+                        <div className="flex justify-center my-4">
+                            <button
+                                onClick={handleShowMoreRequests}
+                                className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                            >
+                                <span className="text-lg font-bold">...</span>
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+            
+            {showAddRequestForm && (
+                <AddRequestForm onSubmit={handleFormSubmit} onClose={() => setShowAddRequestForm(false)} />
+            )}
+        </div>
     );
 }
 
 export default VeterinarianExaminations;
+
 

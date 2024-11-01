@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AnimalCare.Presentation.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
 
@@ -46,6 +46,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateUser([FromBody] UserForCreateDTO user)
         {
@@ -65,6 +66,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPatch("me", Name = "UpdateCurrentUser")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserForUpdateDTO> patchDoc)
         {
             var username = User.Identity.Name;

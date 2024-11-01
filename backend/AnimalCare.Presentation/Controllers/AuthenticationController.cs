@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
+using AnimalCare.Presentation.ActionFilters;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -12,7 +13,7 @@ namespace AnimalCare.Presentation.Controllers
         public AuthenticationController(IServiceManager service) => _service = service;
 
         [HttpPost]
-        //   [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserForCreateDTO userForRegistration)
         {
             var result = await _service.AuthenticationService.RegisterUser(userForRegistration);
@@ -31,7 +32,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPost("login")]
-        //    [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDTO userForAuthentication)
         {
             if (!await _service.AuthenticationService.ValidateUser(userForAuthentication))
