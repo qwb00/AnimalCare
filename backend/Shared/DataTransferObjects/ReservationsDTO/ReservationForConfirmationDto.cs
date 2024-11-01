@@ -19,5 +19,6 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public string Photo { get; set; }
         public bool IsApproved { get; set; }
         public ReservationStatus Status { get; set; }
+        public bool IsDecided { get; set; }
     }
 }

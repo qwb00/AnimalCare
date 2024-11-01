@@ -40,5 +40,7 @@ namespace Models.Entities
         public bool isAproved { get; set; }
         
         public ReservationStatus Status { get; set; }
+        
+        public bool isDecided { get; set; }
     }
 }
