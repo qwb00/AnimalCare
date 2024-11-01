@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9f4a3c8e-b1c2-4914-a567-d5d68b75085a",
+                            Id = "63b6afc9-cf69-43f4-8822-6d3deb9bf9a2",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "0da2debd-d921-49cb-b00a-9a653e05f1e4",
+                            Id = "83a679e1-c23b-49bf-906f-cbb26420ec63",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "ea6cb402-18dc-4c86-a17b-6e4f754e053b",
+                            Id = "c3c1f488-6c1c-46aa-b173-1891de6cfc80",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "d3c49d16-6d30-4768-8cff-2d9ec71fe2fb",
+                            Id = "7ba52e3d-8e28-4429-b3d4-c79451ea8ec1",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -392,6 +392,9 @@ namespace AnimalCare.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Photo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
