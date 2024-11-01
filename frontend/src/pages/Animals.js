@@ -384,7 +384,22 @@
 
         {/* Кнопка Upload photo */}
         <div className="mb-2">
-          <FileUploader onUpload={(uploadedUrl) => setPhotoUrl(uploadedUrl)} />
+        <FileUploader
+    onUpload={(uploadedUrl) => setPhotoUrl(uploadedUrl)}
+    onStatusChange={(status) => {
+        if (status === 'success') {
+            console.log('File uploaded successfully');
+        } else if (status === 'error') {
+            console.log('File upload failed');
+        }
+    }}
+    buttonText="Upload Photo"
+    buttonClassName="h-10 w-36 border border-gray-300 rounded-md text-sm"
+    icon="/icons/upload_photo.png"
+    iconSize="w-5 h-5"
+    isButton={true} // Указываем, что это полноценная кнопка
+/>
+
         </div>
 
         <div className="flex justify-center space-x-2 mt-4">

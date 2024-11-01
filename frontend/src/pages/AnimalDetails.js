@@ -358,25 +358,29 @@ function AnimalDetails() {
             {/* Иконка для загрузки фото */}
             {isEditable && (
               <div className="absolute top-2 right-2 cursor-pointer bg-white rounded-xl p-1">
-                <img 
-                  src="/icons/upload_photo.png" 
-                  alt="Upload"
-                  className="w-8 h-8"
-                  onClick={() => setShowFileUploader(!showFileUploader)} 
-                />
+                <FileUploader
+    onUpload={async (uploadedUrl) => {
+        await updateAnimalAttribute("photo", uploadedUrl);
+        setAnimalData((prevData) => ({ ...prevData, photo: uploadedUrl }));
+        setShowFileUploader(false);
+    }}
+    onStatusChange={(status) => {
+        if (status === 'success') {
+            setShowFileUploader(false);
+        } else if (status === 'error') {
+            console.error('File upload failed');
+        }
+    }}
+    buttonText="" // Без текста
+    buttonClassName="w-8 h-8"
+    icon="/icons/upload_photo.png"
+    iconSize="w-8 h-8"
+    isButton={false} // Отображаем как иконку с индикатором загрузки
+/>
               </div>
             )}
 
-            {/* Компонент FileUploader для загрузки фото */}
-            {showFileUploader && (
-              <FileUploader 
-                onUpload={async (uploadedUrl) => {
-                  await updateAnimalAttribute("photo", uploadedUrl); // Обновляем фото на сервере
-                  setAnimalData((prevData) => ({ ...prevData, photo: uploadedUrl })); // Обновляем локально
-                  setShowFileUploader(false); // Закрываем загрузчик
-                }}
-              />
-            )}
+
           </div>
 
           {/* Секция с основной информацией */}
