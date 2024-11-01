@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../components/Button';
 import API_BASE_URL from "../config";
+import axios from 'axios';
 
 function UserBasicInfo({ user, updateUser }) {
     const [editMode, setEditMode] = useState(false);
@@ -8,6 +9,7 @@ function UserBasicInfo({ user, updateUser }) {
         name: user.name,
         email: user.email,
         phoneNumber: user.phoneNumber,
+        photo: user.photo, // добавляем фото
     });
 
     // Toggle edit mode
@@ -29,6 +31,7 @@ function UserBasicInfo({ user, updateUser }) {
             { op: "replace", path: "/LastName", value: formData.name.split(" ")[1] || user.name.split(" ")[1] },
             { op: "replace", path: "/Email", value: formData.email },
             { op: "replace", path: "/PhoneNumber", value: formData.phoneNumber },
+            { op: "replace", path: "/photo", value: formData.photo },
         ];
 
         try {
