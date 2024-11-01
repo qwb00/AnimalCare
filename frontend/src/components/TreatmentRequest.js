@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../components/Button';
+import Card from '../components/Card';
 import API_BASE_URL from '../config';
 
 const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) => {
@@ -63,99 +63,35 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
     }
   };
 
+  const statusText = request.status === 1 ? "In Progress" : request.status === 0 ? "Completed" : "Declined";
+  const statusColor = request.status === 1 ? "text-blue-500" : request.status === 0 ? "text-green-500" : "text-red-500";
+
   return (
-    <div className="w-[38rem] p-6 border border-gray-200 rounded-lg shadow-md bg-white flex flex-col justify-between text-lg">
-      <div className="flex items-start justify-between">
-        <div className="space-y-5 w-3/4"> {/* Увеличены отступы и ширина текста */}
-          {/* Request Information */}
-          <div className="flex items-center">
-            <img src="/icons/request.png" alt="Request Icon" className="h-8 w-8 mr-4" />
-            <div>
-              <h3 className="text-gray-500 font-semibold text-base mb-1">Request</h3>
-              <p className="text-black font-medium text-lg">{request.animalName} ({request.animalBreed})</p>
-            </div>
-          </div>
-
-          {/* Veterinarian */}
-          <div>
-            <p className="text-gray-500 text-sm">Veterinarian</p>
-            <p className="text-black font-medium text-lg">{request.veterinarianName}</p>
-          </div>
-
-          {/* Date */}
-          <div>
-            <p className="text-gray-500 text-sm">Date</p>
-            <p className="text-black font-medium text-lg">{new Date(request.examinationDate).toLocaleDateString()}</p>
-          </div>
-
-          {/* Type */}
-          <div>
-            <p className="text-gray-500 text-sm">Type</p>
-            <p className="text-black font-medium text-lg">{request.type === 0 ? "Planned treatment" : "Emergency treatment"}</p>
-          </div>
-
-          {/* Description */}
-          <div>
-            <p className="text-gray-500 text-sm">Description</p>
-            <p className="text-black font-medium text-lg">{request.description}</p>
-          </div>
-
-          {/* Status */}
-          <div>
-            <p className="text-gray-500 text-sm">Status</p>
-            <p className={`font-medium text-lg ${request.status === 1 ? "text-blue-500" : request.status === 0 ? "text-green-500" : "text-red-500"}`}>
-              {request.status === 1 ? "In Progress" : request.status === 0 ? "Completed" : "Declined"}
-            </p>
-          </div>
-
-          {/* Final Diagnosis */}
-          <div>
-            <p className="text-gray-500 text-sm">Final Diagnosis</p>
-            <p className="text-green-500 font-medium text-lg">{request.finalDiagnosis}</p>
-          </div>
-        </div>
-
-        {/* Animal Image */}
-        <img
-          src={request.animalPhoto || "/icons/placeholder.png"}
-          alt="Animal"
-          className="w-36 h-36 rounded-full object-cover ml-6" // Увеличено изображение
-        />
-      </div>
-
-      {/* Action Buttons */}
-      <div className="mt-6 border-t border-gray-300 pt-5 flex justify-center gap-12">
-        {showActions === 'Veterinarian' && (
-          <>
-            <Button
-              text="Decline"
-              variant="red"
-              icon="/icons/cancel_white.png"
-              onClick={handleDecline}
-              className="px-8 py-3 text-base"
-            />
-            <Button
-              text="Approve"
-              variant="blue"
-              icon="/icons/confirm_white.png"
-              onClick={handleApprove}
-              className="px-8 py-3 text-base"
-            />
-          </>
-        )}
-        {showActions === 'Caretaker' && request.status === 2 && (
-          <Button
-            text="Delete"
-            variant="red"
-            icon="/icons/cancel_white.png"
-            onClick={handleDelete}
-            className="px-8 py-3 text-base"
-          />
-        )}
-      </div>
-    </div>
+    <Card
+      title={`Request for ${request.animalName} (${request.animalBreed})`}
+      imageSrc={request.animalPhoto || "/icons/placeholder.png"}
+      infoItems={[
+        { label: "Veterinarian", value: request.veterinarianName },
+        { label: "Date", value: new Date(request.examinationDate).toLocaleDateString() },
+        { label: "Type", value: request.type === 0 ? "Planned treatment" : "Emergency treatment" },
+        { label: "Description", value: request.description },
+        { label: "Status", value: statusText, customClass: statusColor },
+        { label: "Final Diagnosis", value: request.finalDiagnosis, customClass: "text-green-500" },
+      ]}
+      buttons={
+        showActions === 'Veterinarian'
+          ? [
+              { text: 'Decline', variant: 'red', icon: '/icons/cancel_white.png', onClick: handleDecline, className: 'px-5 py-2' },
+              { text: 'Approve', variant: 'blue', icon: '/icons/confirm_white.png', onClick: handleApprove, className: 'px-5 py-2' },
+            ]
+          : showActions === 'Caretaker' && request.status === 2
+          ? [
+              { text: 'Delete', variant: 'red', icon: '/icons/cancel_white.png', onClick: handleDelete, className: 'px-5 py-2' },
+            ]
+          : []
+      }
+    />
   );
 };
 
 export default RequestCard;
-

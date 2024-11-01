@@ -1,4 +1,3 @@
-// components/Card.js
 import React from 'react';
 import Button from './Button';
 import PropTypes from 'prop-types';
@@ -18,7 +17,7 @@ function Card({ title, imageSrc, infoItems, buttons, children }) {
                             )}
                             <div>
                                 <p className="text-gray-500">{item.label}</p>
-                                <p className="text-gray-700 font-semibold">{item.value}</p>
+                                <p className={`${item.customClass || 'text-gray-700'} font-semibold`}>{item.value}</p>
                             </div>
                         </div>
                     ))}
@@ -54,6 +53,7 @@ Card.propTypes = {
             icon: PropTypes.string,
             label: PropTypes.string,
             value: PropTypes.string,
+            customClass: PropTypes.string, // Add customClass prop type
         })
     ),
     buttons: PropTypes.arrayOf(PropTypes.object),
@@ -66,3 +66,4 @@ Card.defaultProps = {
 };
 
 export default Card;
+
