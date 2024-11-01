@@ -13,13 +13,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public TimeSpan StartTime { get; set; }
         [DataType(DataType.Time)]
         public TimeSpan EndTime { get; set; }
-
-        public bool IsEnded { get; set; }
-        public bool IsReserved { get; set; }
-        public bool IsApproved { get; set; }
         
         public ReservationStatus Status { get; set; }
-        
-        public bool IsDecided { get; set; }
     }
 }
