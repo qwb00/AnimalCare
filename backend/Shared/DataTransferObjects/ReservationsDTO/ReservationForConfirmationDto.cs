@@ -1,6 +1,7 @@
 // Shared/DataTransferObjects/ReservationForConfirmationDto.cs
 
 using System.ComponentModel.DataAnnotations;
+using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
@@ -17,5 +18,6 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public TimeSpan EndTime { get; set; }
         public string Photo { get; set; }
         public bool IsApproved { get; set; }
+        public ReservationStatus Status { get; set; }
     }
 }

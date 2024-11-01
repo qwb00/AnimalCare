@@ -27,7 +27,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Reservations
         [HttpPost(Name = "CreateReservation")]
-        [Authorize(Roles = "Volunteer,Administrator,Caretaker")]
+       // [Authorize(Roles = "Volunteer,Administrator,Caretaker")]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
         {
             if (reservationRequest == null)
@@ -38,7 +38,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         // GET: api/Reservations/{id}
-        [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
+        //[Authorize(Roles = "Caretaker,Administrator,Volunteer")]
         [HttpGet("{id:guid}", Name = "GetReservationById")]
         public async Task<IActionResult> GetReservationById(Guid id)
         {
@@ -51,7 +51,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // PATCH: api/Reservations/{id}
         [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
-        [Authorize(Roles = "Caretaker,Administrator")]
+        //[Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDto> patchDoc)
         {
             if (patchDoc == null)
@@ -83,7 +83,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // DELETE: api/Reservations/{id}
         [HttpDelete("{id:guid}", Name = "DeleteReservation")]
-        [Authorize(Roles = "Caretaker,Administrator")]
+        //[Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> DeleteReservation(Guid id)
         {
             await _service.ReservationService.DeleteReservationAsync(id, trackChanges: false);

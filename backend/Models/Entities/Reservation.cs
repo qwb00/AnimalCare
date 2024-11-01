@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Shared.Enums;
 
 namespace Models.Entities
 {
@@ -37,5 +38,7 @@ namespace Models.Entities
         public bool isReserved { get; set; }
         // when was approved needed to be colored in a calendar in another color
         public bool isAproved { get; set; }
+        
+        public ReservationStatus Status { get; set; }
     }
 }
