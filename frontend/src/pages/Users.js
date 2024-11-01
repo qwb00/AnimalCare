@@ -145,13 +145,13 @@ function Users() {
             <UserNav role={user.role} />
 
             <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
-                <h2 className="text-lg font-semibold mt-8">All Employee Users</h2>
-
                 <Button
                     text="Add New User"
+                    icon="/icons/plus_white.png"
+                    iconSize='w-4 h-4'  
                     variant="blue"
                     onClick={() => setIsModalOpen(true)}
-                    className="mt-4 w-36"
+                    className="mt-2 w-50"
                 />
 
 <h3 className="text-lg font-semibold mt-8">Caretakers</h3>

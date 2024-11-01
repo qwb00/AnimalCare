@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours } from 'date-fns';
 import Button from './Button';
 import API_BASE_URL from '../config'; 
+import { Link } from 'react-router-dom';
 
 function Calendar({ selectedAnimalId  }) {
   const today = new Date();
@@ -14,6 +15,7 @@ function Calendar({ selectedAnimalId  }) {
   const [reservedSlots, setReservedSlots] = useState([]); // Для хранения зарезервированных интервалов
   const [notification, setNotification] = useState({ message: '', isSuccess: null });
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const MAX_SLOTS = 10;
 
   useEffect(() => {
@@ -125,12 +127,21 @@ function Calendar({ selectedAnimalId  }) {
 
   // Функция для открытия модального окна
   const handleOpenModal = () => {
-    setIsModalOpen(true);
+    const authToken = sessionStorage.getItem('token');
+    if (!authToken) {
+      setIsAuthModalOpen(true);
+    } else {
+      setIsModalOpen(true); // Открываем модальное окно бронирования только для авторизованных пользователей
+    }
   };
 
   // Функция для закрытия модального окна
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCloseAuthModal = () => {
+    setIsAuthModalOpen(false);
   };
 
   // Путь к изображению животного
@@ -469,6 +480,47 @@ const mergeTimeSlots = (selectedSlots) => {
     </div>
   </div>
 )}
+
+{isAuthModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={handleCloseAuthModal}
+        >
+          <div
+            className="relative bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-red-600"
+            onClick={(e) => e.stopPropagation()} // Останавливаем клик внутри окна, чтобы не закрыть его
+          >
+            {/* Кнопка закрытия в правом верхнем углу */}
+            <button 
+              type="button" 
+              className="absolute top-3 right-3 bg-main-blue rounded-full p-2" 
+              aria-label="Close" 
+              onClick={handleCloseAuthModal} 
+              style={{ transform: 'rotate(45deg)' }}
+            >
+              <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
+            </button>
+
+            <h3 className="text-2xl font-bold mb-6 text-center text-red-600">
+              Create an Account
+            </h3>
+            <p className="text-lg mb-6 text-center text-gray-800">
+              You need to create an account to make reservations.
+            </p>
+            <div className="flex justify-center">
+              <Link to="/signup">
+                <Button
+                  text="Register Now"
+                  variant="blue"
+                  icon="/icons/sign_up_button.png"
+                  iconPosition="right"
+                  className="px-5 py-2"
+                />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
