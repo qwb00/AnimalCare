@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isAfter, parse, differenceInHours } from 'date-fns';
+import { format, addDays, addHours, startOfWeek, endOfWeek, isToday, isBefore, isSameDay, isTomorrow , isAfter, parse, differenceInHours } from 'date-fns';
 import Button from './Button';
 import API_BASE_URL from '../config'; 
 import { Link } from 'react-router-dom';
@@ -54,9 +54,11 @@ function Calendar({ selectedAnimalId  }) {
         if (response.data) {
           // Фильтруем резервации, чтобы получить только те, которые относятся к текущему животному
           const filteredReservations = response.data.filter(
-            (reservation) => reservation.animalId === selectedAnimalId
+            (reservation) => 
+              reservation.animalId === selectedAnimalId && 
+              reservation.status !== 4 // Игнорируем слоты со статусом 4
           );
-  
+
           // Преобразуем резервации в формат `yyyy-MM-dd-hh:mm a` для сравнения
           const occupiedSlots = filteredReservations.map((reservation) => {
             const formattedDate = format(new Date(reservation.reservationDate), 'yyyy-MM-dd');
@@ -94,25 +96,23 @@ function Calendar({ selectedAnimalId  }) {
 
   // Функция для выбора временного интервала
   const handleSlotClick = (day, slot) => {
-    const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`; // Уникальный ключ для каждого временного интервала
-
+    const slotKey = `${format(day, 'yyyy-MM-dd')}-${slot}`;
+    const isFutureDate = isAfter(day, today) || isTomorrow(day); // Проверяем, что дата завтра или позже
+  
     if (selectedSlots.includes(slotKey)) {
-      // Убираем из выбранных, если уже выбран
       setSelectedSlots((prevSelected) => prevSelected.filter((s) => s !== slotKey));
+    } else if (isFutureDate && selectedSlots.length < MAX_SLOTS) {
+      setSelectedSlots((prevSelected) => [...prevSelected, slotKey]);
     } else {
-      // Проверяем, что выбранных слотов не больше MAX_SLOTS
-      if (selectedSlots.length < MAX_SLOTS) {
-        setSelectedSlots((prevSelected) => [...prevSelected, slotKey]);
-      } else {
-        alert(`You can select a maximum of ${MAX_SLOTS} slots.`);
-      }
+      alert("You can select a maximum of future slots or limit exceeded.");
     }
   };
 
   // Получаем дни недели для отображения
   const daysOfWeek = [];
   for (let i = 0; i < 7; i++) {
-    daysOfWeek.push(addDays(currentWeek, i));
+    const day = addDays(currentWeek, i);
+    daysOfWeek.push(day);
   }
 
   // Временные слоты для каждого дня (с 9:00 до 17:00)
@@ -353,7 +353,7 @@ const mergeTimeSlots = (selectedSlots) => {
       {/* Места для записи времени (с 9:00 до 17:00) */}
       <div className="grid grid-cols-7 gap-2">
         {daysOfWeek.map((day) => {
-          const isPastDay = isBefore(day, today) && !isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
+          const isPastDay = isBefore(day, today) || isToday(day); // Проверка, прошел ли день (и исключаем сегодняшний)
           
           return (
             <div key={day} className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl">

@@ -17,6 +17,13 @@
     const [userRole, setUserRole] = useState(''); // Состояние для роли пользователя
     const [visibleCount, setVisibleCount] = useState(6);
 
+    const animalsPerPageForAdmin = 5; // Количество животных для администратора
+    const animalsPerPageForUser = 6; // Количество животных для обычного пользователя
+    const animalsPerPage = userRole === 'Caretaker' || userRole === 'Administrator' ? animalsPerPageForAdmin : animalsPerPageForUser;
+    const totalPages = Math.ceil(allAnimals.length / animalsPerPage);
+
+    const [currentPage, setCurrentPage] = useState(1); // Для отслеживания текущей страницы
+
     // Состояния для каждого инпута
     const [name, setName] = useState('');
     const [species, setSpecies] = useState('');
@@ -66,7 +73,56 @@
       setVisibleCount((prevCount) => prevCount + 6);
     };
     
+    // Переключение на следующую страницу
+    const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
+    
+    // Переключение на предыдущую страницу
+    const handlePreviousPage = () => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+
+    // Индексы начала и конца текущей страницы
+    const startIndex = (currentPage - 1) * animalsPerPage;
+    const endIndex = startIndex + animalsPerPage;
       
+    // Определяем список животных для отображения на текущей странице
+    const currentAnimals = allAnimals.slice(startIndex, endIndex);
+
+    // Определение номеров страниц для отображения
+    const getPageNumbers = () => {
+      const pages = [];
+      const maxPageNumbers = 5; // Количество кнопок страниц, которые будут отображаться
+
+      if (totalPages <= maxPageNumbers) {
+        for (let i = 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (currentPage <= 3) {
+          for (let i = 1; i <= maxPageNumbers; i++) {
+            pages.push(i);
+          }
+          pages.push("...", totalPages);
+        } else if (currentPage > totalPages - 3) {
+          pages.push(1, "...");
+          for (let i = totalPages - maxPageNumbers + 1; i <= totalPages; i++) {
+            pages.push(i);
+          }
+        } else {
+          pages.push(1, "...");
+          for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+            pages.push(i);
+          }
+          pages.push("...", totalPages);
+        }
+      }
+
+      return pages;
+    };
+
+    // Функция для перехода к указанной странице
+    const goToPage = (page) => {
+      if (page === "..." || page < 1 || page > totalPages) return;
+      setCurrentPage(page);
+    };
       
       
     // Открытие и закрытие модального окна
@@ -160,53 +216,73 @@
         <Header />
 
         <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-black mt-8 mb-12">OUR ANIMALS</h1>
+          <h1 className="text-4xl font-black mt-8 mb-4">OUR ANIMALS</h1>
         </div>
 
         <div className="container mx-auto p-8">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {allAnimals.slice(0, visibleCount).map((animal, index) => (
-        <AnimalCard
-          key={`${animal.id}-${index}`} 
-          id={animal.id}
-          image={animal.photo}
-          name={animal.name}
-          age={`${animal.age} years`}
-          breed={animal.breed}
-        />
-      ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {currentAnimals.map((animal, index) => (
+          <AnimalCard
+            key={`${animal.id}-${index}`}
+            id={animal.id}
+            image={animal.photo}
+            name={animal.name}
+            age={`${animal.age} years`}
+            breed={animal.breed}
+          />
+        ))}
 
-      {/* Кнопка для добавления нового животного с той же высотой, что и карточки животных */}
-      {userRole && (userRole === 'Caretaker' || userRole === 'Administrator') && (
-        <div
-          className="rounded-xl bg-main-blue h-[500px] flex flex-col justify-start items-center cursor-pointer hover:scale-105 transition-transform"
-          onClick={handleOpenModal}
-        >
-          <div className="text-center text-white text-3xl font-bold mt-20">New Animal</div>
-          <div className="w-48 h-48 rounded-full border-8 border-white flex items-center justify-center mt-20">
-            <img src="/icons/plus_white.png" alt="New" className="w-20 h-20" />
+        {userRole && (userRole === 'Caretaker' || userRole === 'Administrator') && (
+          <div
+            className="rounded-xl bg-main-blue h-[500px] flex flex-col justify-start items-center cursor-pointer hover:scale-105 transition-transform"
+            onClick={handleOpenModal}
+          >
+            <div className="text-center text-white text-3xl font-bold mt-20">New Animal</div>
+            <div className="w-48 h-48 rounded-full border-8 border-white flex items-center justify-center mt-20">
+              <img src="/icons/plus_white.png" alt="New" className="w-20 h-20" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* Пагинация */}
+<div className="flex justify-center space-x-3 my-6 mt-12">
+  {currentPage > 1 && (
+    <button
+      onClick={() => setCurrentPage(currentPage - 1)}
+      className="px-5 py-3 bg-main-blue text-white rounded-xl text-xl"
+    >
+      Previous
+    </button>
+  )}
+
+  {/* Отображение номеров страниц */}
+  {getPageNumbers().map((page, index) => (
+    <button
+      key={index}
+      onClick={() => goToPage(page)}
+      className={`px-5 py-3 rounded-xl text-xl ${page === currentPage ? 'bg-main-blue text-white' : 'bg-white border-black border text-black'} ${
+        page === "..." ? "cursor-default" : "cursor-pointer"
+      }`}
+      disabled={page === "..."}
+    >
+      {page}
+    </button>
+  ))}
+
+  {currentPage < totalPages && (
+    <button
+      onClick={() => setCurrentPage(currentPage + 1)}
+      className="px-5 py-3 bg-main-blue text-white rounded-xl text-xl"
+    >
+      Next
+    </button>
+  )}
+</div>
+
+
+
     </div>
-
-    {visibleCount < allAnimals.length && (
-      <div className="flex justify-center my-4">
-        <button
-            onClick={showMoreAnimals}
-            className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-        >
-            <span className="text-lg font-bold">...</span>
-        </button>
-      </div>
-    )}
-
-    {isLoading && (
-      <div className="text-center mt-4">
-        <p>Loading...</p>
-      </div>
-    )}
-  </div>
 
         {/* Модальное окно для добавления нового животного */}
         {isModalOpen && (
