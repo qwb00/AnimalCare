@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API_BASE_URL from '../config';
-import Button from '../components/Button'; // Импортируем компонент Button
+import Button from '../components/Button'; 
 
 function RegisterPage() {
   const [firstName, setFirstName] = useState('');
@@ -12,6 +12,30 @@ function RegisterPage() {
   const [phoneNumber, setPhone] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const extractErrorMessages = (errorData) => {
+    const errorMessages = [];
+
+    const recursiveExtract = (data) => {
+        if (typeof data === 'string' && !data.startsWith('http') && !data.includes("traceId") && !data.includes("title")) {
+            // Добавляем строку, если это сообщение об ошибке и она не является URL, traceId или title
+            errorMessages.push(data);
+        } else if (Array.isArray(data)) {
+            data.forEach((item) => recursiveExtract(item));
+        } else if (typeof data === 'object' && data !== null) {
+            Object.entries(data).forEach(([key, value]) => {
+                // Пропускаем поля "traceId", "title", и подобные
+                if (!["traceId", "type", "title", "status"].includes(key)) {
+                    recursiveExtract(value);
+                }
+            });
+        }
+    };
+
+    recursiveExtract(errorData);
+    return errorMessages;
+};
+
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -26,7 +50,12 @@ function RegisterPage() {
         body: JSON.stringify({ firstName, lastName, email, password, username, phoneNumber, roles }),
       });
 
-      if (!response.ok) throw new Error('Registration failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessages = extractErrorMessages(errorData);
+        setError(errorMessages.join(" | "));
+        return;
+    }
 
       alert('Registration successful! Please log in.');
       navigate('/login');
