@@ -11,6 +11,9 @@ namespace Shared.DataTransferObjects.UsersDTO
     {
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; init; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address format")]
         public string? Email { get; init; }
     }
 }
