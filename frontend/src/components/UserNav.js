@@ -1,10 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link, useLocation  } from 'react-router-dom';
 
 function UserNav({ role }) {
     // Default to an empty role if undefined
     const location = useLocation();
     const normalizedRole = role.toLowerCase();
+    const [userID, setUserID] = useState(null);
+
+    useEffect(() => {
+        const storedUserID = sessionStorage.getItem('userID');
+        if (storedUserID) {
+            setUserID(storedUserID);
+        }
+    }, []);
 
     // Define the visible menu items based on the role
     const menuItems = {
@@ -26,20 +34,22 @@ function UserNav({ role }) {
     return (
         <div className="flex space-x-8 mt-6 mb-8 ml-16 md:ml-24 xl:ml-36 text-gray-500 text-lg">
             {itemsToShow.includes("General") && (
-                 <Link to="/:userID/general" className={getLinkClass(`/general`)}>
+                 <Link to={`/${userID}/general`} className={getLinkClass(`/general`)}>
                     General
                 </Link>
             )}
             {itemsToShow.includes("Volunteers") && (
-                <Link to="/:userID/volunteers" className={getLinkClass(`/volunteers`)}>
+                <Link to={`/${userID}/volunteers`} className={getLinkClass(`/volunteers`)}>
                     Volunteers
                 </Link>
             )}
             {itemsToShow.includes("Reservations") && (
-                <span className="cursor-pointer hover:text-main-blue">Reservations</span>
+                <Link to={`/${userID}/user-reservations`} className={getLinkClass(`/user-reservations`)}>
+                    Reservations
+                </Link>
             )}
             {itemsToShow.includes("Medical Treatments") && (
-                <Link to="/:userID/veterinarian-examinations" className={getLinkClass(`/veterinarian-examinations`)}>
+                <Link to={`/${userID}/veterinarian-examinations`} className={getLinkClass(`/veterinarian-examinations`)}>
                     Medical Treatments
                 </Link>
 

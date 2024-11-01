@@ -9,7 +9,8 @@ function VolunteerCard({ volunteer, onApprove, onUnverify, onDelete, isRequest }
         email: "/icons/e-mail.png",
         cancel: "/icons/cancel_white.png",
         approve: "/icons/confirm_white.png",
-        unverify: "/icons/unverify_white.png"
+        unverify: "/icons/unverify_white.png",
+        placeholder: '/icons/name.png',
     };
 
     return (
@@ -43,11 +44,13 @@ function VolunteerCard({ volunteer, onApprove, onUnverify, onDelete, isRequest }
                         </div>
                     </div>
                 </div>
-                <img
-                    src={volunteer.photo || placeholderImage}
-                    alt="Volunteer"
-                    className="w-28 h-28 rounded-full object-cover"
-                />
+                <div className="flex-shrink-0 flex items-center ml-6">
+                    <img
+                        src={volunteer.photo || icons.placeholder}
+                        alt="Volunteer"
+                        className="w-32 h-32 rounded-2xl object-cover"
+                    />
+                </div>
             </div>
             <div className="mt-6 border-t border-gray-300 pt-5 flex justify-center gap-24">
                 {isRequest ? (
