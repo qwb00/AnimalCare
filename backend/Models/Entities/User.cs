@@ -9,6 +9,7 @@ namespace Models.Entities
         [Required]
         [MaxLength(150)]
         public string FullName { get; set; }
-
+        [Url]
+        public string? Photo { get; set; }
     }
 }
