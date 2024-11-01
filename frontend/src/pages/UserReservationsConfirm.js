@@ -1,4 +1,3 @@
-// src/pages/UserReservationsConfirm.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config';
@@ -16,6 +15,15 @@ function UserReservationsConfirm() {
     const [displayCountRequests, setDisplayCountRequests] = useState(2);
     const [displayCountPlanned, setDisplayCountPlanned] = useState(2);
     const navigate = useNavigate();
+
+    // Map status values to labels
+    const statusLabels = {
+        0: 'NOT DECIDED',
+        1: 'UPCOMING',
+        2: 'COMPLETED',
+        3: 'MISSED',
+        4: 'CANCELED',
+    };
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -46,8 +54,17 @@ function UserReservationsConfirm() {
                 if (!response.ok) throw new Error('Failed to fetch reservations');
                 const data = await response.json();
 
-                setNewRequests(data.filter((reservation) => reservation.isApproved === false));
-                setPlannedWalks(data.filter((reservation) => reservation.isApproved === true));
+                // New Requests: Reservations with status 0 (NOT DECIDED)
+                setNewRequests(data.filter((reservation) => reservation.status === 0));
+
+                // Planned Walks: Reservations with date/time in the future
+                setPlannedWalks(
+                    data.filter((reservation) => {
+                        return (
+                            reservation.status === 1   // only UPCOMING reservations
+                        );
+                    })
+                );
             } catch (error) {
                 console.error('Error fetching reservations:', error);
             }
@@ -57,6 +74,7 @@ function UserReservationsConfirm() {
         fetchReservations();
     }, [navigate]);
 
+    // Approve Reservation
     const handleApprove = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
@@ -66,25 +84,23 @@ function UserReservationsConfirm() {
                     'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
-                    {
-                        op: 'replace',
-                        path: '/isApproved',
-                        value: true,
-                    },
+                    { op: 'replace', path: '/status', value: 1 }, // UPCOMING
                 ]),
             });
 
             if (!response.ok) throw new Error(`Failed to approve reservation: ${await response.text()}`);
 
-            // Move reservation from newRequests to plannedWalks
+            // Remove reservation from newRequests
             setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
-            const approvedReservation = newRequests.find((reservation) => reservation.id === id);
-            setPlannedWalks((prev) => [...prev, { ...approvedReservation, isApproved: true }]);
+
+            // Optionally, add it to plannedWalks
+            // Fetch the updated reservation and add it to plannedWalks
         } catch (error) {
             console.error('Error approving reservation:', error);
         }
     };
 
+    // Decline Reservation
     const handleDecline = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
@@ -94,11 +110,7 @@ function UserReservationsConfirm() {
                     'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
-                    {
-                        op: 'replace',
-                        path: '/status',
-                        value: 'CANCELED',
-                    },
+                    { op: 'replace', path: '/status', value: 4 }, // CANCELED
                 ]),
             });
 
@@ -111,7 +123,8 @@ function UserReservationsConfirm() {
         }
     };
 
-    const handleDelete = async (id) => {
+    // Mark Reservation as Missed
+    const handleMarkAsMissed = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: 'PATCH',
@@ -120,28 +133,56 @@ function UserReservationsConfirm() {
                     'Content-Type': 'application/json-patch+json',
                 },
                 body: JSON.stringify([
-                    {
-                        op: 'replace',
-                        path: '/status',
-                        value: 'DELETED',
-                    },
+                    { op: 'replace', path: '/status', value: 3 }, // MISSED
                 ]),
             });
 
-            if (!response.ok) throw new Error(`Failed to delete reservation: ${await response.text()}`);
+            if (!response.ok) throw new Error(`Failed to mark reservation as missed: ${await response.text()}`);
 
-            // Remove reservation from plannedWalks
-            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
+            // Update reservation status in plannedWalks
+            setPlannedWalks((prev) =>
+                prev.map((reservation) =>
+                    reservation.id === id ? { ...reservation, status: 3 } : reservation
+                )
+            );
         } catch (error) {
-            console.error('Error deleting reservation:', error);
+            console.error('Error marking reservation as missed:', error);
         }
     };
 
-    // Show more logic
+    // Mark Reservation as Completed
+    const handleMarkAsCompleted = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json-patch+json',
+                },
+                body: JSON.stringify([
+                    { op: 'replace', path: '/status', value: 2 }, // COMPLETED
+                ]),
+            });
+
+            if (!response.ok) throw new Error(`Failed to mark reservation as completed: ${await response.text()}`);
+
+            // Update reservation status in plannedWalks
+            setPlannedWalks((prev) =>
+                prev.map((reservation) =>
+                    reservation.id === id ? { ...reservation, status: 2 } : reservation
+                )
+            );
+        } catch (error) {
+            console.error('Error marking reservation as completed:', error);
+        }
+    };
+
+    // Show more logic for requests
     const handleShowMoreRequests = () => {
         setDisplayCountRequests((prev) => (prev >= newRequests.length ? 2 : prev + 2));
     };
 
+    // Show more logic for planned walks
     const handleShowMorePlanned = () => {
         setDisplayCountPlanned((prev) => (prev >= plannedWalks.length ? 2 : prev + 2));
     };
@@ -172,44 +213,16 @@ function UserReservationsConfirm() {
                             <Card
                                 key={reservation.id}
                                 title={`Walk with ${reservation.animalName} on ${reservationDate}`}
-                                imageSrc={reservation.volunteerphoto || icons.placeholder}
+                                imageSrc={reservation.volunteerPhoto || icons.placeholder}
                                 infoItems={[
-                                    {
-                                        icon: icons.volunteer,
-                                        label: 'Volunteer',
-                                        value: reservation.volunteerName,
-                                    },
-                                    {
-                                        icon: icons.animal,
-                                        label: 'Animal',
-                                        value: `${reservation.animalName} (${reservation.animalBreed})`,
-                                    },
-                                    {
-                                        icon: icons.date,
-                                        label: 'Date',
-                                        value: reservationDate,
-                                    },
-                                    {
-                                        icon: icons.time,
-                                        label: 'Time',
-                                        value: timeRange,
-                                    },
+                                    { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
+                                    { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
+                                    { icon: icons.date, label: 'Date', value: reservationDate },
+                                    { icon: icons.time, label: 'Time', value: timeRange },
                                 ]}
                                 buttons={[
-                                    {
-                                        text: 'Decline',
-                                        variant: 'red',
-                                        icon: icons.decline,
-                                        onClick: () => handleDecline(reservation.id),
-                                        className: 'px-5 py-2',
-                                    },
-                                    {
-                                        text: 'Approve',
-                                        variant: 'blue',
-                                        icon: icons.approve,
-                                        onClick: () => handleApprove(reservation.id),
-                                        className: 'px-5 py-2',
-                                    },
+                                    { text: 'Decline', variant: 'red', icon: icons.decline, onClick: () => handleDecline(reservation.id), className: 'px-5 py-2' },
+                                    { text: 'Approve', variant: 'blue', icon: icons.approve, onClick: () => handleApprove(reservation.id), className: 'px-5 py-2' },
                                 ]}
                             />
                         );
@@ -230,37 +243,17 @@ function UserReservationsConfirm() {
                             <Card
                                 key={reservation.id}
                                 title={`Walk with ${reservation.animalName} on ${reservationDate}`}
-                                imageSrc={reservation.volunteerphoto || icons.placeholder}
+                                imageSrc={reservation.volunteerPhoto || icons.placeholder}
                                 infoItems={[
-                                    {
-                                        icon: icons.volunteer,
-                                        label: 'Volunteer',
-                                        value: reservation.volunteerName,
-                                    },
-                                    {
-                                        icon: icons.animal,
-                                        label: 'Animal',
-                                        value: `${reservation.animalName} (${reservation.animalBreed})`,
-                                    },
-                                    {
-                                        icon: icons.date,
-                                        label: 'Date',
-                                        value: reservationDate,
-                                    },
-                                    {
-                                        icon: icons.time,
-                                        label: 'Time',
-                                        value: timeRange,
-                                    },
+                                    { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
+                                    { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
+                                    { icon: icons.date, label: 'Date', value: reservationDate },
+                                    { icon: icons.time, label: 'Time', value: timeRange },
+                                    { icon: icons.status, label: 'Status', value: statusLabels[reservation.status] || 'UNKNOWN' },
                                 ]}
                                 buttons={[
-                                    {
-                                        text: 'Delete',
-                                        variant: 'red',
-                                        icon: icons.decline,
-                                        onClick: () => handleDelete(reservation.id),
-                                        className: 'px-5 py-2 w-full',
-                                    },
+                                    { text: 'Missed', variant: 'red', icon: icons.decline, onClick: () => handleMarkAsMissed(reservation.id), className: 'px-5 py-2 w-full' },
+                                    { text: 'Completed', variant: 'blue', icon: icons.approve, onClick: () => handleMarkAsCompleted(reservation.id), className: 'px-5 py-2 w-full' },
                                 ]}
                             />
                         );
