@@ -71,8 +71,8 @@ function UserBasicInfo({ user, updateUser }) {
         : 'Invalid date';
 
     return (
-        <div className="p-6 border-2 border-gray-200 rounded-lg mt-6 ml-8 md:ml-12 relative">
-            <div className="flex justify-between items-center">
+        <div className="p-6 border-2 border-gray-200 rounded-lg relative">
+            <div className="flex justify-between space-x-8 items-center">
                 <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
                 <img
                     src="/icons/pen.png"

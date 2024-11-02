@@ -98,20 +98,16 @@ function VeterinarianExaminations() {
     return (
         <div className="container mx-auto">
             <Header />
-            <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-                <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    <UserHeader user={user} />
-                </div>
-            </div>
+            <UserHeader user={user} />
             <UserNav role={user.role} />
 
             {user.role === 'Caretaker' && (
                 <>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                    <div className="w-full max-w-[1024px] mx-auto mb-8">
                         <Button text="+ New Request" variant="blue" onClick={handleAddRequestClick} />
                     </div>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
-                      <div className="flex flex-wrap gap-6">
+                    <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                      <div className="flex flex-wrap gap-10">
                   
                         {requests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} showActions={'Caretaker'} onDelete={handleDelete} />
@@ -134,11 +130,11 @@ function VeterinarianExaminations() {
 
             {user.role === 'Veterinarian' && (
                 <>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                    <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                         <h2 className="text-2xl font-bold">New Requests</h2>
                     </div>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
-                      <div className="flex flex-wrap gap-6">
+                    <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                      <div className="flex flex-wrap gap-10">
                         {newRequests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} showActions={'Veterinarian'}
                                 onApprove={handleApprove} onDecline={handleDecline} />
@@ -161,11 +157,11 @@ function VeterinarianExaminations() {
 
             {user.role === 'Veterinarian' && (
                 <>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
+                    <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                         <h2 className="text-2xl font-bold">Completed Treatments</h2>
                     </div>
-                    <div className="mb-4 mt-4 md:ml-24 lg:ml-32 xl:ml-36">
-                      <div className="flex flex-wrap gap-6">
+                    <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                      <div className="flex flex-wrap gap-10">
                       
                         {completedRequests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} />

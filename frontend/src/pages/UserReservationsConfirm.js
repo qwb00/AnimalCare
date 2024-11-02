@@ -7,6 +7,7 @@ import UserNav from '../components/UserNav';
 import Card from '../components/Card';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { icons } from '../components/icons';
+import Button from "../components/Button";
 
 function UserReservationsConfirm() {
     const [user, setUser] = useState(null);
@@ -187,19 +188,30 @@ function UserReservationsConfirm() {
         setDisplayCountPlanned((prev) => (prev >= plannedWalks.length ? 2 : prev + 2));
     };
 
+    const handleNavigateToReservations = () => {
+        navigate('/reservations');
+    };
+
     if (!user) return <div>Loading...</div>;
 
     return (
         <div className="container mx-auto">
             <Header />
-            <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-                <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    {user ? <UserHeader user={user} /> : <p>Loading user information...</p>}
-                </div>
-            </div>
+
+            {user ? <UserHeader user={user} /> : <p>Loading user information...</p>}
             {user && <UserNav role={user.role} />}
 
-            <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
+            <div className="w-full max-w-[1024px] mx-auto flex flex-col">
+                {/* Update Schedule Button */}
+                <div className="flex justify-start mt-4 mr-4">
+                    <Button
+                        text="Update Schedule"
+                        variant="blue"
+                        icon={icons.plus_white}
+                        onClick={handleNavigateToReservations}
+                        className="mb-4"
+                    />
+                </div>
                 {/* New Requests */}
                 <h2 className="text-2xl font-semibold mb-6">New Requests</h2>
                 <div className="flex flex-wrap gap-20">
@@ -232,7 +244,7 @@ function UserReservationsConfirm() {
 
                 {/* Planned Walks */}
                 <h2 className="text-2xl font-semibold mb-6 mt-10">Planned Walks</h2>
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-wrap gap-20">
                     {plannedWalks.slice(0, displayCountPlanned).map((reservation) => {
                         const reservationDate = new Date(reservation.reservationDate).toLocaleDateString();
                         const startTime = reservation.startTime.slice(0, 5);

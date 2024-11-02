@@ -32,7 +32,7 @@ function UserNav({ role }) {
     };
 
     return (
-        <div className="flex space-x-8 mt-6 mb-8 ml-16 md:ml-24 xl:ml-36 text-gray-500 text-lg">
+        <div className="w-full max-w-[1024px] mx-auto flex space-x-8 mt-6 mb-8 text-gray-500 text-lg">
             {itemsToShow.includes("General") && (
                  <Link to={`/${userID}/general`} className={getLinkClass(`/general`)}>
                     General

@@ -159,14 +159,10 @@ function Volunteers() {
     return (
         <div className="container mx-auto">
             <Header />
-            <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-                <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    <UserHeader user={user} />
-                </div>
-            </div>
+            <UserHeader user={user} />
             <UserNav role={user.role} />
 
-            <div className="ml-12 md:ml-20 xl:ml-36 mb-14">
+            <div className="w-full max-w-[1024px] mx-auto mb-14">
                 {/* New Requests */}
                 <h2 className="text-lg font-semibold mt-8">New Requests</h2>
                 <div className="flex flex-wrap gap-20 mt-4">

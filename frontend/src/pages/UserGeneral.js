@@ -54,23 +54,19 @@ function UserGeneral() {
     }
 
     return (
-        <div className="container mx-auto">
+        <div className="container mx-auto px-10">
             <Header/>
-            <div className="flex flex-col md:flex-row items-start md:items-center mt-10 md:mt-10">
-                <div className="md:ml-12 lg:ml-20 xl:ml-32">
-                    <UserHeader user={user} />
-                </div>
-            </div>
+            <UserHeader user={user} />
 
             {/* Navigation Menu */}
             <UserNav role={user.role} />
 
             {/* User Basic Info */}
-            <div className="ml-16 md:ml-24 xl:ml-30 flex flex-col lg:flex-row gap-8 mt-8 mb-14">
-                <div className="lg:w-1/2 xl:w-2/5">
+            <div className="w-full max-w-[1024px] mx-auto flex flex-col lg:flex-row gap-8 mb-14">
+                <div className="w-full lg:w-1/2 xl:w-2/5">
                     <UserBasicInfo user={user} updateUser={updateUser} />
                 </div>
-                <div className="lg:w-1/2 xl:w-2/3">
+                <div className="w-full lg:w-1/2 xl:w-2/3">
                     <UserReservations userId={user.id}/>
                 </div>
             </div>
