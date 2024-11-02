@@ -12,4 +12,5 @@ export const icons = {
     email: '/icons/e-mail.png',
     cancel: '/icons/cancel_white.png',
     unverify: '/icons/unverify_white.png',
+    plus_white: '/icons/plus_white.png',
 };

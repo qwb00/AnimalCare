@@ -94,6 +94,8 @@ function UserHeader({ user, updateUser }) {
                     >
                         {userData.role}
                     </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
