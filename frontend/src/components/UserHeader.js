@@ -56,7 +56,7 @@ function UserHeader({ user, updateUser }) {
     }
 
     return (
-        <div className="flex items-center mb-8">
+        <div className="w-full max-w-[1024px] mx-auto flex items-center mb-10 mt-6">
             <div className="relative">
                 <img
                     src={avatarUrl}
@@ -94,8 +94,6 @@ function UserHeader({ user, updateUser }) {
                     >
                         {userData.role}
                     </span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
