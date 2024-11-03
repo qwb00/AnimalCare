@@ -39,7 +39,8 @@ namespace AnimalCare
                     (dst => dst.ReservationDate, src => src.StartDate.Date),
                     (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay),
-                    (dst => dst.Photo, src => src.Volunteer.Photo)
+                    (dst => dst.Photo, src => src.Volunteer.Photo),
+                    (dst=>dst.phoneNumber, src => src.Volunteer.PhoneNumber)
                 );
 
             CreateMap<Reservation, ReservationForUserDto>()
