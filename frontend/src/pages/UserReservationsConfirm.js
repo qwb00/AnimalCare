@@ -228,7 +228,7 @@ function UserReservationsConfirm() {
                                 imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
-                                    { icon: icons.phone, label: 'Telephone', value: statusLabels[reservation.phoneNumber] },
+                                    { icon: icons.phone, label: 'Telephone', value: reservation.phoneNumber},
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
@@ -259,7 +259,7 @@ function UserReservationsConfirm() {
                                 imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
-                                    { icon: icons.phone, label: 'Telephone', value: statusLabels[reservation.phoneNumber] },
+                                    { icon: icons.phone, label: 'Telephone', value: reservation.phoneNumber},
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
