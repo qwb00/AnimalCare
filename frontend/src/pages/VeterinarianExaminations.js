@@ -13,7 +13,7 @@ function VeterinarianExaminations() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddRequestForm, setShowAddRequestForm] = useState(false);
-    const [visibleRequests, setVisibleRequests] = useState(2); // Начальное количество отображаемых карточек
+    const [visibleRequests, setVisibleRequests] = useState(2); 
     const navigate = useNavigate();
   
     useEffect(() => {
@@ -65,7 +65,6 @@ function VeterinarianExaminations() {
         fetchRequests();
     }, [navigate]);
   
-    // Фильтруем реквесты по статусу
     if (loading || !user) return <p>Loading...</p>;
     const userRequests = requests.filter(request => request.veterinarianName === user.name);
     const newRequests = userRequests.filter(request => request.status === 1);
@@ -92,7 +91,7 @@ function VeterinarianExaminations() {
     };
 
     const handleShowMoreRequests = () => {
-        setVisibleRequests(prev => prev + 2); // Увеличиваем число отображаемых карточек на 2
+        setVisibleRequests(prev => prev + 2); 
     };
 
     return (

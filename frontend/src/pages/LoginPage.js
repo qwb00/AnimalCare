@@ -28,23 +28,21 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        setErrorData("Wrong password or email. Please try again.");
-        return;
-      }
+    if (!response.ok) {
+      setErrorData("Wrong password or email. Please try again.");
+      return;
+    }
 
-      const data = await response.json();
-      const token = data.token;
-      sessionStorage.setItem('token', token);
+    const data = await response.json();
+    const token = data.token;
+    sessionStorage.setItem('token', token);
 
-      const decodedToken = jwtDecode(token);
-      const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-      const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      console.log("Role:", role);
-      const expirationTime = decodedToken.exp * 1000; // Переводим в миллисекунды
-      sessionStorage.setItem('expirationTime', expirationTime);
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+    const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    const expirationTime = decodedToken.exp * 1000; // to ms
+    sessionStorage.setItem('expirationTime', expirationTime);
       
-    console.log("Decoded Username:", username);
 
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('role', role);
@@ -52,7 +50,6 @@ function LoginPage() {
     setUsername(username); 
     setRole(role);
 
-    // Fetch user ID from the /api/users/me endpoint using the token
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
@@ -62,14 +59,13 @@ function LoginPage() {
 
     if (userResponse.ok) {
       const userData = await userResponse.json();
-      const userID = userData.id; // Assuming 'id' is the property in the response for the user ID
+      const userID = userData.id; 
       sessionStorage.setItem('userID', userID);
       console.log("Fetched User ID:", userID);
     } else {
       console.error('Failed to fetch user ID');
     }
 
-      // Перенаправление на предыдущую страницу или на главную страницу, если URL не указан
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
 
@@ -81,7 +77,6 @@ function LoginPage() {
   return (
     <div className="flex justify-center items-center h-screen bg-light-blue">
       <form onSubmit={handleLogin} className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md relative">
-        {/* Кнопка закрытия */}
         <Link to="/">
           <button type="button" className="absolute top-4 right-4 bg-main-blue rounded-full p-2" aria-label="Close" style={{ transform: 'rotate(45deg)' }} >
             <img src="/icons/plus_white.png" alt="Close" className="w-4 h-4" />
@@ -89,10 +84,8 @@ function LoginPage() {
         </Link>
         <h2 className="text-3xl font-semibold mb-8 text-center text-gray-900">Login to your account</h2>
 
-        {/* Сообщение об ошибке */}
         {errorData && <ErrorMessages errorData={errorData} />}
 
-        {/* Отображение токена при успешном логине */}
         {authToken && (
           <div className="mb-4">
             <p className="text-green-500">Login successful!</p>
@@ -124,7 +117,6 @@ function LoginPage() {
           />
         </div>
 
-        {/* Кнопка входа через компонент Button */}
         <Button 
           text="Sign in" 
           variant="blue" 

@@ -7,10 +7,9 @@ import axios from 'axios';
 import API_BASE_URL from '../config';
 
 function Reservations() {
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null); // Храним выбранный id животного
-  const [availableAnimals, setAvailableAnimals] = useState([]);   // Храним список доступных животных
+  const [selectedAnimalId, setSelectedAnimalId] = useState(null); 
+  const [availableAnimals, setAvailableAnimals] = useState([]);  
 
-  // Загружаем список животных с API при загрузке компонента
   useEffect(() => {
     const loadAnimals = async () => {
       try {
@@ -19,8 +18,8 @@ function Reservations() {
           name: animal.name,
           id: animal.id,
         }));
-        console.log('Available animals from API:', animalData); // Лог доступных животных
-        setAvailableAnimals(animalData); // Сохраняем объекты животных (с name и id)
+        console.log('Available animals from API:', animalData); 
+        setAvailableAnimals(animalData); 
       } catch (error) {
         console.error('Error fetching animals:', error);
       }
@@ -29,14 +28,13 @@ function Reservations() {
     loadAnimals();
   }, []);
 
-  // Обработка результата поиска
   const handleSearchResult = (animalId) => {
-    console.log('Search result:', animalId); // Лог выбранного id животного
+    console.log('Search result:', animalId); 
     const foundAnimal = availableAnimals.find((animal) => animal.id === animalId);
 
     if (foundAnimal) {
       console.log('Animal found:', foundAnimal);
-      setSelectedAnimalId(animalId); // Сохраняем id выбранного животного
+      setSelectedAnimalId(animalId); 
     } else {
       console.log('Animal not found in available Animals array.');
       setSelectedAnimalId(null);
@@ -59,13 +57,13 @@ function Reservations() {
           <Search
             placeholder="Animal's name"
             icon="/icons/pen.png"
-            onSearch={handleSearchResult} // Передаем функцию для обработки результата поиска
+            onSearch={handleSearchResult}
           />
         </div>
 
         {selectedAnimalId ? (
           <div className="mt-2 w-full">
-            <Calendar selectedAnimalId={selectedAnimalId} /> {/* Передаем id выбранного животного */}
+            <Calendar selectedAnimalId={selectedAnimalId} /> 
           </div>
         ) : (
           <p className="text-xl text-gray-600 mt-4">
