@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Показать кнопку при прокрутке вниз
+  // Show button on scroll down
   const toggleVisibility = () => {
     if (window.pageYOffset > 300) {
       setIsVisible(true);
@@ -12,7 +12,7 @@ function BackToTop() {
     }
   };
 
-  // Прокрутить наверх при нажатии на кнопку
+  // Scroll to the top when button is clicked
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,

@@ -7,10 +7,10 @@ import axios from 'axios';
 import API_BASE_URL from '../config';
 
 function Reservations() {
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null); // Храним выбранный id животного
-  const [availableAnimals, setAvailableAnimals] = useState([]);   // Храним список доступных животных
+  const [selectedAnimalId, setSelectedAnimalId] = useState(null); // Store the selected animal's ID
+  const [availableAnimals, setAvailableAnimals] = useState([]);   // Store the list of available animals
 
-  // Загружаем список животных с API при загрузке компонента
+  // Load animals from the API when the component mounts
   useEffect(() => {
     const loadAnimals = async () => {
       try {
@@ -19,8 +19,8 @@ function Reservations() {
           name: animal.name,
           id: animal.id,
         }));
-        console.log('Available animals from API:', animalData); // Лог доступных животных
-        setAvailableAnimals(animalData); // Сохраняем объекты животных (с name и id)
+        console.log('Available animals from API:', animalData); // Log available animals
+        setAvailableAnimals(animalData); // Save the list of animals with name and ID
       } catch (error) {
         console.error('Error fetching animals:', error);
       }
@@ -29,16 +29,16 @@ function Reservations() {
     loadAnimals();
   }, []);
 
-  // Обработка результата поиска
+  // Handle search result
   const handleSearchResult = (animalId) => {
-    console.log('Search result:', animalId); // Лог выбранного id животного
+    console.log('Search result:', animalId); // Log the selected animal ID
     const foundAnimal = availableAnimals.find((animal) => animal.id === animalId);
 
     if (foundAnimal) {
       console.log('Animal found:', foundAnimal);
-      setSelectedAnimalId(animalId); // Сохраняем id выбранного животного
+      setSelectedAnimalId(animalId); // Save the selected animal ID
     } else {
-      console.log('Animal not found in available Animals array.');
+      console.log('Animal not found in available animals list.');
       setSelectedAnimalId(null);
     }
   };
@@ -59,13 +59,13 @@ function Reservations() {
           <Search
             placeholder="Animal's name"
             icon="/icons/pen.png"
-            onSearch={handleSearchResult} // Передаем функцию для обработки результата поиска
+            onSearch={handleSearchResult} // Pass the search result handler
           />
         </div>
 
         {selectedAnimalId ? (
           <div className="mt-2 w-full">
-            <Calendar selectedAnimalId={selectedAnimalId} /> {/* Передаем id выбранного животного */}
+            <Calendar selectedAnimalId={selectedAnimalId} /> {/* Pass the selected animal's ID */}
           </div>
         ) : (
           <p className="text-xl text-gray-600 mt-4">

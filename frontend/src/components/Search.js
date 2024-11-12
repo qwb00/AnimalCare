@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Button from './Button'; // Импортируем компонент Button
+import Button from './Button';
 import axios from 'axios';
 import API_BASE_URL from '../config';
 
-// Компонент для поиска животного
+// Component for searching animals
 function Search({ placeholder, icon, onSearch }) {
   const [searchValue, setSearchValue] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Управляет состоянием выпадающего меню
-  const [animals, setAnimals] = useState([]); // Хранит список животных из API
-  const [isInputError, setIsInputError] = useState(false); // Управляет состоянием ошибки ввода
-  const dropdownRef = useRef(null); // Ссылка на выпадающее меню для отслеживания кликов вне его
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [animals, setAnimals] = useState([]); // Stores list of animals from API
+  const [isInputError, setIsInputError] = useState(false); // Tracks input error state
+  const dropdownRef = useRef(null); // Ref for dropdown to detect outside clicks
 
-  // Загрузка списка животных из API
+  // Load animal list from API
   useEffect(() => {
     const loadAnimals = async () => {
       try {
@@ -20,7 +20,7 @@ function Search({ placeholder, icon, onSearch }) {
           name: animal.name,
           id: animal.id,
         }));
-        setAnimals(animalData); // Устанавливаем объекты животных (с name и id)
+        setAnimals(animalData); // Set animal objects (with name and id)
         console.log('Loaded animals from API:', animalData);
       } catch (error) {
         console.error('Error fetching animals:', error);
@@ -30,10 +30,10 @@ function Search({ placeholder, icon, onSearch }) {
     loadAnimals();
   }, []);
 
-  // Функция для поиска животного
+  // Search function for finding an animal by name
   const handleSearch = () => {
     if (!searchValue) {
-      setIsInputError(true); // Установить ошибку, если поле пустое
+      setIsInputError(true); // Set error if input is empty
       return;
     }
 
@@ -41,42 +41,43 @@ function Search({ placeholder, icon, onSearch }) {
 
     if (foundAnimal) {
       setIsInputError(false);
-      onSearch(foundAnimal.id); // Передаем id животного
+      onSearch(foundAnimal.id); // Pass the animal id to the parent
     } else {
       setIsInputError(true);
     }
 
-    setIsDropdownOpen(false); // Закрыть выпадающее меню при нажатии на кнопку Search
+    setIsDropdownOpen(false); // Close dropdown on search
   };
 
-  // Функция для выбора животного из выпадающего меню
+  // Select an animal from the dropdown menu
   const handleSelectAnimal = (animal) => {
-    setSearchValue(animal.name); // Отображаем выбранное имя в инпуте
-    setIsDropdownOpen(false); // Закрыть меню при выборе
+    setSearchValue(animal.name); // Display selected name in input
+    setIsDropdownOpen(false); // Close menu on selection
     setIsInputError(false);
-    onSearch(animal.id); // Передаем id животного
+    onSearch(animal.id); // Pass the animal id to the parent
   };
 
-  // Функция для закрытия выпадающего меню при клике вне его
+  // Close dropdown when clicking outside of it
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false); // Закрыть меню при клике вне
+      setIsDropdownOpen(false); // Close menu on outside click
     }
   };
 
   useEffect(() => {
-    // Добавляем обработчик кликов по документу
+    // Add event listener for outside clicks
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      // Удаляем обработчик кликов при размонтировании компонента
+      // Remove event listener on component unmount
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
     <div className="relative flex items-center w-full max-w-[600px]" ref={dropdownRef}>
-      {/* Поле ввода */}
+      
+      {/* Input field */}
       <div className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${isInputError ? 'border-red-500 bg-red-100' : 'border-black bg-white'}`}>
         <input
           type="text"
@@ -89,10 +90,10 @@ function Search({ placeholder, icon, onSearch }) {
         <img src={icon} alt="Input icon" className="h-6 w-6 mr-2" />
       </div>
 
-      {/* Кнопка поиска справа от инпута */}
+      {/* Search button next to input */}
       <Button text="Search" variant="blue" icon="/icons/search_white.png" iconPosition="Search" onClick={handleSearch} />
 
-      {/* Выпадающее меню с именами животных */}
+      {/* Dropdown menu with animal names */}
       {isDropdownOpen && (
         <ul className="absolute top-full left-0 w-[240px] bg-white border-2 border-black rounded-xl mt-1 max-h-48 overflow-auto z-10">
           {animals.map((animal) => (
@@ -107,7 +108,7 @@ function Search({ placeholder, icon, onSearch }) {
         </ul>
       )}
 
-      {/* Вывод ошибки под инпутом */}
+      {/* Display error under input if animal not found */}
       {isInputError && (
         <div className="mt-2 text-red-600 text-sm absolute top-full left-0">
           Animal not found.

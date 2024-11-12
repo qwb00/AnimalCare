@@ -1,5 +1,3 @@
-// src/components/FileUploader.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { CLOUDINARY_UPLOAD_URL, CLOUDINARY_UPLOAD_PRESET } from '../cloudinaryConfig';
@@ -13,7 +11,7 @@ function FileUploader({ onUpload, onStatusChange, buttonText = 'Upload Photo', b
         if (!file) return;
 
         setIsUploading(true);
-        setFileName(file.name); // Меняем текст кнопки на название выбранного файла
+        setFileName(file.name); // Display selected file name on button
         onStatusChange && onStatusChange('uploading');
 
         const formData = new FormData();
@@ -27,11 +25,7 @@ function FileUploader({ onUpload, onStatusChange, buttonText = 'Upload Photo', b
             const uploadedUrl = response.data.secure_url;
             onUpload(uploadedUrl);
 
-            if (isButton) {
-                setFileName(file.name); // Обновляем текст кнопки на имя файла только для кнопки
-            } else {
-                setFileName(buttonText); // Сбрасываем текст на buttonText для иконки
-            }
+            setFileName(isButton ? file.name : buttonText); // Reset text depending on button type
 
             onStatusChange && onStatusChange('success');
         } catch (error) {
@@ -63,8 +57,8 @@ function FileUploader({ onUpload, onStatusChange, buttonText = 'Upload Photo', b
                 {isUploading 
                     ? (isButton 
                         ? 'Uploading...' 
-                        : <div className="inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>) // Круговой индикатор загрузки
-                    : (isButton ? fileName : buttonText)} {/* Показываем имя файла только для кнопки */}
+                        : <div className="inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>) // Circular loading indicator
+                    : (isButton ? fileName : buttonText)} {/* Display file name for button only */}
             </button>
         </div>
     );

@@ -3,19 +3,19 @@ import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 
 function HomeSlider() {
-  const [activeSlide, setActiveSlide] = useState(0); // 0 для первого слайда, 1 для второго
+  const [activeSlide, setActiveSlide] = useState(0); // 0 for the first slide, 1 for the second
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveSlide((prevSlide) => (prevSlide === 0 ? 1 : 0)); // Переключаем слайды
-    }, 5000); // Интервал в 5 секунд
+      setActiveSlide((prevSlide) => (prevSlide === 0 ? 1 : 0)); // Toggle slides
+    }, 5000); // 5-second interval
 
-    return () => clearInterval(interval); // Чистим интервал при размонтировании
+    return () => clearInterval(interval); // Clear interval on unmount
   }, []);
 
   return (
     <div className="relative h-full w-full">
-      {/* Первый слайд */}
+      {/* First slide */}
       <div
         className={`absolute inset-0 transition-opacity duration-1000 ${activeSlide === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
         <div className="flex justify-between items-start w-full max-w-[1024px] mx-auto">
@@ -35,16 +35,17 @@ function HomeSlider() {
         </div>
       </div>
 
-      {/* Второй слайд */}
+      {/* Second slide */}
       <div
         className={`absolute inset-0 transition-opacity duration-1000 ${activeSlide === 1 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
         <div className="flex justify-between items-start w-full max-w-[1024px] mx-auto">
-          {/* Картинка слева */}
+          
+          {/* Image on the left */}
           <div className="w-1/2 flex justify-center items-start">
             <img src="/home/main_frame_cat.png" alt="Cat" className="w-full h-full object-contain" />
           </div>
 
-          {/* Текст и кнопка справа */}
+          {/* Text and button on the right */}
           <div className="w-1/2 flex flex-col justify-start items-end text-right">
             <p className="text-2xl font-normal mb-10">
               Join our dedicated team and make a meaningful impact on the lives of our little friends!

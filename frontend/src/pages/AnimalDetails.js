@@ -6,15 +6,14 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
-import AnimalCard from '../components/AnimalCard'; // Импорт компонента AnimalCard для отображения животных
+import AnimalCard from '../components/AnimalCard';
 import FileUploader from '../components/FileUploader';
 
 function AnimalDetails() {
-  const { animalID } = useParams(); // Получаем ID из URL
+  const { animalID } = useParams(); 
   const [animalData, setAnimalData] = useState(null);
-  const [otherAnimals, setOtherAnimals] = useState([]); // Храним 3 случайных животных
+  const [otherAnimals, setOtherAnimals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showFileUploader, setShowFileUploader] = useState(false);
 
   const authToken = sessionStorage.getItem('token');
 
@@ -50,11 +49,10 @@ function AnimalDetails() {
     isLeashTrained: animalData?.isLeashTrained,
   });
 
-  // Проверка роли пользователя
   const userRole = sessionStorage.getItem('role');
   const isEditable = userRole === 'Caretaker' || userRole === 'Administrator';
 
-  // Функция для получения данных о животном
+  // Fetch detailed data of the selected animal
   const fetchAnimalDetails = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals/${animalID}`);
@@ -67,17 +65,15 @@ function AnimalDetails() {
     }
   };
 
-  // Функция для получения 3 случайных животных
+  // Fetch other animals for suggestions
   const fetchOtherAnimals = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals`);
       const allAnimals = response.data.filter((animal) => animal.id !== animalID);
       
-      // Выбираем 3 случайных животных
       const randomAnimals = allAnimals
-        .sort(() => 0.5 - Math.random()) // Перемешиваем массив
-        .slice(0, 3); // Берем первые 3 элемента
-
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3); 
       setOtherAnimals(randomAnimals);
     } catch (error) {
       console.error('Error fetching other animals:', error);
@@ -116,7 +112,6 @@ function AnimalDetails() {
     }
 }
 
-  // Функция для переключения режима редактирования
   const handleEditGeneralToggle = () => {
     setIsEditingGeneral(true);
     setEditedGeneralData({
@@ -132,7 +127,6 @@ function AnimalDetails() {
     });
   };
 
-  // Функция для сохранения изменений на сервере
   const handleSaveGeneralChanges = async () => {
     try {
 
@@ -166,15 +160,13 @@ function AnimalDetails() {
     }
   };
 
-  // Функция для отмены изменений
   const handleCancelGeneralChanges = () => {
-    setEditedGeneralData(animalData); // Сбрасываем изменения
-    setIsEditingGeneral(false); // Выходим из режима редактирования
+    setEditedGeneralData(animalData); 
+    setIsEditingGeneral(false);
   };
 
   const handleEditHistoryToggle = () => {
     setIsEditingHistory(!isEditingHistory);
-    // Если отменяем редактирование, сбрасываем изменения
     if (isEditingHistory) {
       setEditedHistory(animalData?.history || '');
     }
@@ -198,9 +190,7 @@ function AnimalDetails() {
   };
   
   const handleCancelHistoryChanges = () => {
-    // Отменяем изменения и сбрасываем состояние
     setIsEditingHistory(false);
-    //setEditedHistory(animalData?.history || '');
   };
   
   const toDateInputFormat = (dateString) => {
@@ -243,7 +233,6 @@ function AnimalDetails() {
   };
   
   const handleCancelMedicalChanges = () => {
-    // Отменяем изменения и сбрасываем состояние
     setIsEditingMedical(false);
     setEditedMedicalData({
       lastExamination: animalData?.lastExamination || '',
@@ -290,7 +279,6 @@ function AnimalDetails() {
   };
   
   const handleCancelBehaviorChanges = () => {
-    // Отменяем изменения и сбрасываем состояние
     setIsEditingBehavior(false);
     setEditedBehaviorData({
       isPeopleFriendly: animalData?.isPeopleFriendly || false,
@@ -299,10 +287,8 @@ function AnimalDetails() {
       isLeashTrained: animalData?.isLeashTrained || false,
     });
   };
-  
-  
 
-  // Функции для отображения информации о животном
+  // Utility functions to convert numeric values to labels
   const getAnimalSize = (size) => {
     switch (size) {
       case 0: return 'Small';
@@ -329,6 +315,7 @@ function AnimalDetails() {
     return species === 0 ? 'Dog' : 'Cat';
   };
 
+  
   if (isLoading) {
     return <div className="text-center mt-10">Loading...</div>;
   }
@@ -347,7 +334,6 @@ function AnimalDetails() {
 
       <div className="container mx-auto p-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          {/* Левая колонка с изображением животного и основной информацией */}
           <div className="relative">
             <img 
               src={animalData.photo} 
@@ -355,27 +341,24 @@ function AnimalDetails() {
               className="w-full max-w-md h-[350px] object-cover rounded-xl border-2 border-black shadow-lg mb-4" 
             />
 
-            {/* Иконка для загрузки фото */}
             {isEditable && (
               <div className="absolute top-2 right-2 cursor-pointer bg-white rounded-xl p-1">
                 <FileUploader
     onUpload={async (uploadedUrl) => {
         await updateAnimalAttribute("photo", uploadedUrl);
         setAnimalData((prevData) => ({ ...prevData, photo: uploadedUrl }));
-        setShowFileUploader(false);
     }}
     onStatusChange={(status) => {
         if (status === 'success') {
-            setShowFileUploader(false);
         } else if (status === 'error') {
             console.error('File upload failed');
         }
     }}
-    buttonText="" // Без текста
+    buttonText=""
     buttonClassName="w-8 h-8"
     icon="/icons/upload_photo.png"
     iconSize="w-8 h-8"
-    isButton={false} // Отображаем как иконку с индикатором загрузки
+    isButton={false}
 />
               </div>
             )}
@@ -383,7 +366,6 @@ function AnimalDetails() {
 
           </div>
 
-          {/* Секция с основной информацией */}
 <div className="w-full md:w-1/2">
   <div className="flex items-center">
     {isEditingGeneral ? (
@@ -397,7 +379,6 @@ function AnimalDetails() {
       <h2 className="text-3xl font-semibold flex items-center">{animalData.name}</h2>
     )}
 
-    {/* Иконки для редактирования */}
     {isEditable && (
       isEditingGeneral ? (
         <div className="flex space-x-2 ml-4">
@@ -425,7 +406,6 @@ function AnimalDetails() {
     )}
   </div>
 
-  {/* Поля для редактирования значений в секции */}
   {isEditingGeneral ? (
     <div className="flex flex-col gap-2 mb-4">
       <div>
@@ -535,7 +515,6 @@ function AnimalDetails() {
     </div>
   )}
 
-  {/* Кнопка для прогулок с животным */}
   <div className="mt-4">
     <Link to="/reservations">
       <Button
@@ -549,11 +528,9 @@ function AnimalDetails() {
 </div>
 </div>
 
-        {/* Секция с историей и дополнительной информацией */}
         <div className="mt-8">
           <h3 className="text-4xl text-center font-black mb-4">STORY & DETAILED INFORMATION</h3>
           
-          {/* История */}
 <div className="mb-6">
   <h4 className="text-xl font-semibold flex items-center">
     History
@@ -595,11 +572,9 @@ function AnimalDetails() {
   )}
 </div>
 
-          {/* Медицинские данные */}
 <div className="mb-6">
   <div className="flex items-center">
     <h4 className="text-xl font-semibold flex items-center">Health and medical data</h4>
-    {/* Иконки для редактирования */}
     {isEditable && (
       isEditingMedical ? (
         <div className="flex space-x-2 ml-4">
@@ -628,7 +603,6 @@ function AnimalDetails() {
 
   </div>
 
-  {/* Поля для редактирования значений в медицинской секции */}
   {isEditingMedical ? (
     <ul className="list-disc list-inside">
       <li>
@@ -684,7 +658,6 @@ function AnimalDetails() {
   )}
 </div>
 
-          {/* Секция с поведением и обучением */}
 <div className="mb-6">
   <h4 className="text-xl font-semibold flex items-center">
     Behavior and training
@@ -792,15 +765,14 @@ function AnimalDetails() {
 </div>
 </div>
 
-        {/* Секция с другими животными */}
         <div className="mt-12">
           <h3 className="text-4xl text-center font-black mb-8">OTHER ANIMALS</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {otherAnimals.map((animal) => (
             <AnimalCard
-              key={animal.id} // Используем уникальный идентификатор
+              key={animal.id}
               id={animal.id}
-              image={animal.photo} // Используем правильный ключ photo
+              image={animal.photo}
               name={animal.name}
               age={`${animal.age} years`}
               breed={animal.breed}

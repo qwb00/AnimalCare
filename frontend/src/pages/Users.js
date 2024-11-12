@@ -46,6 +46,7 @@ function Users() {
         }
     };
 
+    // Fetch logged-in user data and list of users on component mount
     useEffect(() => {
         const token = sessionStorage.getItem('token');
         if (!token) {
@@ -69,6 +70,7 @@ function Users() {
         fetchAllUsers();
     }, [navigate]);
 
+    // Delete a user by ID
     const handleDelete = async () => {
         try {
             await axios.delete(`${API_BASE_URL}/users/${selectedUser.id}`, {
@@ -78,22 +80,25 @@ function Users() {
                 },
             });
             setUsers((prev) => prev.filter((user) => user.id !== selectedUser.id));
-            setSelectedUser(null); // Сброс выбранного пользователя
-            setIsDeleteModalOpen(false); // Закрытие модального окна
+            setSelectedUser(null); 
+            setIsDeleteModalOpen(false); 
         } catch (error) {
             console.error('Error deleting user:', error);
         }
     };
 
+    // Open delete confirmation modal
     const openDeleteModal = (user) => {
-        setSelectedUser(user); // Сохраняем данные выбранного пользователя
-        setIsDeleteModalOpen(true); // Открываем модальное окно подтверждения удаления
+        setSelectedUser(user); 
+        setIsDeleteModalOpen(true); 
     };
 
+    // Show more users when clicking "Show More" button
     const handleShowMore = () => {
         setDisplayCount((prev) => (prev >= users.length ? 2 : prev + 2));
     };
 
+    // Add a new user
     const handleAddUser = async (event) => {
         event.preventDefault();
         try {
@@ -108,11 +113,10 @@ function Users() {
                 }
             );
 
-            await fetchAllUsers(); // Обновляем список пользователей
+            await fetchAllUsers();
             setNotification({ isSuccess: true, message: 'User created successfully!' });
             setIsNotificationOpen(true);
 
-            // Закрываем модальное окно и сбрасываем форму
             setIsModalOpen(false);
             setNewUser({ firstName: '', lastName: '', username: '', email: '', password: '', phoneNumber: '', roles: ['Caretaker'] });
         } catch (error) {
@@ -121,6 +125,7 @@ function Users() {
         }
     };
 
+    // Handle form input changes
     const handleChange = (event) => {
         const { name, value } = event.target;
         setNewUser((prev) => ({
@@ -201,7 +206,7 @@ function Users() {
                 {veterinarians.length > displayCount && <ShowMoreButton onClick={handleShowMore} />}
             </div>
 
-            {/* Модальное окно подтверждения удаления */}
+                {/* Delete Confirmation Modal */}
             {isDeleteModalOpen && selectedUser && (
                 <div
                     className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -233,19 +238,18 @@ function Users() {
                 </div>
             )}
 
-            {/* Модальное окно для ввода данных нового пользователя */}
+             {/* New User Form Modal */}
             {isModalOpen && (
                 <div
                     className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                    onClick={() => setIsModalOpen(false)} // Закрываем модальное окно при клике на затемненную область
+                    onClick={() => setIsModalOpen(false)}
                 >
                     <div
                         className="bg-white p-6 rounded-3xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black relative"
-                        onClick={(e) => e.stopPropagation()} // Останавливаем всплытие, чтобы клик внутри окна не закрывал его
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <h3 className="text-xl font-bold mb-6 text-center text-gray-800">ADD NEW USER</h3>
 
-                        {/* Кнопка закрытия */}
                         <button
                             type="button"
                             className="absolute top-3 right-3 bg-main-blue rounded-full p-2"
@@ -256,9 +260,7 @@ function Users() {
                             <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
                         </button>
 
-                        {/* Поля ввода для нового пользователя */}
                         <form onSubmit={handleAddUser}>
-                            {/* First Name */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">First Name</label>
                                 <input
@@ -272,7 +274,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Last Name */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Last Name</label>
                                 <input
@@ -286,7 +287,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Username */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Username</label>
                                 <input
@@ -300,7 +300,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Email */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Email</label>
                                 <input
@@ -314,7 +313,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Password */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Password</label>
                                 <input
@@ -328,7 +326,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Phone Number */}
                             <div className="mb-3">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Phone Number</label>
                                 <input
@@ -342,7 +339,6 @@ function Users() {
                                 />
                             </div>
 
-                            {/* Role Selection */}
                             <div className="mb-6">
                                 <label className="block text-gray-700 mb-1 font-medium text-sm">Role</label>
                                 <select
@@ -357,7 +353,6 @@ function Users() {
                                 </select>
                             </div>
 
-                            {/* Кнопки подтверждения и отмены */}
                             <div className="flex justify-center space-x-2 mt-4">
                                 <Button
                                     text="Cancel"
@@ -382,8 +377,6 @@ function Users() {
                 </div>
             )}
 
-
-            {/* Модальное окно уведомления */}
             {isNotificationOpen && (
                 <div
                     className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

@@ -3,9 +3,10 @@ import React from 'react';
 function Footer() {
   return (
     <footer className="bg-white py-8">
-      {/* Контейнер с двумя секциями */}
+      {/* Container with two sections */}
       <div className="max-w-[1024px] mx-auto flex justify-center items-start">
-        {/* Секция с контактной информацией */}
+        
+        {/* Contact information section */}
         <div className="w-1/2 pr-8 text-start">
           <h3 className="text-2xl text-center font-bold mb-4">Contact info:</h3>
           <p className="text-gray-600 mb-2"><span className="font-bold">Address:</span> Happy Paws Animal Shelter, 1234 Příběnická, 110 00 Prague</p>
@@ -15,7 +16,7 @@ function Footer() {
           <p className="text-gray-600">Monday – Sunday: 9:00 AM – 6:00 PM</p>
         </div>
 
-        {/* Секция с социальными сетями */}
+        {/* Social media section */}
         <div className="w-1/2 pl-8 text-end">
           <h3 className="text-2xl text-center font-bold mb-4">Follow us:</h3>
           <p className="text-gray-600 mb-2"><span className="font-bold">Instagram:</span> <a href="https://instagram.com/happypaws_cz" className="text-blue-500">instagram.com/happypaws_cz</a></p>
