@@ -10,6 +10,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public Guid Id { get; set; }
         public string VolunteerName { get; set; }
         public Guid VolunteerId { get; set; }
+        public string phoneNumber { get; set; }
         public string AnimalName { get; set; }
         public Guid AnimalId { get; set; }
         public string AnimalBreed { get; set; }
