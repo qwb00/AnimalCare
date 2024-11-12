@@ -49,8 +49,6 @@ function LoginPage() {
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('role', role);
     setAuthToken(token);
-    setUsername(username); 
-    setRole(role);
 
     // if login is successfull, send additional request to the server to get the current user data
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Button from './Button';
-import axios from 'axios';
-import API_BASE_URL from '../config';
+import React, { useState, useEffect, useRef } from "react";
+import Button from "./Button";
+import axios from "axios";
+import API_BASE_URL from "../config";
 
 // Component for searching animals
 function Search({ placeholder, icon, onSearch }) {
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [animals, setAnimals] = useState([]); // Stores list of animals from API
   const [isInputError, setIsInputError] = useState(false); // Tracks input error state
@@ -21,9 +21,9 @@ function Search({ placeholder, icon, onSearch }) {
           id: animal.id,
         }));
         setAnimals(animalData); // Set animal objects (with name and id)
-        console.log('Loaded animals from API:', animalData);
+        console.log("Loaded animals from API:", animalData);
       } catch (error) {
-        console.error('Error fetching animals:', error);
+        console.error("Error fetching animals:", error);
       }
     };
 
@@ -37,7 +37,9 @@ function Search({ placeholder, icon, onSearch }) {
       return;
     }
 
-    const foundAnimal = animals.find((animal) => animal.name.toLowerCase() === searchValue.toLowerCase());
+    const foundAnimal = animals.find(
+      (animal) => animal.name.toLowerCase() === searchValue.toLowerCase()
+    );
 
     if (foundAnimal) {
       setIsInputError(false);
@@ -66,24 +68,32 @@ function Search({ placeholder, icon, onSearch }) {
 
   useEffect(() => {
     // Add event listener for outside clicks
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       // Remove event listener on component unmount
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="relative flex items-center w-full max-w-[600px]" ref={dropdownRef}>
-      
+    <div
+      className="relative flex items-center w-full max-w-[600px]"
+      ref={dropdownRef}
+    >
       {/* Input field */}
-      <div className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${isInputError ? 'border-red-500 bg-red-100' : 'border-black bg-white'}`}>
+      <div
+        className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${
+          isInputError ? "border-red-500 bg-red-100" : "border-black bg-white"
+        }`}
+      >
         <input
           type="text"
           placeholder={placeholder}
           value={searchValue}
-          className={`w-full px-4 py-2 focus:outline-none rounded-xl ${isInputError ? 'bg-red-100' : 'bg-white'}`}
+          className={`w-full px-4 py-2 focus:outline-none rounded-xl ${
+            isInputError ? "bg-red-100" : "bg-white"
+          }`}
           onChange={(e) => setSearchValue(e.target.value)}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         />
@@ -91,7 +101,13 @@ function Search({ placeholder, icon, onSearch }) {
       </div>
 
       {/* Search button next to input */}
-      <Button text="Search" variant="blue" icon="/icons/search_white.png" iconPosition="Search" onClick={handleSearch} />
+      <Button
+        text="Search"
+        variant="blue"
+        icon="/icons/search_white.png"
+        iconPosition="Search"
+        onClick={handleSearch}
+      />
 
       {/* Dropdown menu with animal names */}
       {isDropdownOpen && (
