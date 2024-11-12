@@ -8,8 +8,8 @@ import UserReservations from "../components/UserReservations";
 import API_BASE_URL from "../config";
 
 function UserGeneral() {
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
+    const [user, setUser] = useState(null); // User data state
+    const navigate = useNavigate(); // Navigation object
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -18,6 +18,7 @@ function UserGeneral() {
             return;
         }
 
+        // getting user data
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -27,7 +28,8 @@ function UserGeneral() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch user information');
+                    const errorText = await response.text();
+                    throw new Error(`Failed to update user information: ${errorText}`);
                 }
 
                 const userData = await response.json();
@@ -50,7 +52,7 @@ function UserGeneral() {
     };
 
     if (!user) {
-        return null; // Return null if user data is not available
+        return <div>Loading...</div>; // Return null if user data is not available
     }
 
     return (
@@ -61,11 +63,12 @@ function UserGeneral() {
             {/* Navigation Menu */}
             <UserNav role={user.role} />
 
-            {/* User Basic Info */}
             <div className="w-full max-w-[1024px] mx-auto flex flex-col lg:flex-row gap-8 mb-14">
+                {/* User Basic Info */}
                 <div className="w-full lg:w-1/2 xl:w-2/5">
                     <UserBasicInfo user={user} updateUser={updateUser} />
                 </div>
+                {/* User Reservations Info */}
                 <div className="w-full lg:w-1/2 xl:w-2/3">
                     <UserReservations userId={user.id}/>
                 </div>

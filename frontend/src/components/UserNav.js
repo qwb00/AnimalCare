@@ -25,6 +25,7 @@ function UserNav({ role }) {
     // Get the menu items for the current role, or default to General
     const itemsToShow = menuItems[normalizedRole] || ["General"];
 
+    // highlight the current page in the menu
     const getLinkClass = (pathSegment) => {
         return location.pathname.includes(pathSegment)
             ? "text-main-blue font-semibold border-b-2 border-main-blue cursor-pointer"

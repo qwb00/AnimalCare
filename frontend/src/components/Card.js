@@ -45,6 +45,7 @@ function Card({ title, imageSrc, infoItems, buttons, children }) {
     );
 }
 
+// PropTypes to ensure that the component is used correctly
 Card.propTypes = {
     title: PropTypes.string,
     imageSrc: PropTypes.string,
@@ -53,17 +54,17 @@ Card.propTypes = {
             icon: PropTypes.string,
             label: PropTypes.string,
             value: PropTypes.string,
-            customClass: PropTypes.string, // Add customClass prop type
+            customClass: PropTypes.string,
         })
     ),
     buttons: PropTypes.arrayOf(PropTypes.object),
     children: PropTypes.node,
 };
 
+// Default props
 Card.defaultProps = {
     infoItems: [],
     buttons: [],
 };
 
 export default Card;
-

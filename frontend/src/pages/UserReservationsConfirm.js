@@ -10,21 +10,12 @@ import { icons } from '../components/icons';
 import Button from "../components/Button";
 
 function UserReservationsConfirm() {
-    const [user, setUser] = useState(null);
-    const [newRequests, setNewRequests] = useState([]);
-    const [plannedWalks, setPlannedWalks] = useState([]);
-    const [displayCountRequests, setDisplayCountRequests] = useState(2);
-    const [displayCountPlanned, setDisplayCountPlanned] = useState(2);
-    const navigate = useNavigate();
-
-    // Map status values to labels
-    const statusLabels = {
-        0: 'NOT DECIDED',
-        1: 'UPCOMING',
-        2: 'COMPLETED',
-        3: 'MISSED',
-        4: 'CANCELED',
-    };
+    const [user, setUser] = useState(null); // Stores the logged-in user's data
+    const [newRequests, setNewRequests] = useState([]); // Stores new reservation requests with status "NOT DECIDED"
+    const [plannedWalks, setPlannedWalks] = useState([]); // Stores planned walks with status "UPCOMING"
+    const [displayCountRequests, setDisplayCountRequests] = useState(2); // Controls the number of displayed requests
+    const [displayCountPlanned, setDisplayCountPlanned] = useState(2); // Controls the number of displayed planned walks
+    const navigate = useNavigate(); // Used to navigate between routes
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -58,14 +49,8 @@ function UserReservationsConfirm() {
                 // New Requests: Reservations with status 0 (NOT DECIDED)
                 setNewRequests(data.filter((reservation) => reservation.status === 0));
 
-                // Planned Walks: Reservations with date/time in the future
-                setPlannedWalks(
-                    data.filter((reservation) => {
-                        return (
-                            reservation.status === 1   // only UPCOMING reservations
-                        );
-                    })
-                );
+                // Planned Walks: Reservations with status 1 (UPCOMING)
+                setPlannedWalks(data.filter((reservation) => reservation.status === 1));
             } catch (error) {
                 console.error('Error fetching reservations:', error);
             }
@@ -94,8 +79,8 @@ function UserReservationsConfirm() {
             // Remove reservation from newRequests
             setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
 
-            // Optionally, add it to plannedWalks
-            // Fetch the updated reservation and add it to plannedWalks
+            // adding it to plannedWalks
+            setPlannedWalks((prev) => [...prev, newRequests.find((reservation) => reservation.id === id)]);
         } catch (error) {
             console.error('Error approving reservation:', error);
         }
@@ -140,12 +125,8 @@ function UserReservationsConfirm() {
 
             if (!response.ok) throw new Error(`Failed to mark reservation as missed: ${await response.text()}`);
 
-            // Update reservation status in plannedWalks
-            setPlannedWalks((prev) =>
-                prev.map((reservation) =>
-                    reservation.id === id ? { ...reservation, status: 3 } : reservation
-                )
-            );
+            // Remove reservation from plannedWalks
+            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
             console.error('Error marking reservation as missed:', error);
         }
@@ -167,12 +148,8 @@ function UserReservationsConfirm() {
 
             if (!response.ok) throw new Error(`Failed to mark reservation as completed: ${await response.text()}`);
 
-            // Update reservation status in plannedWalks
-            setPlannedWalks((prev) =>
-                prev.map((reservation) =>
-                    reservation.id === id ? { ...reservation, status: 2 } : reservation
-                )
-            );
+            // Remove reservation from plannedWalks
+            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
             console.error('Error marking reservation as completed:', error);
         }
@@ -198,8 +175,8 @@ function UserReservationsConfirm() {
         <div className="container mx-auto">
             <Header />
 
-            {user ? <UserHeader user={user} /> : <p>Loading user information...</p>}
-            {user && <UserNav role={user.role} />}
+            <UserHeader user={user} />
+            <UserNav role={user.role} />
 
             <div className="w-full max-w-[1024px] mx-auto flex flex-col">
                 {/* Update Schedule Button */}
@@ -228,7 +205,6 @@ function UserReservationsConfirm() {
                                 imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
-                                    { icon: icons.phone, label: 'Telephone', value: reservation.phoneNumber},
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
@@ -246,6 +222,7 @@ function UserReservationsConfirm() {
                 {/* Planned Walks */}
                 <h2 className="text-2xl font-semibold mb-6 mt-10">Planned Walks</h2>
                 <div className="flex flex-wrap gap-20">
+                    {/* Shows only defined number of walks */}
                     {plannedWalks.slice(0, displayCountPlanned).map((reservation) => {
                         const reservationDate = new Date(reservation.reservationDate).toLocaleDateString();
                         const startTime = reservation.startTime.slice(0, 5);
@@ -259,7 +236,6 @@ function UserReservationsConfirm() {
                                 imageSrc={reservation.photo || icons.placeholder}
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
-                                    { icon: icons.phone, label: 'Telephone', value: reservation.phoneNumber},
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
