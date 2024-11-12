@@ -84,9 +84,9 @@ function AnimalDetails() {
   const fetchOtherAnimals = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals`);
-      const allAnimals = response.data.filter(
-        (animal) => animal.id !== animalID
-      );
+      
+      // Filter out the current animal from the list to avoid duplicate animal suggestions
+      const allAnimals = response.data.filter((animal) => animal.id !== animalID);
 
       // Shuffle and select the first 3 animals (get 3 random animals from API)
       const randomAnimals = allAnimals
