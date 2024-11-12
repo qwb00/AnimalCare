@@ -3,7 +3,7 @@ import React from 'react';
 function Button({ text, variant, icon, iconPosition = 'left', iconSize = 'h-6 w-6', className, onClick }) {
   const baseClasses = "inline-flex py-2 px-4 font-semibold rounded-xl shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center";
 
-  // Updated variant classes to support red, blue, and yellow colors
+  // Variant-specific styles for button color options
   const variantClasses = (() => {
     switch (variant) {
       case 'blue':
@@ -17,7 +17,7 @@ function Button({ text, variant, icon, iconPosition = 'left', iconSize = 'h-6 w-
     }
   })();
 
-  // Check for icon presence and position
+  // Handle icon presence and positioning
   const content = icon ? (
       iconPosition === 'left' ? (
           <><img src={icon} alt="" className={`mr-2 ${iconSize}`} /> {text}</>

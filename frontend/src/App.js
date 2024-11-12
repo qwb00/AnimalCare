@@ -6,7 +6,7 @@ import Reservations from './pages/Reservations';
 import VeterinarianExaminations from './pages/VeterinarianExaminations';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage'
-import BackToTop from './components/BackToTop'; // Импортируем якорь
+import BackToTop from './components/BackToTop';
 
 import UserGeneral from './pages/UserGeneral';
 import AnimalDetails from './pages/AnimalDetails';

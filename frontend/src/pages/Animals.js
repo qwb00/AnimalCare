@@ -2,29 +2,26 @@
   import Header from '../components/Header';
   import Footer from '../components/Footer';
   import AnimalCard from '../components/AnimalCard';
-  import axios, { all } from 'axios';
+  import axios from 'axios';
   import API_BASE_URL from '../config';
-  import Button from '../components/Button'; // Импортируем кнопку Button
+  import Button from '../components/Button';
   import FileUploader from '../components/FileUploader';
 
   function Animals() {
     const [allAnimals, setAllAnimals] = useState([]); 
-    const [isLoading, setIsLoading] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Открытие/закрытие модального окна
-    const [isNotificationOpen, setIsNotificationOpen] = useState(false); // Открытие/закрытие модального уведомления
-    const [notification, setNotification] = useState({ isSuccess: true, message: '' }); // Состояние уведомления
-    const [photoUrl, setPhotoUrl] = useState(''); // Состояние для хранения URL фотографии
-    const [userRole, setUserRole] = useState(''); // Состояние для роли пользователя
-    const [visibleCount, setVisibleCount] = useState(6);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [notification, setNotification] = useState({ isSuccess: true, message: '' });
+    const [photoUrl, setPhotoUrl] = useState('');
+    const [userRole, setUserRole] = useState('');
 
-    const animalsPerPageForAdmin = 5; // Количество животных для администратора
-    const animalsPerPageForUser = 6; // Количество животных для обычного пользователя
+    const animalsPerPageForAdmin = 5;
+    const animalsPerPageForUser = 6;
     const animalsPerPage = userRole === 'Caretaker' || userRole === 'Administrator' ? animalsPerPageForAdmin : animalsPerPageForUser;
     const totalPages = Math.ceil(allAnimals.length / animalsPerPage);
 
-    const [currentPage, setCurrentPage] = useState(1); // Для отслеживания текущей страницы
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // Состояния для каждого инпута
     const [name, setName] = useState('');
     const [species, setSpecies] = useState('');
     const [breed, setBreed] = useState('');
@@ -36,10 +33,7 @@
     const [personality, setPersonality] = useState('');
     const [history, setHistory] = useState('');
 
-    // Функция загрузки всех животных с сервера
     const loadAllAnimals = async () => {
-      setIsLoading(true);
-
       try {
         const response = await axios.get(`${API_BASE_URL}/animals`, {
           headers: {
@@ -53,43 +47,31 @@
         }
       } catch (error) {
         console.error('Error fetching animals:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     useEffect(() => {
-      // Получаем роль пользователя из sessionStorage
       const storedUserRole = sessionStorage.getItem('role');
       setUserRole(storedUserRole);
 
       console.log('User role:', storedUserRole);
     
-      // Загружаем всех животных при монтировании компонента
       loadAllAnimals();
     }, []);
 
-    const showMoreAnimals = () => {
-      setVisibleCount((prevCount) => prevCount + 6);
-    };
-    
-    // Переключение на следующую страницу
+    // Pagination controls
     const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
     
-    // Переключение на предыдущую страницу
     const handlePreviousPage = () => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
 
-    // Индексы начала и конца текущей страницы
     const startIndex = (currentPage - 1) * animalsPerPage;
     const endIndex = startIndex + animalsPerPage;
       
-    // Определяем список животных для отображения на текущей странице
     const currentAnimals = allAnimals.slice(startIndex, endIndex);
 
-    // Определение номеров страниц для отображения
     const getPageNumbers = () => {
       const pages = [];
-      const maxPageNumbers = 5; // Количество кнопок страниц, которые будут отображаться
+      const maxPageNumbers = 5;
 
       if (totalPages <= maxPageNumbers) {
         for (let i = 1; i <= totalPages; i++) {
@@ -118,17 +100,15 @@
       return pages;
     };
 
-    // Функция для перехода к указанной странице
     const goToPage = (page) => {
       if (page === "..." || page < 1 || page > totalPages) return;
       setCurrentPage(page);
     };
       
-      
-    // Открытие и закрытие модального окна
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
+    // Generate unique ID for new animals
     function generateGUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
@@ -137,10 +117,7 @@
       });
     }
     
-
-
-    // Функция для отправки данных на сервер
-    // Обновление функции handleAddAnimal для проверки заполненности полей
+    // Add new animal
     const handleAddAnimal = async () => {
 
       if (!name || !breed || !age || !species || !sex || !size || !health || !photoUrl) {
@@ -149,11 +126,9 @@
         return;
       }
 
-
       const newAnimalID = generateGUID();
     
       try {    
-        // Формируем объект данных для отправки
           const animalData = {
             name: name,
             breed: breed,
@@ -187,7 +162,6 @@
 
         console.log('New animal ID:', newAnimalID);
     
-        // Отправляем данные животного на сервер
         const response = await axios.post(`${API_BASE_URL}/animals`, animalData, {
           headers: {
             'Content-Type': 'application/json',
@@ -245,7 +219,7 @@
         )}
       </div>
 
-      {/* Пагинация */}
+{/* Pagination */}
 <div className="flex justify-center space-x-3 my-6 mt-12">
   {currentPage > 1 && (
     <button
@@ -256,7 +230,6 @@
     </button>
   )}
 
-  {/* Отображение номеров страниц */}
   {getPageNumbers().map((page, index) => (
     <button
       key={index}
@@ -284,17 +257,17 @@
 
     </div>
 
-        {/* Модальное окно для добавления нового животного */}
+      {/* Modal for adding new animal */}
         {isModalOpen && (
     <div 
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={handleCloseModal} // Закрытие модального окна по клику на затемненную область
+      onClick={handleCloseModal}
     >
       <div 
         className="bg-white p-4 rounded-3xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black"
         onClick={(e) => {
           if (e) e.stopPropagation();
-        }} // Останавливаем клик внутри модального окна, чтобы не закрыть его
+        }} 
       >
         <h3 className="text-xl font-bold mb text-center text-gray-800">ADD NEW ANIMAL</h3>
         
@@ -308,7 +281,6 @@
             <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
         </button>
 
-        {/* Инпут Name */}
         <div className="mb-1">
           <label className="block text-gray-700 mb-1 font-medium text-xs">Name</label>
           <input
@@ -321,7 +293,6 @@
           />
         </div>
 
-        {/* Выпадающий список Species */}
         <div className="mb-1 relative">
           <label className="block text-gray-700 mb-1 font-medium text-xs">Species</label>
           <div className="relative">
@@ -338,7 +309,6 @@
           </div>
         </div>
 
-        {/* Инпут Breed */}
         <div className="mb-1">
           <label className="block text-gray-700 mb-1 font-medium text-xs">Breed</label>
           <input
@@ -350,9 +320,7 @@
           />
         </div>
 
-        {/* Поля Age и Sex в одной строке */}
         <div className="flex gap-2 mb-1">
-          {/* Инпут Age */}
           <div className="flex-1">
             <label className="block text-gray-700 mb-1 font-medium text-xs">Age</label>
             <input
@@ -366,7 +334,6 @@
             />
           </div>
 
-          {/* Выпадающий список Sex */}
           <div className="flex-1 relative">
             <label className="block text-gray-700 mb-1 font-medium text-xs">Sex</label>
             <select
@@ -382,9 +349,7 @@
           </div>
         </div>
 
-        {/* Поля Size и Health Conditions в одной строке */}
         <div className="flex gap-2 mb-1">
-          {/* Выпадающий список Size */}
           <div className="flex-1 relative">
             <label className="block text-gray-700 mb-1 font-medium text-xs">Size</label>
             <select
@@ -401,7 +366,6 @@
             </select>
           </div>
 
-          {/* Выпадающий список Health Conditions */}
           <div className="flex-1 relative">
             <label className="block text-gray-700 mb-1 font-medium text-xs">Health Conditions</label>
             <select
@@ -418,7 +382,6 @@
           </div>
         </div>
 
-        {/* Поле Found date */}
         <div className="mb-1">
           <label className="block text-gray-700 mb-1 font-medium text-xs">Found date</label>
           <input
@@ -431,7 +394,6 @@
           />
         </div>
 
-        {/* Поле Personality */}
         <div className="mb-1">
           <label className="block text-gray-700 mb-1 font-medium text-xs">Personality</label>
           <input
@@ -444,7 +406,6 @@
           />
         </div>
 
-        {/* Текстареа History */}
         <div className="mb-2 relative">
           <label className="block text-gray-700 mb-1 font-medium text-xs">History</label>
           <textarea
@@ -458,7 +419,6 @@
           ></textarea>
         </div>
 
-        {/* Кнопка Upload photo */}
         <div className="mb-2">
         <FileUploader
     onUpload={(uploadedUrl) => setPhotoUrl(uploadedUrl)}
@@ -473,13 +433,12 @@
     buttonClassName="h-10 w-36 border border-gray-300 rounded-md text-sm"
     icon="/icons/upload_photo.png"
     iconSize="w-5 h-5"
-    isButton={true} // Указываем, что это полноценная кнопка
+    isButton={true}
 />
 
         </div>
 
         <div className="flex justify-center space-x-2 mt-4">
-          {/* Кнопка Cancel */}
           <Button 
           text="Cancel" 
           variant="white" 
@@ -489,7 +448,6 @@
           className="px-5 py-2 text-sm" 
           onClick={handleCloseModal} 
           />
-          {/* Кнопка Confirm */}
           <Button 
             text="Confirm" 
             variant="blue" 
@@ -507,13 +465,13 @@
   {isNotificationOpen && (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={() => setIsNotificationOpen(false)} // Закрываем модальное окно по клику
+      onClick={() => setIsNotificationOpen(false)} 
     >
       <div
         className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
           notification.isSuccess ? 'border-green-600' : 'border-red-600'
         }`}
-        onClick={(e) => e.stopPropagation()} // Останавливаем клик внутри модального окна, чтобы не закрыть его
+        onClick={(e) => e.stopPropagation()} 
       >
         <h3
           className={`text-2xl font-bold mb-6 text-center ${
