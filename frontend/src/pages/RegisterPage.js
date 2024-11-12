@@ -17,6 +17,7 @@ function RegisterPage() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setErrorData(null);
+    // Setting up the user role, here as "Volunteer" by default during registration
     const roles = ["Volunteer"];
     try {
       const response = await fetch(`${API_BASE_URL}/authentication`, {
@@ -43,7 +44,9 @@ function RegisterPage() {
 
   return (
     <div className="flex justify-center items-center h-screen bg-light-blue">
+       {/* Registration form */}
       <form onSubmit={handleSignUp} className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm relative">
+        {/* Button to close the form and return to the homepage */}
         <Link to="/">
           <button type="button" className="absolute top-3 right-3 bg-main-blue rounded-full p-2" aria-label="Close" style={{ transform: 'rotate(45deg)' }}>
             <img src="/icons/plus_white.png" alt="Close" className="w-3 h-3" />
@@ -51,8 +54,10 @@ function RegisterPage() {
         </Link>
         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">Sign Up</h2>
 
+         {/* Component to display any errors */}
         {errorData && <ErrorMessages errorData={errorData} />}
 
+         {/* Input fields*/}
         <div className="mb-3">
           <label className="block text-gray-700 mb-1 text-sm font-medium">First Name</label>
           <input
@@ -125,12 +130,14 @@ function RegisterPage() {
           />
         </div>
 
+         {/* Submit button for the form */}
         <Button 
           text="Sign Up" 
           variant="blue" 
           className="w-full py-2 rounded-lg text-sm font-semibold"
         />
 
+         {/* Link to the login page */}
         <div className="text-center mt-4 text-gray-700 text-sm">
           Already have an account?{' '}
           <Link to="/login" className="text-main-blue font-semibold hover:underline">

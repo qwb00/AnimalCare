@@ -2,9 +2,12 @@ import React from 'react';
 import Card from '../components/Card';
 import API_BASE_URL from '../config';
 
+// Component to display a treatment request card with actions for approve, decline, or delete
 const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) => {
   const token = sessionStorage.getItem('token');
 
+  // sending patch request to change status request status for approved, same with handleDecline
+  // 0 - approved, 2 - declined
   const handleApprove = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/examinations/${request.id}`, {
@@ -16,6 +19,7 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
         body: JSON.stringify([{ op: "replace", path: "/status", value: 0 }]),
       });
       if (response.ok) {
+        // Call parent handler to update the UI
         onApprove(request.id);
       } else {
         console.error('Failed to approve request');
@@ -63,9 +67,11 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
     }
   };
 
+  // Determine status text and color based on the request status
   const statusText = request.status === 1 ? "In Progress" : request.status === 0 ? "Completed" : "Declined";
   const statusColor = request.status === 1 ? "text-blue-500" : request.status === 0 ? "text-green-500" : "text-red-500";
 
+  // Render the Card component with information and actions specific to the request
   return (
     <Card
       title={`Request for ${request.animalName} (${request.animalBreed})`}
@@ -78,6 +84,7 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
         { label: "Status", value: statusText, customClass: statusColor },
         { label: "Final Diagnosis", value: request.finalDiagnosis, customClass: "text-green-500" },
       ]}
+      // Conditionally render buttons based on user role and request status
       buttons={
         showActions === 'Veterinarian'
           ? [
