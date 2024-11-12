@@ -13,8 +13,9 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
     const [animals, setAnimals] = useState([]);
     const [veterinarians, setVeterinarians] = useState([]);
     
+    // Effect to fetch animals and veterinarians when the component is rendering
     useEffect(() => {
-        // Функция для получения списка животных из API
+        //function to get list of animals
         const fetchAnimals = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/animals`);
@@ -25,7 +26,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
             }
         };
         
-        // Функция для получения списка ветеринаров из API
+        // get veterinarians list
         const fetchVeterinarians = async () => {
             try {
                 const token = sessionStorage.getItem('token');
@@ -36,7 +37,6 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                 });
                 const data = await response.json();
                 const veterinarians = data.filter(user => user.role === "Veterinarian");
-                console.log("veterinarians", veterinarians)
                 setVeterinarians(veterinarians);
             } catch (error) {
                 console.error("Error fetching veterinarians:", error);
@@ -47,6 +47,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
         fetchVeterinarians();
     }, []);
 
+    // Handle form input changes and update formData state
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -54,10 +55,11 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        
+        // Retrieve current caretaker's ID from sessionStorage
         const careTakerId = sessionStorage.getItem('userID');
-
-        // Данные для отправки
+        
+        // Prepare data to submit, including converting type to a numerical format
         const dataToSubmit = {
             ...formData,
             careTakerId,
@@ -75,13 +77,13 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
                 body: JSON.stringify(dataToSubmit),
    
             });
-            console.log("Body", JSON.stringify(dataToSubmit));
+
             if (!response.ok) {
                 throw new Error('Failed to create new request');
             }
 
             alert('Request created successfully');
-            onClose(); 
+            onClose(); // Close the form upon successful submission
         } catch (error) {
             console.error("Error submitting request:", error);
         }

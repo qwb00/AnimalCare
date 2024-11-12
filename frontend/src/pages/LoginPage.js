@@ -9,8 +9,6 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authToken, setAuthToken] = useState(null); 
-  const [username, setUsername] = useState(null); 
-  const [role, setRole] = useState(null);
   const [errorData, setErrorData] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +18,7 @@ function LoginPage() {
     setErrorData(null);
 
     try {
+      // Request to the server for user authentication
       const response = await fetch(`${API_BASE_URL}/authentication/login`, {
         method: 'POST',
         headers: {
@@ -33,10 +32,13 @@ function LoginPage() {
       return;
     }
 
+    // Extract the token from a successful response and save it to sessionStorage
+    // Tokein will be sent to the server to assume that user has access rights.
     const data = await response.json();
     const token = data.token;
     sessionStorage.setItem('token', token);
 
+    // Decode the token to get the user's name and role
     const decodedToken = jwtDecode(token);
     const username = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
     const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
@@ -50,6 +52,7 @@ function LoginPage() {
     setUsername(username); 
     setRole(role);
 
+    // if login is successfull, send additional request to the server to get the current user data
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
@@ -65,7 +68,7 @@ function LoginPage() {
     } else {
       console.error('Failed to fetch user ID');
     }
-
+      // Redirect the user to the previous page or to the homepage
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
 
@@ -84,8 +87,10 @@ function LoginPage() {
         </Link>
         <h2 className="text-3xl font-semibold mb-8 text-center text-gray-900">Login to your account</h2>
 
+        {/* Component to display errors */}
         {errorData && <ErrorMessages errorData={errorData} />}
 
+        {/* Message indicating successful login */}
         {authToken && (
           <div className="mb-4">
             <p className="text-green-500">Login successful!</p>
@@ -93,6 +98,7 @@ function LoginPage() {
           </div>
         )}
 
+         {/* Input field for email */}
         <div className="mb-4">
           <label className="block text-gray-700 mb-2 font-medium">Email address</label>
           <input
@@ -105,6 +111,7 @@ function LoginPage() {
           />
         </div>
 
+        {/* Input field for password */}
         <div className="mb-6">
           <label className="block text-gray-700 mb-2 font-medium">Password</label>
           <input
@@ -116,13 +123,15 @@ function LoginPage() {
             required
           />
         </div>
-
+        
+        {/* Submit button for the form */}
         <Button 
           text="Sign in" 
           variant="blue" 
           className="w-full py-3 rounded-lg font-semibold"
         />
 
+         {/* Link to the sign-up page */}
         <div className="text-center mt-6 text-gray-700">
           Don't have an account?{' '}
           <Link to="/signup" className="text-main-blue font-semibold hover:underline">

@@ -15,10 +15,12 @@ function VeterinarianExaminations() {
     const [showAddRequestForm, setShowAddRequestForm] = useState(false);
     const [visibleRequests, setVisibleRequests] = useState(2); 
     const navigate = useNavigate();
-  
+    
+    // Effect during rendering to fetch user and request data on component
     useEffect(() => {
         const token = sessionStorage.getItem('token');
-
+        
+        // get user data from the server
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -33,12 +35,13 @@ function VeterinarianExaminations() {
 
                 const userData = await response.json();
                 setUser(userData);
-            } catch (error) {
+            } catch (error) { // redirect user to login page if fetching data fails
                 console.error('Error fetching user data:', error);
                 navigate('/login');
             }
         };
-
+        
+        // also get medical requests for animals
         const fetchRequests = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/examinations`, {
@@ -58,24 +61,31 @@ function VeterinarianExaminations() {
             } catch (error) {
                 console.error('Error fetching records:', error);
             } finally {
-                setLoading(false);
+                setLoading(false); // if we are fetching requests successfully we are setting loading value to false
             }
         };
         fetchUser();
         fetchRequests();
     }, [navigate]);
-  
+    
+    // Show loading text if data is still being fetched
     if (loading || !user) return <p>Loading...</p>;
+
+    // Filter requests to show only those relevant to the user
     const userRequests = requests.filter(request => request.veterinarianName === user.name);
     const newRequests = userRequests.filter(request => request.status === 1);
     const completedRequests = userRequests.filter(request => request.status === 0);
     
+    // Show the form to add a new request
     const handleAddRequestClick = () => {
         setShowAddRequestForm(true);
     };
+
     const handleFormSubmit = (formData) => {
         setShowAddRequestForm(false);
     };
+
+    // Approve a request by setting its status to completed
     const handleApprove = (requestId) => {
         setRequests(prevRequests =>
             prevRequests.map(request =>
@@ -83,13 +93,13 @@ function VeterinarianExaminations() {
             )
         );
     };
-    const handleDecline = (requestId) => {
-        setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
-    };
+
+    // Remove request from the list ( for declining and deleting purposes)
     const handleDelete = (requestId) => {
         setRequests(prevRequests => prevRequests.filter(request => request.id !== requestId));
     };
 
+    // Show more requests by increasing the number of visible requests
     const handleShowMoreRequests = () => {
         setVisibleRequests(prev => prev + 2); 
     };
@@ -100,6 +110,7 @@ function VeterinarianExaminations() {
             <UserHeader user={user} />
             <UserNav role={user.role} />
 
+            {/* Display for caretakers to add new requests and manage their list of requests */}
             {user.role === 'Caretaker' && (
                 <>
                     <div className="w-full max-w-[1024px] mx-auto mb-8">
@@ -107,13 +118,14 @@ function VeterinarianExaminations() {
                     </div>
                     <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                       <div className="flex flex-wrap gap-10">
-                  
+                        {/* Render request cards with options for caretakers through showActions */}
                         {requests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} showActions={'Caretaker'} onDelete={handleDelete} />
                         ))}
                     
                       </div>
                     </div>
+                     {/* Button to show more requests if they are available */}
                       {requests.length > visibleRequests && (
                           <div className="flex justify-center my-4">
                               <button
@@ -127,6 +139,7 @@ function VeterinarianExaminations() {
                 </>
             )}
 
+             {/* Display for veterinarians to see new requests and completed treatments */}
             {user.role === 'Veterinarian' && (
                 <>
                     <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
@@ -134,13 +147,15 @@ function VeterinarianExaminations() {
                     </div>
                     <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                       <div className="flex flex-wrap gap-10">
+                         {/* Render request cards with approval and decline actions for new requests */}
                         {newRequests.slice(0, visibleRequests).map((request) => (
                             <RequestCard key={request.id} request={request} showActions={'Veterinarian'}
-                                onApprove={handleApprove} onDecline={handleDecline} />
+                                onApprove={handleApprove} onDecline={handleDelete} />
                         ))}
                   
                       </div>
                     </div>
+                     {/* Button to show more new requests*/}
                     {newRequests.length > visibleRequests && (
                         <div className="flex justify-center my-4">
                             <button
@@ -154,6 +169,7 @@ function VeterinarianExaminations() {
                 </>
             )}
 
+            {/* Section for veterinarians to view completed treatments */}
             {user.role === 'Veterinarian' && (
                 <>
                     <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
@@ -181,6 +197,7 @@ function VeterinarianExaminations() {
                 </>
             )}
             
+             {/* Show the form to add a new request if toggled */}
             {showAddRequestForm && (
                 <AddRequestForm onSubmit={handleFormSubmit} onClose={() => setShowAddRequestForm(false)} />
             )}
