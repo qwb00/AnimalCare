@@ -1,4 +1,3 @@
-// components/ShowMoreButton.js
 import React from 'react';
 
 function ShowMoreButton({ onClick }) {

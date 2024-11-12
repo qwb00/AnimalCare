@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../components/Button';
 import API_BASE_URL from "../config";
-import axios from 'axios';
 
 function UserBasicInfo({ user, updateUser }) {
     const [editMode, setEditMode] = useState(false);
@@ -9,7 +8,7 @@ function UserBasicInfo({ user, updateUser }) {
         name: user.name,
         email: user.email,
         phoneNumber: user.phoneNumber,
-        photo: user.photo, // добавляем фото
+        photo: user.photo,
     });
 
     // Toggle edit mode
@@ -104,7 +103,7 @@ function UserBasicInfo({ user, updateUser }) {
                     </div>
                 </div>
 
-                {/* Role - Not Editable */}
+                {/* Role */}
                 <div className="flex items-start">
                     <img src="/icons/role.png" alt="Role Icon" className="h-8 w-8 mr-4" />
                     <div>
@@ -151,7 +150,7 @@ function UserBasicInfo({ user, updateUser }) {
                     </div>
                 </div>
 
-                {/* Registration Date - Not Editable */}
+                {/* Registration Date */}
                 <div className="flex items-start">
                     <img src="/icons/calendar_black.png" alt="Registration Date Icon" className="h-8 w-8 mr-4" />
                     <div>

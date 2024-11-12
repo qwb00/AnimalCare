@@ -1,4 +1,3 @@
-// src/pages/Volunteers.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
@@ -10,12 +9,12 @@ import ShowMoreButton from '../components/ShowMoreButton';
 import { icons } from '../components/icons';
 
 function Volunteers() {
-    const [user, setUser] = useState(null);
-    const [newRequests, setNewRequests] = useState([]);
-    const [currentVolunteers, setCurrentVolunteers] = useState([]);
-    const [displayCountRequests, setDisplayCountRequests] = useState(2);
-    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2);
-    const navigate = useNavigate();
+    const [user, setUser] = useState(null); // Stores logged-in user data
+    const [newRequests, setNewRequests] = useState([]); // Stores unverified volunteer requests
+    const [currentVolunteers, setCurrentVolunteers] = useState([]); // Stores verified volunteers
+    const [displayCountRequests, setDisplayCountRequests] = useState(2); // Controls number of displayed requests
+    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2); // Controls number of displayed volunteers
+    const navigate = useNavigate(); // Navigation hook for redirecting
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');

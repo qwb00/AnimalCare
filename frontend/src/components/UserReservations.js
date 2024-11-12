@@ -11,8 +11,8 @@ const statusMap = {
 };
 
 function UserReservations({ userId }) {
-    const [reservations, setReservations] = useState([]);
-    const [visibleReservations, setVisibleReservations] = useState(3);
+    const [reservations, setReservations] = useState([]); // State to store fetched reservations
+    const [visibleReservations, setVisibleReservations] = useState(3); // State to control number of displayed reservations
 
     useEffect(() => {
         const fetchReservations = async () => {
@@ -50,7 +50,9 @@ function UserReservations({ userId }) {
         <div className="max-w-md mx-auto">
             <h3 className="text-lg font-semibold mb-4">Your Reservations</h3>
             <div className="relative">
+                {/* Slices the reservation to display only needed reservations */}
                 {reservations.slice(0, visibleReservations).map((reservation, index) => {
+                    {/* Format the date */}
                     const formattedDate = reservation.date
                         ? new Date(reservation.date).toLocaleDateString('en-GB', {
                             day: '2-digit',
@@ -103,7 +105,6 @@ function UserReservations({ userId }) {
                                         <span className="text-gray-500">Status:</span>
                                         <span
                                             className={`ml-2 px-2 py-1 rounded ${statusInfo.colorClass}`}
-                                            style={{ border: `2px solid ${statusInfo.colorClass.split(" ")[1]}` }}
                                         >
                                             {statusInfo.text}
                                         </span>
