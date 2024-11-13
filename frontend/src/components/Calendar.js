@@ -197,23 +197,27 @@ function Calendar({ selectedAnimalId }) {
     };
   };
 
-  // Merge consecutive selected time slots for continuous intervals
+  // Merge consecutive selected time slots to create continuous time intervals for each day
   const mergeTimeSlots = (selectedSlots) => {
+    // Convert each selected slot into a structured format (date and start/end times)
     const slots = selectedSlots.map(formatTimeSlot);
 
-    // Group slots by date
+    // Group slots by date to merge intervals only within the same day
     const groupedByDate = slots.reduce((acc, slot) => {
+      // Initialize a list for each unique date
       if (!acc[slot.date]) {
         acc[slot.date] = [];
       }
+      // Add slot to the list for this specific date
       acc[slot.date].push(slot);
       return acc;
     }, {});
 
-    const mergedSlots = [];
+    const mergedSlots = []; // Array to store the final merged intervals
 
-    // Merge consecutive times for each date
+    // Loop through each date to process and merge slots within that day
     Object.keys(groupedByDate).forEach((date) => {
+      // Sort slots by start time to ensure correct chronological merging
       const times = groupedByDate[date].sort((a, b) => {
         const parsedA = parse(
           `${date} ${a.startTime}`,
@@ -228,10 +232,13 @@ function Calendar({ selectedAnimalId }) {
         return parsedA - parsedB;
       });
 
+      // Initialize the first interval to start merging
       let currentStart = times[0].startTime;
       let currentEnd = times[0].endTime;
 
+      // Loop through each time slot starting from the second one
       for (let i = 1; i < times.length; i++) {
+        // Convert end time of previous slot and start time of the current slot to compare
         const previousEnd = parse(
           `${date} ${currentEnd}`,
           "MMM dd yyyy hh:mm a",
@@ -243,11 +250,12 @@ function Calendar({ selectedAnimalId }) {
           new Date()
         );
 
+        // Check if the current slot directly follows the previous one (is consecutive)
         if (differenceInHours(currentStartTime, previousEnd) === 0) {
-          // Extend current interval if the slot is consecutive
+          // Extend the current interval to include this slot if consecutive
           currentEnd = times[i].endTime;
         } else {
-          // Save the current interval and start a new one
+          // If not consecutive, save the current interval and start a new one
           mergedSlots.push({
             date,
             startTime: currentStart,
@@ -258,25 +266,29 @@ function Calendar({ selectedAnimalId }) {
         }
       }
 
-      mergedSlots.push({ date, startTime: currentStart, endTime: currentEnd }); // Add last interval
+      // Add the last interval for the day to the merged slots
+      mergedSlots.push({ date, startTime: currentStart, endTime: currentEnd });
     });
 
-    return mergedSlots;
+    return mergedSlots; // Return all merged intervals for use in reservation
   };
 
-  // Confirm reservation by sending selected slots to the server
+  // Confirm the reservation by sending selected time slots to the server for booking
   const handleConfirmReservation = async () => {
     try {
+      // Retrieve authentication token and user ID from session storage
       const authToken = sessionStorage.getItem("token");
       const userID = sessionStorage.getItem("userID");
 
+      // Copy existing reserved slots and prepare to store successfully reserved ones
       const newReservedSlots = [...reservedSlots];
       let successfullyReservedSlots = [];
 
-      // Loop through each merged time slot to create reservations
+      // Loop through each merged time slot to send reservation requests for each interval
       for (const { date, startTime, endTime } of mergeTimeSlots(
         selectedSlots
       )) {
+        // Prepare reservation data in the required format
         const reservationData = {
           volunteerId: userID,
           animalId: selectedAnimalId,
@@ -292,7 +304,7 @@ function Calendar({ selectedAnimalId }) {
         };
 
         try {
-          // Send reservation data to API
+          // Send reservation data to API endpoint
           const response = await axios.post(
             `${API_BASE_URL}/reservations`,
             reservationData,
@@ -304,8 +316,9 @@ function Calendar({ selectedAnimalId }) {
             }
           );
 
+          // If the reservation was created successfully (status 201)
           if (response.status === 201) {
-            // Update reserved slots and show success notification
+            // Format date and start time to match reserved slot key format
             const formattedDate = format(
               parse(date, "MMM dd yyyy", new Date()),
               "yyyy-MM-dd"
@@ -315,17 +328,22 @@ function Calendar({ selectedAnimalId }) {
               "hh:mm a"
             );
             const newSlotKey = `${formattedDate}-${formattedStartTime}`;
+
+            // Add the newly reserved slot to `newReservedSlots` and track successful reservations
             newReservedSlots.push(newSlotKey);
             successfullyReservedSlots.push(newSlotKey);
 
+            // Display success notification to the user
             showNotification("Reservation created successfully!", true);
           } else {
+            // If response is not successful, show error notification
             showNotification(
               "Failed to create reservation. Please try again.",
               false
             );
           }
         } catch (error) {
+          // Handle errors and display appropriate message if reservation fails
           const errorMessage =
             error.response?.data?.message ||
             "Error creating reservation. Please try again.";
@@ -333,17 +351,20 @@ function Calendar({ selectedAnimalId }) {
         }
       }
 
-      setReservedSlots(newReservedSlots); // Update reserved slots with new slots
+      // Update reserved slots with all successfully booked slots
+      setReservedSlots(newReservedSlots);
 
-      // Clear successfully reserved slots from selected slots
+      // Remove successfully reserved slots from `selectedSlots`
       setSelectedSlots((prevSelectedSlots) =>
         prevSelectedSlots.filter(
           (slot) => !successfullyReservedSlots.includes(slot)
         )
       );
 
-      handleCloseModal(); // Close reservation modal
+      // Close the reservation modal after completing booking
+      handleCloseModal();
     } catch (error) {
+      // Catch unexpected errors and display general error notification
       showNotification("Unexpected error. Please try again.", false);
     }
   };
