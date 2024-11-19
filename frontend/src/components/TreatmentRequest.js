@@ -7,7 +7,7 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
   const token = sessionStorage.getItem('token');
 
   // sending patch request to change status request status for approved, same with handleDecline
-  // 0 - approved, 2 - declined
+  // 1 - approved, 2 - declined
   const handleApprove = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/examinations/${request.id}`, {
@@ -16,7 +16,7 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json-patch+json',
         },
-        body: JSON.stringify([{ op: "replace", path: "/status", value: 0 }]),
+        body: JSON.stringify([{ op: "replace", path: "/status", value: 1 }]),
       });
       if (response.ok) {
         // Call parent handler to update the UI
@@ -68,8 +68,8 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
   };
 
   // Determine status text and color based on the request status
-  const statusText = request.status === 1 ? "In Progress" : request.status === 0 ? "Completed" : "Declined";
-  const statusColor = request.status === 1 ? "text-blue-500" : request.status === 0 ? "text-green-500" : "text-red-500";
+  const statusText = request.status === 0 ? "In Progress" : request.status === 1 ? "Completed" : "Declined";
+  const statusColor = request.status === 0 ? "text-blue-500" : request.status === 1 ? "text-green-500" : "text-red-500";
 
   // Render the Card component with information and actions specific to the request
   return (

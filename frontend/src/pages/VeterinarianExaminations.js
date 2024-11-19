@@ -73,8 +73,8 @@ function VeterinarianExaminations() {
 
     // Filter requests to show only those relevant to the user
     const userRequests = requests.filter(request => request.veterinarianName === user.name);
-    const newRequests = userRequests.filter(request => request.status === 1);
-    const completedRequests = userRequests.filter(request => request.status === 0);
+    const newRequests = userRequests.filter(request => request.status === 0);
+    const completedRequests = userRequests.filter(request => request.status === 1);
     
     // Show the form to add a new request
     const handleAddRequestClick = () => {
@@ -89,7 +89,7 @@ function VeterinarianExaminations() {
     const handleApprove = (requestId) => {
         setRequests(prevRequests =>
             prevRequests.map(request =>
-                request.id === requestId ? { ...request, status: 0 } : request
+                request.id === requestId ? { ...request, status: 1 } : request
             )
         );
     };
