@@ -64,6 +64,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
             ...formData,
             careTakerId,
             type: formData.type === 'Planned treatment' ? 0 : 1,
+            status: 0 
         };
         
         try {

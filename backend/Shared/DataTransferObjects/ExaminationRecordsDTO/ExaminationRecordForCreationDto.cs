@@ -25,5 +25,8 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 
         [Required]
         public string Description { get; set; }
+
+        [Required]
+        public ExaminationStatus Status { get; set; }
     }
 }
