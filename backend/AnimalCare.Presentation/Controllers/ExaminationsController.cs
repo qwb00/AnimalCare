@@ -1,13 +1,8 @@
-// AnimalCare.Presentation/Controllers/ExaminationsController.cs
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
-using Shared.DataTransferObjects;
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Microsoft.AspNetCore.JsonPatch;
-using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace AnimalCare.Presentation.Controllers
 {

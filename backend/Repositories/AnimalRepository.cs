@@ -19,19 +19,5 @@ namespace Repositories
         .SingleOrDefaultAsync();
 
         public void CreateAnimal(Animal animal) => Create(animal);
-        
-        public async Task<DateTime?> GetLastExaminationDateAsync(Guid animalId, bool trackChanges)
-        {
-            var animal = await GetByCondition(a => a.Id == animalId, trackChanges)
-                .Include(a => a.Examinations)
-                .FirstOrDefaultAsync();
-
-            if (animal == null || !animal.Examinations.Any())
-            {
-                return null;
-            }
-
-            return animal.Examinations.Max(r => r.Date);
-        }
     }
 }

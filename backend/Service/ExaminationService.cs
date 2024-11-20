@@ -1,14 +1,9 @@
-﻿// Service/ExaminationService.cs
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
 using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
-using Shared.DataTransferObjects.AnimalsDTO;
 
 namespace Service
 {
@@ -68,8 +63,8 @@ namespace Service
         {
             var examination = await GetExaminationAndCheckIfItExists(id, true);
 
-            var examinationDTO = _mapper.Map<ExaminationRecordForUpdateDto>(examination);
-            return (examinationForPatch: examinationDTO, examinationEntity: examination);
+            var examinationDto = _mapper.Map<ExaminationRecordForUpdateDto>(examination);
+            return (examinationForPatch: examinationDto, examinationEntity: examination);
         }
 
         public async Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDto patch, ExaminationRecord examination)

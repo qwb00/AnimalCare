@@ -1,10 +1,7 @@
-// ReservationsController.cs
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
-using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.ReservationsDTO;
 
 namespace AnimalCare.Presentation.Controllers

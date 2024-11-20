@@ -1,9 +1,7 @@
-﻿// ReservationService.cs
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
 using Models.Entities;
 using Service.Contracts;
-using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.ReservationsDTO;
 
 namespace Service
