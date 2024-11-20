@@ -6,6 +6,7 @@ using Shared.DataTransferObjects.AnimalsDTO;
 using Shared.DataTransferObjects.UsersDTO;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Shared.DataTransferObjects.ReservationsDTO;
+using Shared.DataTransferObjects.MedicationsDTO;
 using Shared.Enums;
 
 namespace AnimalCare
@@ -127,7 +128,7 @@ namespace AnimalCare
 
             CreateMap<ExaminationRecord, ExaminationRecordForUpdateDto>();
 
-            CreateMap<ExaminationRecord, ExaminationRecordDto>()
+            CreateMap<ExaminationRecord, ExaminationRecordDetailDTO>()
                 .MapMembers(
                     (dst => dst.Id, src => src.Id),
                     (dst => dst.AnimalName, src => src.Animal.Name),
@@ -140,6 +141,8 @@ namespace AnimalCare
                     (dst => dst.Description, src => src.Description),
                     (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
                 );
+            CreateMap<MedicationSchedule, MedicationScheduleForCreationDTO>().ReverseMap();
+            CreateMap<MedicationSchedule, MedicationScheduleDTO>();
         }
     }
 }

@@ -23,21 +23,21 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ExaminationRecordDto>> GetAllExaminationsAsync(bool trackChanges)
+        public async Task<IEnumerable<ExaminationRecordDetailDTO>> GetAllExaminationsAsync(bool trackChanges)
         {
             var examinations = await _repository.Examination.GetAllExaminationsAsync(trackChanges);
-            var examinationsDto = _mapper.Map<IEnumerable<ExaminationRecordDto>>(examinations);
+            var examinationsDto = _mapper.Map<IEnumerable<ExaminationRecordDetailDTO>>(examinations);
             return examinationsDto;
         }
 
-        public async Task<ExaminationRecordDto> GetExaminationByIdAsync(Guid examinationId, bool trackChanges)
+        public async Task<ExaminationRecordDetailDTO> GetExaminationByIdAsync(Guid examinationId, bool trackChanges)
         {
             var examination = await GetExaminationAndCheckIfItExists(examinationId, trackChanges);
-            var examinationDto = _mapper.Map<ExaminationRecordDto>(examination);
+            var examinationDto = _mapper.Map<ExaminationRecordDetailDTO>(examination);
             return examinationDto;
         }
 
-        public async Task<ExaminationRecordDto> CreateExaminationAsync(ExaminationRecordForCreationDto examinationForCreation)
+        public async Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDto examinationForCreation)
         {
             var examinationEntity = _mapper.Map<ExaminationRecord>(examinationForCreation);
             examinationEntity.Id = Guid.NewGuid();
@@ -51,7 +51,7 @@ namespace Service
                 e => e.Animal,
                 e => e.Veterinarian);
 
-            var examinationToReturn = _mapper.Map<ExaminationRecordDto>(examinationFromDb);
+            var examinationToReturn = _mapper.Map<ExaminationRecordDetailDTO>(examinationFromDb);
             return examinationToReturn;
         }
 

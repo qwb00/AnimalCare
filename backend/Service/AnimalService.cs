@@ -3,8 +3,6 @@ using Contracts;
 using Service.Contracts;
 using Models.Entities;
 using Shared.DataTransferObjects.AnimalsDTO;
-using Microsoft.AspNetCore.Identity;
-using Shared.DataTransferObjects.UsersDTO;
 
 namespace Service
 {
@@ -42,9 +40,9 @@ namespace Service
             _repository.Animal.CreateAnimal(animalEntity);
             await _repository.SaveAsync();
 
-            var companyToReturn = _mapper.Map<AnimalDetailedDto>(animalEntity);
+            var animalToReturn = _mapper.Map<AnimalDetailedDto>(animalEntity);
 
-            return companyToReturn;
+            return animalToReturn;
         }
 
         public async Task DeleteAnimalAsync(Guid animalId, bool trackChanges)

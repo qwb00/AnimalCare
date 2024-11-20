@@ -11,6 +11,7 @@ namespace Service.Contracts
         IAnimalService AnimalService { get; }
         IExaminationService ExaminationService { get; }
         IReservationService ReservationService { get; }
+        IMedicationService MedicationService { get; }
         IUserService UserService { get; }
         IAuthenticationService AuthenticationService { get; }
     }
