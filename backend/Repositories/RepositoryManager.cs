@@ -9,6 +9,7 @@ namespace Repositories
         private readonly Lazy<IAnimalRepository> _animalRepository;
         private readonly Lazy<IExaminationRepository> _examinationRepository;
         private readonly Lazy<IReservationRepository> _reservationRepository;
+        private readonly Lazy<IMedicationRepository> _medicationRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -16,13 +17,14 @@ namespace Repositories
             _animalRepository = new Lazy<IAnimalRepository>(() => new AnimalRepository(repositoryContext));
             _examinationRepository = new Lazy<IExaminationRepository>(() => new ExaminationRepository(repositoryContext));
             _reservationRepository = new Lazy<IReservationRepository>(() => new ReservationRepository(repositoryContext));
+            _medicationRepository = new Lazy<IMedicationRepository>(() => new MedicationRepository(repositoryContext));
         }
 
         public IAnimalRepository Animal => _animalRepository.Value;
         public IExaminationRepository Examination => _examinationRepository.Value;
         public IReservationRepository Reservation => _reservationRepository.Value;
+        public IMedicationRepository Medication => _medicationRepository.Value;
 
         public async Task SaveAsync() => await _repositoryContext.SaveChangesAsync();
-        public async ValueTask DisposeAsync() => await _repositoryContext.DisposeAsync().ConfigureAwait(false);
     }
 }

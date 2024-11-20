@@ -1,10 +1,8 @@
-// Shared/DataTransferObjects/ExaminationRecordDto.cs
-using System;
-using Shared.Enums;
+﻿using Shared.Enums;
 
-namespace Shared.DataTransferObjects
+namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 {
-    public class ExaminationRecordDto
+    public record ExaminationRecordListDTO
     {
         public Guid Id { get; set; }
         public string AnimalName { get; set; }
@@ -13,8 +11,6 @@ namespace Shared.DataTransferObjects
         public ExaminationType Type { get; set; }
         public ExaminationStatus Status { get; set; }
         public DateTime ExaminationDate { get; set; }
-        public string Description { get; set; }
-        public string FinalDiagnosis { get; set; }
         public string AnimalPhoto { get; set; }
     }
 }

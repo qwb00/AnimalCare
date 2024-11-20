@@ -8,6 +8,6 @@ namespace Shared.DataTransferObjects.AnimalsDTO;
 public record AnimalDetailedDto : AnimalForCreating
 {
     public Guid Id { get; set; }
-    public List<ExaminationRecordDto> ExaminationRecords { get; set;}
+    public List<ExaminationRecordDetailDTO> ExaminationRecords { get; set;}
     public List<ReservationForUserDto> Reservations { get; set;}
 }

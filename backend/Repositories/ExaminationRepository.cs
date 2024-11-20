@@ -16,6 +16,7 @@ namespace Repositories
             await GetAll(trackChanges)
                 .Include(e => e.Animal)
                 .Include(e => e.Veterinarian)
+                .Include(e => e.Medicals)
                 .OrderBy(e => e.Date)
                 .ToListAsync();
 

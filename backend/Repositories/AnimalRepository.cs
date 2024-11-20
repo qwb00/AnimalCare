@@ -1,7 +1,6 @@
 ﻿using Contracts;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Repositories
 {
@@ -20,19 +19,6 @@ namespace Repositories
         .SingleOrDefaultAsync();
 
         public void CreateAnimal(Animal animal) => Create(animal);
-        
-        //public async Task<IEnumerable<Animal>> GetThreeAnimalsAsync(bool trackChanges)
-        //{
-        //    var animals = await GetAll(trackChanges, a => a.Reservations, a => a.Examinations).ToListAsync();
-        //    var dogs = animals.Where(a => a.Species == Shared.Enums.Species.Dog).ToList();
-        //    var cats = animals.Where(a => a.Species == Shared.Enums.Species.Cat).ToList();
-        //    if (dogs.Any() && cats.Any())
-        //    {
-        //        return animals.Take(3).ToList();
-        //    }
-
-        //    return Enumerable.Empty<Animal>();
-        //}
         
         public async Task<DateTime?> GetLastExaminationDateAsync(Guid animalId, bool trackChanges)
         {
