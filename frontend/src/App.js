@@ -13,6 +13,7 @@ import AnimalDetails from './pages/AnimalDetails';
 import Volunteers from './pages/Volunteers';
 import Users from './pages/Users';
 import UserReservationsConfirm from "./pages/UserReservationsConfirm";
+import Prescriptions from "./pages/Prescriptions";
 
 function App() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/signup" element={<RegisterPage />} />
         <Route path="/:userID/veterinarian-examinations" element={<VeterinarianExaminations />} />
+        <Route path="/:userID/medical-prescriptions" element={<Prescriptions />} />
         <Route path="/:userID/volunteers" element={<Volunteers />} />
         <Route path="/:userID/users" element={<Users />} />
         <Route path="/:userID/user-reservations" element={<UserReservationsConfirm />} />
