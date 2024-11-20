@@ -2,7 +2,6 @@
 using Contracts;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Repositories
 {
