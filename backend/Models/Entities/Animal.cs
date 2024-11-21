@@ -42,6 +42,7 @@ namespace Models.Entities
 
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         public ICollection<ExaminationRecord> Examinations { get; set; } = new List<ExaminationRecord>();
+        public ICollection<MedicationSchedule> Medications { get; set; }
 
     }
 }

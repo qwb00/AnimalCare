@@ -86,6 +86,11 @@ namespace Repositories
                  .WithOne(r => r.Animal)
                  .HasForeignKey(r => r.AnimalId)
                  .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Animal>()
+                 .HasMany(a => a.Medications)
+                 .WithOne(r => r.Animal)
+                 .HasForeignKey(r => r.AnimalId)
+                 .OnDelete(DeleteBehavior.Cascade);
         }
 
     }
