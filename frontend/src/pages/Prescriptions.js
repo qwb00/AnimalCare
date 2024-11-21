@@ -26,34 +26,17 @@ function Prescriptions() {
         }
 
         const fetchPrescriptions = async () => {
-            // Mock data для тестирования; заменить на API-запрос
-            const mockPrescriptions = [
-                {
-                    id: 1,
-                    animalName: "Lola",
-                    medication: "Paracetamol",
-                    photo: "/images/lola.jpg",
-                    dateRange: { startDate: "2024-11-01", endDate: "2024-11-30" },
-                    frequency: { count: 2, unit: "day" },
-                },
-                {
-                    id: 2,
-                    animalName: "Max",
-                    medication: "Ibuprofen",
-                    photo: "/images/max.jpg",
-                    dateRange: { startDate: "2024-11-05", endDate: "2024-11-10" },
-                    frequency: { count: 1, unit: "day" },
-                },
-                {
-                    id: 3,
-                    animalName: "Bella",
-                    medication: "Antibiotics",
-                    photo: "/images/bella.jpg",
-                    dateRange: { startDate: "2024-11-10", endDate: "2024-11-20" },
-                    frequency: { count: 1, unit: "week" },
-                },
-            ];
-            setPrescriptions(mockPrescriptions);
+            try {
+                const response = await axios.get(`${API_BASE_URL}/medications`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                });
+                console.log(response.data); // Log available animals
+                setPrescriptions(response.data); // Save the list of animals with name and ID
+            } catch (error) {
+                console.error("Error fetching animals:", error);
+            }
         };
 
         fetchPrescriptions();

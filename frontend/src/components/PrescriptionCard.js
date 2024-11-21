@@ -4,9 +4,10 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 
 const PrescriptionCard = ({ prescription, onEdit }) => {
+  console.log(prescription);
   // Форматируем даты для читабельности
-  const formattedStartDate = format(new Date(prescription.dateRange.startDate), "MMM d, yyyy");
-  const formattedEndDate = format(new Date(prescription.dateRange.endDate), "MMM d, yyyy");
+  const formattedStartDate = format(new Date(prescription.start), "MMM d, yyyy");
+  const formattedEndDate = format(new Date(prescription.end), "MMM d, yyyy");
 
   return (
     <Card
@@ -17,7 +18,7 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
         { label: "Medication", value: prescription.medication },
         { label: "Duration", value: `${formattedStartDate} - ${formattedEndDate}` },
         { label: "Type", value: prescription.type || "N/A" },
-        { label: "Frequency", value: `${prescription.frequency.count} per ${prescription.frequency.unit}` },
+        { label: "Frequency", value: `${prescription.dailyDoseCount} per ${prescription.frequencyInWeeks}` },
         { label: "Description", value: prescription.description || "No description provided" },
         { label: "Diagnosis", value: prescription.diagnosis || "No diagnosis available" },
       ]}
