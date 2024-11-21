@@ -1,193 +1,259 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
+import Button from "../components/Button";
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import enUS from 'date-fns/locale/en-US';
+import Select from 'react-select';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+registerLocale('en-US', enUS);
 
 const AddRequestForm = ({ onSubmit, onClose }) => {
-    const [formData, setFormData] = useState({
-        animalId: '',
-        veterinarianId: '',
-        examinationDate: '',
-        type: '',
-        description: '',
-    });
-    
-    const [animals, setAnimals] = useState([]);
-    const [veterinarians, setVeterinarians] = useState([]);
-    
-    // Effect to fetch animals and veterinarians when the component is rendering
-    useEffect(() => {
-        //function to get list of animals
-        const fetchAnimals = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/animals`);
-                const data = await response.json();
-                setAnimals(data);
-            } catch (error) {
-                console.error("Error fetching animals:", error);
-            }
-        };
-        
-        // get veterinarians list
-        const fetchVeterinarians = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await fetch(`${API_BASE_URL}/users`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                const data = await response.json();
-                const veterinarians = data.filter(user => user.role === "Veterinarian");
-                setVeterinarians(veterinarians);
-            } catch (error) {
-                console.error("Error fetching veterinarians:", error);
-            }
-        };
-        
-        fetchAnimals();
-        fetchVeterinarians();
-    }, []);
+  const [formData, setFormData] = useState({
+    animalId: '',
+    veterinarianId: '',
+    examinationDate: '',
+    type: '',
+    description: '',
+  });
 
-    // Handle form input changes and update formData state
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
+  const [animals, setAnimals] = useState([]);
+  const [veterinarians, setVeterinarians] = useState([]);
+
+  // Effect to fetch animals and veterinarians when the component is rendering
+  useEffect(() => {
+    // Function to get list of animals
+    const fetchAnimals = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/animals`);
+        const data = await response.json();
+        setAnimals(data);
+      } catch (error) {
+        console.error("Error fetching animals:", error);
+      }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        // Retrieve current caretaker's ID from sessionStorage
-        const careTakerId = sessionStorage.getItem('userID');
-        
-        // Prepare data to submit, including converting type to a numerical format
-        const dataToSubmit = {
-            ...formData,
-            careTakerId,
-            type: formData.type === 'Planned treatment' ? 0 : 1,
-        };
-        
-        try {
-            const token = sessionStorage.getItem('token');
-            const response = await fetch(`${API_BASE_URL}/examinations`, { 
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataToSubmit),
-   
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create new request');
-            }
-
-            alert('Request created successfully');
-            onClose(); // Close the form upon successful submission
-        } catch (error) {
-            console.error("Error submitting request:", error);
-        }
+    // Get veterinarians list
+    const fetchVeterinarians = async () => {
+      try {
+        const token = sessionStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/users`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        const veterinarians = data.filter(user => user.role === "Veterinarian");
+        setVeterinarians(veterinarians);
+      } catch (error) {
+        console.error("Error fetching veterinarians:", error);
+      }
     };
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md max-w-md w-full">
-                <h2 className="text-xl font-bold mb-4">New Request</h2>
-                
-                {/* Animal Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Animal</label>
-                    <select
-                        name="animalId"
-                        value={formData.animalId}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>Select an animal</option>
-                        {animals.map((animal) => (
-                            <option key={animal.id} value={animal.id}>
-                                {animal.name} ({animal.breed})
-                            </option>
-                        ))}
-                    </select>
-                </div>
+    fetchAnimals();
+    fetchVeterinarians();
+  }, []);
 
-                {/* Veterinarian Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Veterinarian</label>
-                    <select
-                        name="veterinarianId"
-                        value={formData.veterinarianId}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>Select a veterinarian</option>
-                        {veterinarians.map((vet) => (
-                            <option key={vet.id} value={vet.id}>
-                                {vet.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+  // Transform animals and veterinarians data to options for react-select
+  const animalOptions = animals.map((animal) => ({
+    value: animal.id,
+    label: `${animal.name} (${animal.breed})`,
+  }));
 
-                {/* Examination Date Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Examination Date</label>
-                    <input
-                        type="date"
-                        name="examinationDate"
-                        value={formData.examinationDate}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
+  const veterinarianOptions = veterinarians.map((vet) => ({
+    value: vet.id,
+    label: vet.name,
+  }));
 
-                {/* Type Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Type</label>
-                    <select
-                        name="type"
-                        value={formData.type}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>Select type</option>
-                        <option value="Planned treatment">Planned treatment</option>
-                        <option value="Emergency treatment">Emergency treatment</option>
-                    </select>
-                </div>
+  // Handle form input changes and update formData state
+  const handleChange = (event) => {
+    const { name, value } = event.target || event;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-                {/* Description Field */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 mb-2">Description</label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        placeholder="Type description here"
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-                {/* Action Buttons */}
-                <div className="flex justify-end">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="text-gray-600 mr-4"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                    >
-                        Add
-                    </button>
-                </div>
-            </form>
-        </div>
-    );
+    // Retrieve current caretaker's ID from sessionStorage
+    const careTakerId = sessionStorage.getItem('userID');
+
+    // Prepare data to submit, including converting type to a numerical format
+    const dataToSubmit = {
+      ...formData,
+      careTakerId,
+      type: formData.type === 'Planned treatment' ? 0 : 1,
+    };
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/examinations`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSubmit),
+
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create new request');
+      }
+      onClose(); 
+      toast.success('Request created successfully', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      toast.error('Error submitting request');
+    }
+  };
+
+  return (
+    <>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded-3xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black relative"
+        onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-xl font-bold mb-6 text-center text-gray-800">
+          NEW REQUEST
+        </h3>
+
+        <button
+          type="button"
+          className="absolute top-3 right-3 bg-main-blue rounded-full p-2"
+          aria-label="Close"
+          style={{ transform: "rotate(45deg)" }}
+          onClick={onClose}>
+          <img
+            src="/icons/plus_white.png"
+            alt="Close"
+            className="w-3 h-3"
+          />
+        </button>
+
+        <form onSubmit={handleSubmit}>
+          {/* Animal */}
+          <div className="mb-3">
+            <label className="block text-gray-700 mb-1 font-medium text-sm">
+              Animal
+            </label>
+            <Select
+              name="animalId"
+              value={animalOptions.find(option => option.value === formData.animalId)}
+              options={animalOptions}
+              onChange={(selectedOption) =>
+                handleChange({ name: 'animalId', value: selectedOption.value })
+              }
+              placeholder="Select an animal"
+              className="text-sm"
+              required
+            />
+          </div>
+
+          {/* Veterinarian */}
+          <div className="mb-3">
+            <label className="block text-gray-700 mb-1 font-medium text-sm">
+              Veterinarian
+            </label>
+            <Select
+              name="veterinarianId"
+              value={veterinarianOptions.find(option => option.value === formData.veterinarianId)}
+              options={veterinarianOptions}
+              onChange={(selectedOption) =>
+                handleChange({ name: 'veterinarianId', value: selectedOption.value })
+              }
+              placeholder="Select a veterinarian"
+              className="text-sm"
+              required
+            />
+          </div>
+
+          {/* Examination Date */}
+          <div className="mb-3">
+            <label className="block text-gray-700 mb-1 font-medium text-sm">
+              Examination Date
+            </label>
+            <DatePicker
+              selected={formData.examinationDate}
+              onChange={(date) =>
+                handleChange({ name: 'examinationDate', value: date })
+              }
+              dateFormat="MM/dd/yyyy"
+              locale="en-US"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+              wrapperClassName="w-full"
+              placeholderText="Select a date"
+              required
+            />
+          </div>
+
+          {/* Type */}
+          <div className="mb-3">
+            <label className="block text-gray-700 mb-1 font-medium text-sm">
+              Type
+            </label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+            >
+              <option value="" disabled>
+                Select type
+              </option>
+              <option value="Planned treatment">Planned treatment</option>
+              <option value="Emergency treatment">Emergency treatment</option>
+            </select>
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-1 font-medium text-sm">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Type description here"
+              required
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center space-x-2 mt-4">
+            <Button
+              text="Cancel"
+              variant="white"
+              iconSize="w-5 h-5"
+              icon="/icons/cancel.png"
+              iconPosition="right"
+              className="px-5 py-2 text-sm"
+              onClick={onClose}
+            />
+            <Button
+              text="Add"
+              variant="blue"
+              iconSize="w-5 h-5"
+              icon="/icons/confirm_white.png"
+              iconPosition="right"
+              className="px-5 py-2 text-sm"
+              type="submit"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+    </>
+  );
 };
 
 export default AddRequestForm;
