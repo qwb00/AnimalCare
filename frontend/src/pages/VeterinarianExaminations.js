@@ -7,6 +7,7 @@ import API_BASE_URL from '../config';
 import RequestCard from '../components/TreatmentRequest';
 import Header from '../components/Header';
 import AddRequestForm from '../components/AddRequestForm';
+import { ToastContainer } from 'react-toastify';
 
 function VeterinarianExaminations() {
     const [user, setUser] = useState(null);
@@ -105,6 +106,10 @@ function VeterinarianExaminations() {
     };
 
     return (
+        <>
+        <div>
+            <ToastContainer />
+        </div>
         <div className="container mx-auto">
             <Header />
             <UserHeader user={user} />
@@ -202,6 +207,7 @@ function VeterinarianExaminations() {
                 <AddRequestForm onSubmit={handleFormSubmit} onClose={() => setShowAddRequestForm(false)} />
             )}
         </div>
+        </>
     );
 }
 
