@@ -15,7 +15,6 @@ namespace Repositories
             await GetAll(trackChanges)
                 .Include(e => e.Animal)
                 .Include(e => e.Veterinarian)
-                .Include(e => e.Medicals)
                 .OrderBy(e => e.Date)
                 .ToListAsync();
 
@@ -25,13 +24,6 @@ namespace Repositories
         {
             return await GetByCondition(e => e.Id == examinationId, trackChanges, includes).SingleOrDefaultAsync();
         }
-        
-        // get all records for a specific animal
-        public async Task<IEnumerable<ExaminationRecord>> GetRecordsByAnimalNameAsync(string animalName, bool trackChanges)
-        {
-            return await GetByCondition(e => e.Animal.Name.Equals(animalName), trackChanges, e => e.Animal)
-                .OrderBy(c => c.Date)
-                .ToListAsync();
-        }
+       
     }
 }

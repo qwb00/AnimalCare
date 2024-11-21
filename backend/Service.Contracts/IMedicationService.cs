@@ -4,7 +4,9 @@ namespace Service.Contracts
 {
     public interface IMedicationService
     {
-        Task<MedicationScheduleDTO> CreateMedicationAsync(Guid treatmentId, MedicationScheduleForCreationDTO medication, bool trackChanges);
+        Task<IEnumerable<MedicationScheduleDTO>> GetAllMedicationsAsync(bool trackChanges);
+        Task<MedicationScheduleDTO> GetMedicationByIdAsync(Guid medicationId, bool trackChanges);
+        Task<MedicationScheduleDTO> CreateMedicationAsync(MedicationScheduleForCreationDTO medication, bool trackChanges);
         Task DeleteMedicationAsync(Guid medicationId, bool trackChanges);
     }
 }
