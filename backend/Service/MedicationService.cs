@@ -2,6 +2,7 @@
 using Contracts;
 using Models.Entities;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.MedicationsDTO;
 
 namespace Service
@@ -17,12 +18,25 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<MedicationScheduleDTO> CreateMedicationAsync(Guid treatmentId, MedicationScheduleForCreationDTO medication, bool trackChanges)
+        public async Task<IEnumerable<MedicationScheduleDTO>> GetAllMedicationsAsync(bool trackChanges)
         {
-            await CheckIfTreatmentExists(treatmentId, trackChanges);
+            var medications = await _repository.Medication.GetAllMedicationsAsync(trackChanges);
+            var medicationsDto = _mapper.Map<IEnumerable<MedicationScheduleDTO>>(medications);
+            return medicationsDto;
+        }
+
+        public async Task<MedicationScheduleDTO> GetMedicationByIdAsync(Guid medicationId, bool trackChanges)
+        {
+            var medication = await GetMedicationAndCheckIfItExists(medicationId, trackChanges);
+            var medicationDto = _mapper.Map<MedicationScheduleDTO>(medication);
+            return medicationDto;
+        }
+
+        public async Task<MedicationScheduleDTO> CreateMedicationAsync(MedicationScheduleForCreationDTO medication, bool trackChanges)
+        {
             var medicationEntity = _mapper.Map<MedicationSchedule>(medication);
 
-            _repository.Medication.CreateMedcicationForTreatment(treatmentId, medicationEntity);
+            _repository.Medication.CreateMedcication(medicationEntity);
             await _repository.SaveAsync();
 
             var medicationToReturn = _mapper.Map<MedicationScheduleDTO>(medicationEntity);
@@ -36,13 +50,6 @@ namespace Service
 
             _repository.Medication.Delete(medication);
             await _repository.SaveAsync();
-        }
-
-        private async Task CheckIfTreatmentExists(Guid treatmentId, bool trackChanges)
-        {
-            var treatment = await _repository.Examination.GetByIdAsync(treatmentId, trackChanges);
-            if (treatment is null)
-                throw new Exception("Examination not found");
         }
 
         private async Task<MedicationSchedule> GetMedicationAndCheckIfItExists(Guid id, bool trackChanges)

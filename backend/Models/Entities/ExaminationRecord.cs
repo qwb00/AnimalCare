@@ -37,7 +37,5 @@ namespace Models.Entities
         public Guid VeterinarianId { get; set; }
         [ForeignKey("VeterinarianId")]
         public Veterinarian Veterinarian { get; set; }
-
-        public ICollection<MedicationSchedule>? Medicals { get; set; }
     }
 }

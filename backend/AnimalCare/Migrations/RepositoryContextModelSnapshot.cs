@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ab352284-9bcb-4727-8a0f-39552e437ef9",
+                            Id = "e1dccffa-8823-40db-ac8e-2d5e8b9bc99f",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "88d5a96d-2b93-4cb7-bf71-47800a6541f4",
+                            Id = "bb6c0b91-e886-4ce9-81b7-c8f152e9149f",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "5ede59fa-7510-4bfd-a78e-5c2bca74be8d",
+                            Id = "03aaf590-d163-4771-8494-20baafb27373",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "116274ed-12c6-4a2b-b007-f128af52582b",
+                            Id = "98cdb7ea-b40e-4635-944c-7c58d216b5c5",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -339,23 +339,20 @@ namespace AnimalCare.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ExaminationRecordId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ExaminationRecordIdId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("FrequencyInWeeks")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("VeterinarianId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ExaminationRecordId");
+                    b.HasIndex("VeterinarianId");
 
-                    b.ToTable("MedicationSchedule");
+                    b.ToTable("Medications");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>
@@ -590,13 +587,13 @@ namespace AnimalCare.Migrations
 
             modelBuilder.Entity("Models.Entities.MedicationSchedule", b =>
                 {
-                    b.HasOne("Models.Entities.ExaminationRecord", "ExaminationRecord")
-                        .WithMany("Medicals")
-                        .HasForeignKey("ExaminationRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
+                        .WithMany("Medications")
+                        .HasForeignKey("VeterinarianId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("ExaminationRecord");
+                    b.Navigation("Veterinarian");
                 });
 
             modelBuilder.Entity("Models.Entities.Reservation", b =>
@@ -625,11 +622,6 @@ namespace AnimalCare.Migrations
                     b.Navigation("Reservations");
                 });
 
-            modelBuilder.Entity("Models.Entities.ExaminationRecord", b =>
-                {
-                    b.Navigation("Medicals");
-                });
-
             modelBuilder.Entity("Models.Entities.CareTaker", b =>
                 {
                     b.Navigation("Requests");
@@ -637,6 +629,8 @@ namespace AnimalCare.Migrations
 
             modelBuilder.Entity("Models.Entities.Veterinarian", b =>
                 {
+                    b.Navigation("Medications");
+
                     b.Navigation("Requests");
                 });
 

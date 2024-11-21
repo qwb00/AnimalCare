@@ -13,6 +13,7 @@ namespace Repositories
         public DbSet<Animal>? Animals { get; set; }
         public DbSet<Reservation>? Reservations { get; set; }
         public DbSet<ExaminationRecord>? Requests { get; set; }
+        public DbSet<MedicationSchedule>? Medications { get; set; }
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
@@ -36,7 +37,6 @@ namespace Repositories
             ConfigureVeterinarianEntity(modelBuilder);
             ConfigureVolunteerEntity(modelBuilder);
             ConfigureAnimalEntity(modelBuilder);
-            ConfigureExaminationRecordEntity(modelBuilder);
 
         }
 
@@ -65,6 +65,11 @@ namespace Repositories
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
                  .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Veterinarian>()
+                 .HasMany(user => user.Medications)
+                 .WithOne(r => r.Veterinarian)
+                 .HasForeignKey(r => r.VeterinarianId)
+                 .OnDelete(DeleteBehavior.NoAction);
         }
         private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
         {
@@ -80,14 +85,6 @@ namespace Repositories
                  .HasMany(a => a.Reservations)
                  .WithOne(r => r.Animal)
                  .HasForeignKey(r => r.AnimalId)
-                 .OnDelete(DeleteBehavior.Cascade);
-        }
-        private void ConfigureExaminationRecordEntity(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ExaminationRecord>()
-                 .HasMany(a => a.Medicals)
-                 .WithOne(r => r.ExaminationRecord)
-                 .HasForeignKey(r => r.ExaminationRecordId)
                  .OnDelete(DeleteBehavior.Cascade);
         }
 
