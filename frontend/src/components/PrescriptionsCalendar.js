@@ -100,16 +100,15 @@ function PrescriptionsCalendar({ prescriptions }) {
                           return (
                             <div
                               key={formattedDate}
-                              onClick={() => setSelectedDate(day)} // Устанавливаем выбранную дату
+                              onClick={() => setSelectedDate(day)} 
                               className={`border rounded-md h-28 flex flex-col justify-start items-start p-2 relative cursor-pointer ${
                                 isSameDay(day, selectedDate)
                                   ? "bg-main-blue text-white border-black"
                                   : isToday(day)
                                   ? "border-black text-main-blue"
                                   : "bg-white text-black border-gray-300"
-                              }`} // Подсвечиваем выбранную дату или текущий день
+                              }`}
                             >
-                              {/* Отображение номера дня */}
                               <p className={`text-sm font-bold ${
                                 isSameDay(day, selectedDate) ? "text-white" : "text-black"
                               }`}>
