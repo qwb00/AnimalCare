@@ -290,7 +290,7 @@ function Calendar({ selectedAnimalId }) {
       )) {
         // Prepare reservation data in the required format
         const reservationData = {
-          volunteerId: userID,
+          userId: userID,
           animalId: selectedAnimalId,
           reservationDate: format(
             parse(date, "MMM dd yyyy", new Date()),
