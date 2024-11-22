@@ -51,7 +51,7 @@ namespace Repositories
             modelBuilder.Entity<User>()
                 .HasMany(user => user.Reservations)
                 .WithOne(r => r.User)
-                .HasForeignKey(r => r.VolunteerId)
+                .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
         
