@@ -248,12 +248,12 @@ namespace AnimalCare.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Drug = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DaysOfWeek = table.Column<int>(type: "int", nullable: false),
-                    FrequencyInWeeks = table.Column<int>(type: "int", nullable: false),
-                    DailyDoseCount = table.Column<int>(type: "int", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false),
+                    Unit = table.Column<int>(type: "int", nullable: false),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Diagnosis = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     VeterinarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -306,10 +306,10 @@ namespace AnimalCare.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0c9c64ac-c6a3-4a11-9380-43cdd1977029", null, "Veterinarian", "VETERINARIAN" },
-                    { "7355cd98-de9b-4808-8721-b0eb9eb37097", null, "Administrator", "ADMINISTRATOR" },
-                    { "80c3ba68-b170-48a6-8e47-95f3ebb62821", null, "Caretaker", "CARETAKER" },
-                    { "d4049210-01d0-43a8-8d9c-9f084d714cd0", null, "Volunteer", "VOLUNTEER" }
+                    { "42a12b38-0461-4778-b791-a734b6c28880", null, "Veterinarian", "VETERINARIAN" },
+                    { "73280559-ce83-4b90-ab47-a5bad8b7d443", null, "Volunteer", "VOLUNTEER" },
+                    { "b1d46b59-52df-48d7-ad1d-0a638a6d0c1f", null, "Caretaker", "CARETAKER" },
+                    { "b8fb83ee-6252-4fa5-b561-903ffc3af555", null, "Administrator", "ADMINISTRATOR" }
                 });
 
             migrationBuilder.CreateIndex(

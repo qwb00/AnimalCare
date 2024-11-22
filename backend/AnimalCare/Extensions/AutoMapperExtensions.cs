@@ -16,6 +16,14 @@ public static class AutoMapperExtensions
         }
         return map;
     }
+    public static IMappingExpression<TSource, TDestination> MapPathMember<TSource, TDestination, TDestMember, TSourceMember>(
+     this IMappingExpression<TSource, TDestination> map,
+     Expression<Func<TDestination, TDestMember>> dstSelector,
+     Expression<Func<TSource, TSourceMember>> srcSelector)
+    {
+        map.ForPath(dstSelector, config => config.MapFrom(srcSelector));
+        return map;
+    }
 
     public static IMappingExpression<TSource, TDestination> UseValue<TSource, TDestination, TValue>(
         this IMappingExpression<TSource, TDestination> map,
