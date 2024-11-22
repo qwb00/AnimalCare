@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -38,47 +37,9 @@ namespace AnimalCare.Presentation.Controllers
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
 
-            // Get the user ID from the claims
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized();
-
-            // Get the user from the database
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return Unauthorized();
-
-            // Get user roles
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            if (userRoles == null || !userRoles.Any())
-            {
-                return Unauthorized("User does not have any roles");
-            }
-
-            // If the user is a Volunteer, check IsVerified
-            if (userRoles.Contains("Volunteer"))
-            {
-                if (user is Volunteer volunteer)
-                {
-                    if (!volunteer.IsVerified)
-                    {
-                        return Unauthorized("Volunteer is not verified");
-                    }
-                }
-                else
-                {
-                    return Unauthorized("User is not a volunteer");
-                }
-            }
-
-            // Set the VolunteerId in the reservationRequest to the current user's ID
-            reservationRequest.VolunteerId = Guid.Parse(userId);
-
             var createdReservation = await _service.ReservationService.CreateReservationAsync(reservationRequest);
             return CreatedAtRoute("GetReservationById", new { id = createdReservation.Id }, createdReservation);
         }
-
 
         // GET: api/Reservations/{id}
         [Authorize(Roles = "Caretaker,Administrator,Volunteer")]

@@ -14,7 +14,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         public Guid AnimalId { get; set; }
 
         [Required]
-        public Guid VolunteerId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]

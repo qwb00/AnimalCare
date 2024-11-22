@@ -9,7 +9,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
     {
         public Guid Id { get; set; }
         public string VolunteerName { get; set; }
-        public Guid VolunteerId { get; set; }
+        public Guid UserId { get; set; }
         public string phoneNumber { get; set; }
         public string AnimalName { get; set; }
         public Guid AnimalId { get; set; }
