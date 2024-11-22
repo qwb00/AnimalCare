@@ -106,7 +106,7 @@ namespace AnimalCare
                     (dst => dst.VeterinarianId, src => src.VeterinarianId),
                     (dst => dst.CareTakerId, src => src.CareTakerId)
                 )
-                .UseValue(dst => dst.Status, ExaminationStatus.InProgress)
+                .UseValue(dst => dst.Status, ExaminationStatus.NotDecided)
                 .UseValue( dst => dst.FinalDiagnosis, "Not specified")
                 .Ignore(
                     dst => dst.Id
