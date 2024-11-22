@@ -233,7 +233,6 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                                 <option value="0">Day</option>
                                 <option value="1">Week</option>
                                 <option value="2">Month</option>
-                                <option value="3">Year</option>
                             </select>
                         </div>
                     </div>
