@@ -159,6 +159,11 @@ namespace AnimalCare
                 .MapPathMember(dst => dst.End, src => src.DateRange.EndDate)
                 .MapPathMember(dst => dst.Count, src => src.Frequency.Count)
                 .MapPathMember(dst => dst.Unit, src => src.Frequency.Unit);
+            CreateMap<MedicationScheduleForUpdateDTO, MedicationSchedule>()
+               .MapPathMember(dst => dst.Start, src => src.DateRange.StartDate)
+               .MapPathMember(dst => dst.End, src => src.DateRange.EndDate)
+               .MapPathMember(dst => dst.Count, src => src.Frequency.Count)
+               .MapPathMember(dst => dst.Unit, src => src.Frequency.Unit);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
+using Shared.DataTransferObjects.AnimalsDTO;
 using Shared.DataTransferObjects.MedicationsDTO;
 
 namespace AnimalCare.Presentation.Controllers
@@ -43,6 +44,14 @@ namespace AnimalCare.Presentation.Controllers
             var createdExamination = await _service.MedicationService.CreateMedicationAsync(medicationForCreation, trackChanges: false);
 
             return Ok(createdExamination);
+        }
+
+        [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Administrator,Veterinarian")]
+        public async Task<IActionResult> UpdateMedication(Guid id, [FromBody] MedicationScheduleForUpdateDTO medication)
+        {
+            await _service.MedicationService.UpdateMedicationAsync(id, medication, trackChanges: true);
+            return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
