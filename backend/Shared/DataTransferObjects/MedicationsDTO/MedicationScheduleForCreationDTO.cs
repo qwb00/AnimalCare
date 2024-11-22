@@ -6,5 +6,7 @@ namespace Shared.DataTransferObjects.MedicationsDTO
     {
         [Required]
         public Guid VeterinarianId { get; set; }
+        [Required]
+        public Guid AnimalId { get; set; }
     }
 }

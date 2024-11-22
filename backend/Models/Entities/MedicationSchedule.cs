@@ -21,5 +21,10 @@ namespace Models.Entities
 
         [ForeignKey("VeterinarianId")]
         public Veterinarian Veterinarian { get; set; }
+
+        [Required]
+        public Guid AnimalId { get; set; }
+        [ForeignKey("AnimalId")]
+        public Animal Animal { get; set; }
     }
 }

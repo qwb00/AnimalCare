@@ -1,5 +1,4 @@
 ﻿using Shared.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DataTransferObjects.MedicationsDTO
@@ -16,5 +15,9 @@ namespace Shared.DataTransferObjects.MedicationsDTO
 
         [MaxLength(1000)]
         public string Description { get; set; }
+        public string FinalDiagnosis { get; set; }
+        public string AnimalPhoto { get; set; }
+        public string AnimalName { get; set; }
+        public string AnimalBreed { get; set; }
     }
 }

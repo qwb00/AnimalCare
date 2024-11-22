@@ -12,7 +12,9 @@ namespace Repositories
         }
 
         public async Task<IEnumerable<MedicationSchedule>> GetAllMedicationsAsync(bool trackChanges) =>
-            await GetAll(trackChanges).ToListAsync();
+            await GetAll(trackChanges)
+            .Include(e => e.Animal)
+            .ToListAsync();
 
         public async Task<MedicationSchedule> GetMedicationByIdAsync(Guid medicationId, bool trackChanges)
         {
