@@ -21,8 +21,8 @@ namespace Models.Entities
         [Required]
         public Guid VolunteerId { get; set; }
 
-        [ForeignKey("VolunteerId")]
-        public Volunteer Volunteer { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; }
 
         [Required]
         public Guid AnimalId { get; set; }

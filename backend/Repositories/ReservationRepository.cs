@@ -13,7 +13,7 @@ namespace Repositories
         public async Task<IEnumerable<Reservation>> GetAllReservationsAsync(bool trackChanges) =>
 	        await GetAll(trackChanges)
 		        .Include(r => r.Animal)
-		        .Include(r => r.Volunteer)
+		        .Include(r => r.User)
 		        .OrderBy(r => r.StartDate)
 		        .ToListAsync();
         
