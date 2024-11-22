@@ -34,14 +34,14 @@ namespace AnimalCare
             
             CreateMap<Reservation, ReservationForConfirmationDto>()
                 .MapMembers(
-                    (dst => dst.VolunteerName, src => src.Volunteer.FullName),
+                    (dst => dst.VolunteerName, src => src.User.FullName),
                     (dst => dst.AnimalName, src => src.Animal.Name),
-                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed!),
                     (dst => dst.ReservationDate, src => src.StartDate.Date),
                     (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay),
-                    (dst => dst.Photo, src => src.Volunteer.Photo),
-                    (dst=>dst.phoneNumber, src => src.Volunteer.PhoneNumber)
+                    (dst => dst.Photo, src => src.User.Photo!),
+                    (dst=>dst.phoneNumber, src => src.User.PhoneNumber!)
                 );
 
             CreateMap<Reservation, ReservationForUserDto>()
@@ -132,9 +132,9 @@ namespace AnimalCare
                 .MapMembers(
                     (dst => dst.Id, src => src.Id),
                     (dst => dst.AnimalName, src => src.Animal.Name),
-                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed!),
                     (dst => dst.VeterinarianName, src => src.Veterinarian.FullName),
-                    (dst => dst.AnimalPhoto, src => src.Animal.Photo),
+                    (dst => dst.AnimalPhoto, src => src.Animal.Photo!),
                     (dst => dst.Type, src => src.Type),
                     (dst => dst.Status, src => src.Status),
                     (dst => dst.ExaminationDate, src => src.Date),

@@ -35,7 +35,7 @@ namespace Repositories
             ConfigureUserEntity(modelBuilder);
             ConfigureCareTakerEntity(modelBuilder);
             ConfigureVeterinarianEntity(modelBuilder);
-            ConfigureVolunteerEntity(modelBuilder);
+            //ConfigureVolunteerEntity(modelBuilder);
             ConfigureAnimalEntity(modelBuilder);
 
         }
@@ -48,6 +48,11 @@ namespace Repositories
             modelBuilder.Entity<User>()
                 .HasIndex(user => user.PhoneNumber)
                 .IsUnique();
+            modelBuilder.Entity<User>()
+                .HasMany(user => user.Reservations)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.VolunteerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
         
         private void ConfigureCareTakerEntity(ModelBuilder modelBuilder)
@@ -70,14 +75,6 @@ namespace Repositories
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
                  .OnDelete(DeleteBehavior.NoAction);
-        }
-        private void ConfigureVolunteerEntity(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Volunteer>()
-                 .HasMany(user => user.Reservations)
-                 .WithOne(r => r.Volunteer)
-                 .HasForeignKey(r => r.VolunteerId)
-                 .OnDelete(DeleteBehavior.Cascade);
         }
         private void ConfigureAnimalEntity(ModelBuilder modelBuilder)
         {

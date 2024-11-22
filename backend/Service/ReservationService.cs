@@ -61,11 +61,12 @@ namespace Service
                 reservationEntity.Id,
                 trackChanges: false,
                 r => r.Animal,
-                r => r.Volunteer);
+                r => r.User);
 
             var reservationToReturn = _mapper.Map<ReservationForConfirmationDto>(reservationFromDb);
             return reservationToReturn;
         }
+
 
         public async Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDto reservationForUpdate, bool trackChanges)
         {
@@ -95,7 +96,7 @@ namespace Service
                 id,
                 trackChanges,
                 r => r.Animal,
-                r => r.Volunteer);
+                r => r.User);
 
             if (reservation == null)
                 throw new Exception("Reservation not found");
