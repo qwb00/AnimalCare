@@ -48,7 +48,6 @@ function LoginPage() {
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('role', role);
     setAuthToken(token);
-    console.log(username);
     // if login is successfull, send additional request to the server to get the current user data
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',
@@ -61,7 +60,6 @@ function LoginPage() {
       const userData = await userResponse.json();
       const userID = userData.id; 
       sessionStorage.setItem('userID', userID);
-      console.log("Fetched User ID:", userID);
     } else {
       console.error('Failed to fetch user ID');
     }
@@ -86,14 +84,6 @@ function LoginPage() {
 
         {/* Component to display errors */}
         {errorData && <ErrorMessages errorData={errorData} />}
-
-        {/* Message indicating successful login */}
-        {authToken && (
-          <div className="mb-4">
-            <p className="text-green-500">Login successful!</p>
-            <p className="text-gray-700">Token: <span className="font-mono bg-gray-100 p-1 rounded">{authToken}</span></p>
-          </div>
-        )}
 
          {/* Input field for email */}
         <div className="mb-4">
