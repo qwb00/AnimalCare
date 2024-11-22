@@ -19,7 +19,7 @@ namespace Models.Entities
         public ReservationStatus Status { get; set; }
      
         [Required]
-        public Guid VolunteerId { get; set; }
+        public Guid UserId { get; set; }
 
         [ForeignKey("UserId")]
         public User User { get; set; }

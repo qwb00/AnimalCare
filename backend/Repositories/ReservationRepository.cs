@@ -18,7 +18,7 @@ namespace Repositories
 		        .ToListAsync();
         
         public async Task<IEnumerable<Reservation>> GetReservationsAsync(Guid volunteerId, bool trackChanges)
-            => await GetByCondition(e => e.VolunteerId.Equals(volunteerId), trackChanges).ToListAsync();
+            => await GetByCondition(e => e.UserId.Equals(volunteerId), trackChanges).ToListAsync();
 		
         public async Task<Reservation> GetReservationByIdAsync(Guid reservationId, bool trackChanges, params Expression<Func<Reservation, object>>[] includes)
         {
@@ -27,7 +27,7 @@ namespace Repositories
         
         public async Task<IEnumerable<Reservation>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges)
         {
-	        return await GetByCondition(r => r.VolunteerId == volunteerId, trackChanges)
+	        return await GetByCondition(r => r.UserId == volunteerId, trackChanges)
 		        .Include(r => r.Animal)
 		        .OrderByDescending(r => r.StartDate)
 		        .ToListAsync();
