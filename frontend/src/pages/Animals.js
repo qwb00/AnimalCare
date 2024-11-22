@@ -190,7 +190,7 @@ function Animals() {
 
       console.log("Response:", response);
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         setNotification({
           isSuccess: true,
           message: "Animal added successfully!",
