@@ -38,48 +38,27 @@ namespace AnimalCare.Presentation.Controllers
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
 
-            // Get the user ID from the claims
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized();
-
-            // Get the user from the database
-            var user = await _userManager.FindByIdAsync(userId);
+            // Получаем пользователя по ID из DTO
+            var user = await _userManager.FindByIdAsync(reservationRequest.UserId.ToString());
             if (user == null)
-                return Unauthorized();
+                return NotFound("User not found.");
 
-            // Get user roles
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            if (userRoles == null || !userRoles.Any())
+            // Проверяем, является ли пользователь волонтером
+            var isVolunteer = await _userManager.IsInRoleAsync(user, "Volunteer");
+            if (isVolunteer)
             {
-                return Unauthorized("User does not have any roles");
-            }
-
-            // If the user is a Volunteer, check IsVerified
-            if (userRoles.Contains("Volunteer"))
-            {
-                if (user is Volunteer volunteer)
+                // Проверяем, что пользователь - верифицированный волонтер
+                if (user is Volunteer volunteer && !volunteer.IsVerified)
                 {
-                    if (!volunteer.IsVerified)
-                    {
-                        return Unauthorized("Volunteer is not verified");
-                    }
-                }
-                else
-                {
-                    return Unauthorized("User is not a volunteer");
+                    return BadRequest("Unverified volunteers cannot create reservations.");
                 }
             }
 
-            // Set the VolunteerId in the reservationRequest to the current user's ID
-            reservationRequest.VolunteerId = Guid.Parse(userId);
-
+            // Создаем резерв
             var createdReservation = await _service.ReservationService.CreateReservationAsync(reservationRequest);
             return CreatedAtRoute("GetReservationById", new { id = createdReservation.Id }, createdReservation);
         }
-
-
+        
         // GET: api/Reservations/{id}
         [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
         [HttpGet("{id:guid}", Name = "GetReservationById")]

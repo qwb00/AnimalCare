@@ -16,7 +16,7 @@ function UserNav({ role }) {
 
     // Define the visible menu items based on the role
     const menuItems = {
-        administrator: ["General", "Users", "Reservations", "Medical Treatments"],
+        administrator: ["General", "Users", "Volunteers", "Reservations"],
         caretaker: ["General", "Volunteers", "Reservations", "Medical Treatments", "Medical Prescriptions"],
         veterinarian: ["General", "Medical Treatments", "Medical Prescriptions"],
         volunteer: ["General"],
@@ -62,7 +62,7 @@ function UserNav({ role }) {
             )}
             {itemsToShow.includes("Medical Prescriptions") && (
                 <Link to={`/${userID}/medical-prescriptions`} className={getLinkClass(`/medical-prescriptions`)}>
-                    Medical Treatments
+                    Medical Prescriptions
                 </Link>
 
             )}

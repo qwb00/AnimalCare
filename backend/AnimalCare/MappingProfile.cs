@@ -65,7 +65,7 @@ namespace AnimalCare
                 )
                 .Ignore(
                     dst => dst.Id,
-                    dst => dst.VolunteerId,
+                    dst => dst.UserId,
                     dst => dst.AnimalId
                 );
 

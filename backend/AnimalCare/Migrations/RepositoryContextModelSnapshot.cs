@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b1d46b59-52df-48d7-ad1d-0a638a6d0c1f",
+                            Id = "7a2ce36a-101a-4795-8455-c91dced11fcf",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "b8fb83ee-6252-4fa5-b561-903ffc3af555",
+                            Id = "171e0260-ad6d-44de-a36b-3c459683952e",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "42a12b38-0461-4778-b791-a734b6c28880",
+                            Id = "09e7a546-b215-4610-9cd4-6c6f125540d9",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "73280559-ce83-4b90-ab47-a5bad8b7d443",
+                            Id = "c93723e1-d4ce-4786-894c-5802cb1e22bb",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -380,14 +380,14 @@ namespace AnimalCare.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("VolunteerId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AnimalId");
 
-                    b.HasIndex("VolunteerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -619,15 +619,15 @@ namespace AnimalCare.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Entities.Volunteer", "Volunteer")
+                    b.HasOne("Models.Entities.User", "User")
                         .WithMany("Reservations")
-                        .HasForeignKey("VolunteerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Animal");
 
-                    b.Navigation("Volunteer");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Entities.Animal", b =>
@@ -636,6 +636,11 @@ namespace AnimalCare.Migrations
 
                     b.Navigation("Medications");
 
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Models.Entities.User", b =>
+                {
                     b.Navigation("Reservations");
                 });
 
@@ -649,11 +654,6 @@ namespace AnimalCare.Migrations
                     b.Navigation("Medications");
 
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("Models.Entities.Volunteer", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

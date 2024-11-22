@@ -11,12 +11,10 @@ import AddPrescriptionForm from '../components/AddPrescriptionForm';
 import API_BASE_URL from '../config';
 
 function Prescriptions() {
+    const [user, setUser] = useState(null); // Stores logged-in user data
     const [prescriptions, setPrescriptions] = useState([]);
     const [showAddPrescriptionForm, setShowAddPrescriptionForm] = useState(false);
     const navigate = useNavigate();
-
-    // Роль пользователя берется из sessionStorage
-    const userRole = sessionStorage.getItem('role') || 'Caretaker'; // По умолчанию для тестов
 
     useEffect(() => {
         const token = sessionStorage.getItem("token");
@@ -24,6 +22,22 @@ function Prescriptions() {
             navigate("/login");
             return;
         }
+
+        const fetchUser = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch user information');
+
+                const userData = await response.json();
+                setUser(userData);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                navigate('/login');
+            }
+        };
 
         const fetchPrescriptions = async () => {
             try {
@@ -39,6 +53,7 @@ function Prescriptions() {
             }
         };
 
+        fetchUser();
         fetchPrescriptions();
     }, [navigate]);
 
@@ -51,38 +66,43 @@ function Prescriptions() {
         setShowAddPrescriptionForm(false);
     };
 
+    if (!user) return <div>Loading...</div>;
+
     return (
-        <div className="container mx-auto max-w-[1024px]">
+        <div className="container mx-auto">
             <Header />
-            <UserHeader user={{ name: "John Doe", role: userRole }} />
-            <UserNav role={userRole} />
+            <UserHeader user={user} />
+            <UserNav role={user.role} />
 
-            {userRole === 'Veterinarian' && (
-                <>
-                    <div className="mb-8">
-                        <Button text="+ New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
-                    </div>
-                    <div className="mb-4">
-                        <h2 className="text-2xl font-bold text-black">Active Prescriptions</h2>
-                    </div>
-                    <div className="flex flex-wrap gap-10">
-                        {prescriptions.map((prescription) => (
-                            <PrescriptionCard
-                                key={prescription.id}
-                                prescription={prescription}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
+            <div className="w-full max-w-[1024px] mx-auto mb-14">
 
-            {userRole === 'Caretaker' && (
-                <PrescriptionsCalendar prescriptions={prescriptions} />
-            )}
+                {user.role === 'Veterinarian' && (
+                    <>
+                        <div className="mb-8">
+                            <Button text="+ New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
+                        </div>
+                        <div className="mb-4">
+                            <h2 className="text-2xl font-bold text-black">Active Prescriptions</h2>
+                        </div>
+                        <div className="flex flex-wrap gap-10">
+                            {prescriptions.map((prescription) => (
+                                <PrescriptionCard
+                                    key={prescription.id}
+                                    prescription={prescription}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
 
-            {showAddPrescriptionForm && (
-                <AddPrescriptionForm onSubmit={handleFormSubmit} onClose={() => setShowAddPrescriptionForm(false)} />
-            )}
+                {user.role === 'Caretaker' && (
+                    <PrescriptionsCalendar prescriptions={prescriptions} />
+                )}
+
+                {showAddPrescriptionForm && (
+                    <AddPrescriptionForm onSubmit={handleFormSubmit} onClose={() => setShowAddPrescriptionForm(false)} />
+                )}
+            </div>
         </div>
     );
 }

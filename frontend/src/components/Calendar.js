@@ -290,7 +290,7 @@ function Calendar({ selectedAnimalId }) {
       )) {
         // Prepare reservation data in the required format
         const reservationData = {
-          volunteerId: userID,
+          userId: userID,
           animalId: selectedAnimalId,
           reservationDate: format(
             parse(date, "MMM dd yyyy", new Date()),
@@ -346,7 +346,7 @@ function Calendar({ selectedAnimalId }) {
           // Handle errors and display appropriate message if reservation fails
           const errorMessage =
             error.response?.data?.message ||
-            "Error creating reservation. Please try again.";
+            "Your account is not verified. Please wait for verification.";
           showNotification(errorMessage, false);
         }
       }
