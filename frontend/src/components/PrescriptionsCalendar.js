@@ -19,8 +19,8 @@ function PrescriptionsCalendar({ prescriptions }) {
     const today = new Date();
     const todaysPrescriptions = prescriptions.filter(
         (prescription) =>
-            prescription.dateRange.startDate <= format(today, "yyyy-MM-dd") &&
-            prescription.dateRange.endDate >= format(today, "yyyy-MM-dd")
+            prescription.start <= format(today, "yyyy-MM-dd") &&
+            prescription.end >= format(today, "yyyy-MM-dd")
     );
 
     return (
@@ -33,15 +33,15 @@ function PrescriptionsCalendar({ prescriptions }) {
                     todaysPrescriptions.map((prescription) => (
                         <div key={prescription.id} className="mb-3 flex items-center bg-light-blue p-3 rounded-md shadow-sm">
                             <img
-                                src={prescription.photo}
+                                src={prescription.animalPhoto}
                                 alt={prescription.animalName}
                                 className="w-12 h-12 rounded-full mr-3"
                             />
                             <div>
                                 <p className="font-bold text-black">{prescription.animalName}</p>
-                                <p className="text-sm text-black">{prescription.medication}</p>
+                                <p className="text-sm text-black">{prescription.drug}</p>
                                 <p className="text-sm text-black">
-                                    {prescription.frequency.count} per {prescription.frequency.unit}
+                                    {prescription.dailyDoseCount} per {prescription.frequencyInWeeks}
                                 </p>
                             </div>
                         </div>
@@ -75,8 +75,8 @@ function PrescriptionsCalendar({ prescriptions }) {
                         const formattedDate = format(day, "yyyy-MM-dd");
                         const dailyPrescriptions = prescriptions.filter(
                             (prescription) =>
-                                prescription.dateRange.startDate <= formattedDate &&
-                                prescription.dateRange.endDate >= formattedDate
+                                prescription.start <= formattedDate &&
+                                prescription.end >= formattedDate
                         );
 
                         return (
@@ -98,11 +98,11 @@ function PrescriptionsCalendar({ prescriptions }) {
                                                 <strong>Animal:</strong> {prescription.animalName}
                                             </p>
                                             <p className="text-black">
-                                                <strong>Medication:</strong> {prescription.medication}
+                                                <strong>Medication:</strong> {prescription.drug}
                                             </p>
                                             <p className="text-black">
-                                                <strong>Frequency:</strong> {prescription.frequency.count} per{" "}
-                                                {prescription.frequency.unit}
+                                                <strong>Frequency:</strong> {prescription.dailyDoseCount} 
+                                                    per {" "} {prescription.frequencyInWeeks}
                                             </p>
                                         </div>
                                     </div>

@@ -11,13 +11,12 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
 
   return (
     <Card
-      title={`Prescription #${prescription.id}`}
-      imageSrc={prescription.photo || "/icons/placeholder.png"}
+      title={`Prescription`}
+      imageSrc={prescription.animalPhoto || "/icons/placeholder.png"}
       infoItems={[
-        { label: "Animal", value: `${prescription.animalName} (${prescription.animalType || 'Unknown'})` },
-        { label: "Medication", value: prescription.medication },
+        { label: "Animal", value: `${prescription.animalName} (${prescription.animalBreed || 'Unknown'})` },
+        { label: "Medication", value: prescription.drug },
         { label: "Duration", value: `${formattedStartDate} - ${formattedEndDate}` },
-        { label: "Type", value: prescription.type || "N/A" },
         { label: "Frequency", value: `${prescription.dailyDoseCount} per ${prescription.frequencyInWeeks}` },
         { label: "Description", value: prescription.description || "No description provided" },
         { label: "Diagnosis", value: prescription.diagnosis || "No diagnosis available" },
@@ -26,7 +25,7 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
         {
           text: "Edit",
           variant: "white",
-          icon: "/icons/pen.png", // Иконка редактирования
+          icon: "/icons/pen.png", 
           iconSize: "h-4 w-4",
           onClick: () => onEdit(prescription.id),
           className: "px-4 py-2",
