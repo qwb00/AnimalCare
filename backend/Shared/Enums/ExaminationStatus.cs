@@ -5,5 +5,6 @@ public enum ExaminationStatus
 {
     InProgress,
     Completed,
-    Cancelled
+    Cancelled,
+    NotDecided
 }
