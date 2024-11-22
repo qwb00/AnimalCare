@@ -4,12 +4,11 @@ import Button from './Button';
 function AddPrescriptionForm({ onSubmit, onClose }) {
     const [formData, setFormData] = useState({
         animalName: '',
-        medication: '',
+        drug: '',
         dateRange: {
             startDate: '',
             endDate: ''
         },
-        type: '',
         frequency: {
             count: 1,
             unit: 'day'

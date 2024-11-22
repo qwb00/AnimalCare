@@ -31,7 +31,6 @@ function LoginPage() {
       setErrorData("Wrong password or email. Please try again.");
       return;
     }
-
     // Extract the token from a successful response and save it to sessionStorage
     // Tokein will be sent to the server to assume that user has access rights.
     const data = await response.json();
@@ -49,7 +48,7 @@ function LoginPage() {
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('role', role);
     setAuthToken(token);
-
+    console.log(username);
     // if login is successfull, send additional request to the server to get the current user data
     const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',

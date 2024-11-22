@@ -6,13 +6,13 @@ namespace Shared.DataTransferObjects.MedicationsDTO
     public abstract record MedicalScheduleForManipulationDTO
     {
         public string Drug { get; set; }
-        public DaysOfWeek DaysOfWeek { get; set; }
-        public int FrequencyInWeeks { get; set; }
-        public int DailyDoseCount { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public DateRangeDTO DateRange {  get; set; }
+        public FrequencyDTO Frequency { get; set; }
 
         [MaxLength(1000)]
         public string Description { get; set; }
+
+        [MaxLength(300)]
+        public string Diagnosis { get; set; }
     }
 }

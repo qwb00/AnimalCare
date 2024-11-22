@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "33817e2f-84b0-4c43-ba93-7d9374fafd16",
+                            Id = "ab352284-9bcb-4727-8a0f-39552e437ef9",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "cce01b13-1387-49a4-b5d9-24e8015b370a",
+                            Id = "88d5a96d-2b93-4cb7-bf71-47800a6541f4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "f0635246-4b71-4637-9d6e-e86d2bf75137",
+                            Id = "5ede59fa-7510-4bfd-a78e-5c2bca74be8d",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "66586b0f-39fa-4082-9832-ae8cd6b879ac",
+                            Id = "116274ed-12c6-4a2b-b007-f128af52582b",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -376,9 +376,6 @@ namespace AnimalCare.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("VolunteerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -610,15 +607,15 @@ namespace AnimalCare.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Entities.User", "User")
+                    b.HasOne("Models.Entities.Volunteer", "Volunteer")
                         .WithMany("Reservations")
                         .HasForeignKey("VolunteerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Animal");
 
-                    b.Navigation("User");
+                    b.Navigation("Volunteer");
                 });
 
             modelBuilder.Entity("Models.Entities.Animal", b =>
@@ -633,11 +630,6 @@ namespace AnimalCare.Migrations
                     b.Navigation("Medicals");
                 });
 
-            modelBuilder.Entity("Models.Entities.User", b =>
-                {
-                    b.Navigation("Reservations");
-                });
-
             modelBuilder.Entity("Models.Entities.CareTaker", b =>
                 {
                     b.Navigation("Requests");
@@ -646,6 +638,11 @@ namespace AnimalCare.Migrations
             modelBuilder.Entity("Models.Entities.Veterinarian", b =>
                 {
                     b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("Models.Entities.Volunteer", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

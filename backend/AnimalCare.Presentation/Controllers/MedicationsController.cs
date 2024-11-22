@@ -14,14 +14,33 @@ namespace AnimalCare.Presentation.Controllers
 
         public MedicationsController(IServiceManager service) => _service = service;
 
+        [HttpGet]
+        [Authorize(Roles = "Caretaker,Administrator,Veterinarian")]
+        public async Task<IActionResult> GetExaminations()
+        {
+            var examinations = await _service.MedicationService.GetAllMedicationsAsync(trackChanges: false);
+            return Ok(examinations);
+        }
+
+        [HttpGet("{id:guid}", Name = "GetMedicationById")]
+        [Authorize(Roles = "Caretaker,Administrator,Veterinarian")]
+        public async Task<IActionResult> GetExaminationById(Guid id)
+        {
+            var examination = await _service.MedicationService.GetMedicationByIdAsync(id, trackChanges: false);
+            if (examination == null)
+                return NotFound();
+
+            return Ok(examination);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Veterinarian,Administrator")]
-        public async Task<IActionResult> CreateMedication(Guid treatmentId, [FromBody] MedicationScheduleForCreationDTO medicationForCreation)
+        public async Task<IActionResult> CreateMedication([FromBody] MedicationScheduleForCreationDTO medicationForCreation)
         {
             if (medicationForCreation == null)
                 return BadRequest("ExaminationRecordForCreationDto object is null");
 
-            var createdExamination = await _service.MedicationService.CreateMedicationAsync(treatmentId, medicationForCreation, trackChanges: false);
+            var createdExamination = await _service.MedicationService.CreateMedicationAsync(medicationForCreation, trackChanges: false);
 
             return Ok(createdExamination);
         }

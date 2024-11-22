@@ -12,8 +12,8 @@ using Repositories;
 namespace AnimalCare.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241025001228_Final")]
-    partial class Final
+    [Migration("20241122155724_Updated medications")]
+    partial class Updatedmedications
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,25 +46,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2cc9ebc1-e820-48be-9065-eac083d5f734",
+                            Id = "b1d46b59-52df-48d7-ad1d-0a638a6d0c1f",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "76715467-ed8d-4851-9d0c-326233d53874",
+                            Id = "b8fb83ee-6252-4fa5-b561-903ffc3af555",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "7673799f-c5e1-45e2-b6fa-c068c03f2847",
+                            Id = "42a12b38-0461-4778-b791-a734b6c28880",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "b43e80cd-7c0e-4519-93ce-e6878db7be42",
+                            Id = "73280559-ce83-4b90-ab47-a5bad8b7d443",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -318,6 +318,53 @@ namespace AnimalCare.Migrations
                     b.ToTable("ExaminationRecord");
                 });
 
+            modelBuilder.Entity("Models.Entities.MedicationSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnimalId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Drug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("VeterinarianId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimalId");
+
+                    b.HasIndex("VeterinarianId");
+
+                    b.ToTable("Medications");
+                });
+
             modelBuilder.Entity("Models.Entities.Reservation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -330,20 +377,14 @@ namespace AnimalCare.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsEnded")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("VolunteerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isAproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isReserved")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -401,6 +442,9 @@ namespace AnimalCare.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Photo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -551,6 +595,25 @@ namespace AnimalCare.Migrations
                     b.Navigation("Veterinarian");
                 });
 
+            modelBuilder.Entity("Models.Entities.MedicationSchedule", b =>
+                {
+                    b.HasOne("Models.Entities.Animal", "Animal")
+                        .WithMany("Medications")
+                        .HasForeignKey("AnimalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
+                        .WithMany("Medications")
+                        .HasForeignKey("VeterinarianId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
+
+                    b.Navigation("Veterinarian");
+                });
+
             modelBuilder.Entity("Models.Entities.Reservation", b =>
                 {
                     b.HasOne("Models.Entities.Animal", "Animal")
@@ -574,6 +637,8 @@ namespace AnimalCare.Migrations
                 {
                     b.Navigation("Examinations");
 
+                    b.Navigation("Medications");
+
                     b.Navigation("Reservations");
                 });
 
@@ -584,6 +649,8 @@ namespace AnimalCare.Migrations
 
             modelBuilder.Entity("Models.Entities.Veterinarian", b =>
                 {
+                    b.Navigation("Medications");
+
                     b.Navigation("Requests");
                 });
 

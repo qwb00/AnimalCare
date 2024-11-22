@@ -141,8 +141,24 @@ namespace AnimalCare
                     (dst => dst.Description, src => src.Description),
                     (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
                 );
-            CreateMap<MedicationSchedule, MedicationScheduleForCreationDTO>().ReverseMap();
-            CreateMap<MedicationSchedule, MedicationScheduleDTO>();
+           
+            CreateMap<MedicationSchedule, MedicationScheduleDTO>()
+                .MapMembers(
+                    (dst => dst.AnimalName, src => src.Animal.Name),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.AnimalPhoto, src => src.Animal.Photo)
+                );
+            CreateMap<MedicationScheduleDTO, MedicationScheduleForCreationDTO>()
+                .MapPathMember(dst => dst.DateRange.StartDate, src => src.Start)
+                .MapPathMember(dst => dst.DateRange.EndDate, src => src.End)
+                .MapPathMember(dst => dst.Frequency.Count, src => src.Count)
+                .MapPathMember(dst => dst.Frequency.Unit, src => src.Unit)
+                .ReverseMap();
+            CreateMap<MedicationScheduleForCreationDTO, MedicationSchedule>()
+                .MapPathMember(dst => dst.Start, src => src.DateRange.StartDate)
+                .MapPathMember(dst => dst.End, src => src.DateRange.EndDate)
+                .MapPathMember(dst => dst.Count, src => src.Frequency.Count)
+                .MapPathMember(dst => dst.Unit, src => src.Frequency.Unit);
         }
     }
 }
