@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
 import Button from './Button';
 import Select from 'react-select';
+import {  toast } from 'react-toastify';
 
 function AddPrescriptionForm({ onSubmit, onClose }) {
     const [formData, setFormData] = useState({
@@ -13,30 +14,30 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         },
         frequency: {
             count: 1,
-            unit: 'day'
+            unit: 0
         },
         description: '',
         diagnosis: '',
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (event) => {
+        const { name, value } = event.target || event;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleDateChange = (e) => {
-        const { name, value } = e.target;
+    const handleDateChange = (event) => {
+        const { name, value } = event.target || event;
         setFormData((prev) => ({
             ...prev,
             dateRange: { ...prev.dateRange, [name]: value }
         }));
     };
 
-    const handleFrequencyChange = (e) => {
-        const { name, value } = e.target;
+    const handleFrequencyChange = (event) => {
+        const { name, value } = event.target || event;
         setFormData((prev) => ({
             ...prev,
-            frequency: { ...prev.frequency, [name]: value }
+            frequency: { ...prev.frequency, [name]: Number(value) }
         }));
     };
 
@@ -50,13 +51,45 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit(formData);
-    };
+    
+        // Retrieve current caretaker's ID from sessionStorage
+        const veterinarianId = sessionStorage.getItem('userID');
+    
+        // Prepare data to submit, including converting type to a numerical format
+        const dataToSubmit = {
+          ...formData,
+          veterinarianId
+        };
+        console.log(dataToSubmit);
+        try {
+          const token = sessionStorage.getItem('token');
+          const response = await fetch(`${API_BASE_URL}/medications`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSubmit),
+    
+          });
+    
+          if (!response.ok) {
+            throw new Error('Failed to create new request');
+          }
+          onClose(); 
+          toast.success('Request created successfully', {
+            autoClose: 3000,
+            hideProgressBar: true,
+          });
+        } catch (error) {
+          console.error("Error submitting request:", error);
+          toast.error('Error submitting request');
+        }
+      };
     const [animals, setAnimals] = useState([]);
 
-  // Effect to fetch animals and veterinarians when the component is rendering
   useEffect(() => {
     // Function to get list of animals
     const fetchAnimals = async () => {
@@ -131,10 +164,10 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             Medication
                         </label>
                         <input
-                            name="medication"
+                            name="drug"
                             type="text"
                             placeholder="Enter medication"
-                            value={formData.medication}
+                            value={formData.drug}
                             onChange={handleChange}
                             required
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
@@ -197,10 +230,10 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                                 required
                                 className="p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
                             >
-                                <option value="day">Day</option>
-                                <option value="week">Week</option>
-                                <option value="month">Month</option>
-                                <option value="year">Year</option>
+                                <option value="0">Day</option>
+                                <option value="1">Week</option>
+                                <option value="2">Month</option>
+                                <option value="3">Year</option>
                             </select>
                         </div>
                     </div>

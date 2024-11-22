@@ -9,6 +9,13 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
   const formattedStartDate = format(new Date(prescription.start), "MMM d, yyyy");
   const formattedEndDate = format(new Date(prescription.end), "MMM d, yyyy");
 
+  const unitMapping = {
+    0: "day",
+    1: "week",
+    2: "month",
+    3: "year"
+  };
+
   return (
     <Card
       title={`Prescription`}
@@ -17,7 +24,7 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
         { label: "Animal", value: `${prescription.animalName} (${prescription.animalBreed || 'Unknown'})` },
         { label: "Medication", value: prescription.drug },
         { label: "Duration", value: `${formattedStartDate} - ${formattedEndDate}` },
-        { label: "Frequency", value: `${prescription.count} per ${prescription.unit}` },
+        { label: "Frequency", value: `${prescription.count} per ${unitMapping[prescription.unit]}` },
         { label: "Description", value: prescription.description || "No description provided" },
         { label: "Diagnosis", value: prescription.diagnosis || "No diagnosis available" },
       ]}
