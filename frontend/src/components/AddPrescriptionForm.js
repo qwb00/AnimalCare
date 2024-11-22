@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../config';
 import Button from './Button';
+import Select from 'react-select';
 
 function AddPrescriptionForm({ onSubmit, onClose }) {
     const [formData, setFormData] = useState({
-        animalName: '',
+        animalId: '',
         drug: '',
         dateRange: {
             startDate: '',
@@ -52,6 +54,30 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         e.preventDefault();
         onSubmit(formData);
     };
+    const [animals, setAnimals] = useState([]);
+
+  // Effect to fetch animals and veterinarians when the component is rendering
+  useEffect(() => {
+    // Function to get list of animals
+    const fetchAnimals = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/animals`);
+        const data = await response.json();
+        setAnimals(data);
+      } catch (error) {
+        console.error("Error fetching animals:", error);
+      }
+    };
+
+    fetchAnimals();
+  }, []);
+
+  // Transform animals and veterinarians data to options for react-select
+  const animalOptions = animals.map((animal) => ({
+    value: animal.id,
+    label: `${animal.name} (${animal.breed})`,
+  }));
+
 
     return (
         <div
@@ -81,19 +107,21 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                 </button>
 
                 <form onSubmit={handleSubmit}>
-                    {/* Animal Name */}
+                    {/* Animal */}
                     <div className="mb-3">
                         <label className="block text-gray-700 mb-1 font-medium text-sm">
-                            Animal Name
+                        Animal
                         </label>
-                        <input
-                            name="animalName"
-                            type="text"
-                            placeholder="Enter animal name"
-                            value={formData.animalName}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                        <Select
+                        name="animalId"
+                        value={animalOptions.find(option => option.value === formData.animalId)}
+                        options={animalOptions}
+                        onChange={(selectedOption) =>
+                            handleChange({ name: 'animalId', value: selectedOption.value })
+                        }
+                        placeholder="Select an animal"
+                        className="text-sm"
+                        required
                         />
                     </div>
 

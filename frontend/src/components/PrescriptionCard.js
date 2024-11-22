@@ -17,7 +17,7 @@ const PrescriptionCard = ({ prescription, onEdit }) => {
         { label: "Animal", value: `${prescription.animalName} (${prescription.animalBreed || 'Unknown'})` },
         { label: "Medication", value: prescription.drug },
         { label: "Duration", value: `${formattedStartDate} - ${formattedEndDate}` },
-        { label: "Frequency", value: `${prescription.dailyDoseCount} per ${prescription.frequencyInWeeks}` },
+        { label: "Frequency", value: `${prescription.count} per ${prescription.unit}` },
         { label: "Description", value: prescription.description || "No description provided" },
         { label: "Diagnosis", value: prescription.diagnosis || "No diagnosis available" },
       ]}
