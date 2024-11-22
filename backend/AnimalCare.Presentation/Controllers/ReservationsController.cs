@@ -1,6 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.ReservationsDTO;
 
@@ -11,8 +14,13 @@ namespace AnimalCare.Presentation.Controllers
     public class ReservationsController : ControllerBase
     {
         private readonly IServiceManager _service;
-
-        public ReservationsController(IServiceManager service) => _service = service;
+        private readonly UserManager<User> _userManager;
+        
+        public ReservationsController(IServiceManager service, UserManager<User> userManager)
+        {
+            _service = service;
+            _userManager = userManager;
+        }
 
         // GET: api/Reservations
         [HttpGet(Name = "GetReservations")]
@@ -24,15 +32,53 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Reservations
         [HttpPost(Name = "CreateReservation")]
-        [Authorize(Roles = "Volunteer,Administrator,Caretaker")]
+        [Authorize]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
         {
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
 
+            // Get the user ID from the claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            // Get the user from the database
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Unauthorized();
+
+            // Get user roles
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles == null || !userRoles.Any())
+            {
+                return Unauthorized("User does not have any roles");
+            }
+
+            // If the user is a Volunteer, check IsVerified
+            if (userRoles.Contains("Volunteer"))
+            {
+                if (user is Volunteer volunteer)
+                {
+                    if (!volunteer.IsVerified)
+                    {
+                        return Unauthorized("Volunteer is not verified");
+                    }
+                }
+                else
+                {
+                    return Unauthorized("User is not a volunteer");
+                }
+            }
+
+            // Set the VolunteerId in the reservationRequest to the current user's ID
+            reservationRequest.VolunteerId = Guid.Parse(userId);
+
             var createdReservation = await _service.ReservationService.CreateReservationAsync(reservationRequest);
             return CreatedAtRoute("GetReservationById", new { id = createdReservation.Id }, createdReservation);
         }
+
 
         // GET: api/Reservations/{id}
         [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
