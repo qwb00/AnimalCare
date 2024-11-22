@@ -3,6 +3,7 @@ using Contracts;
 using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.AnimalsDTO;
 using Shared.DataTransferObjects.MedicationsDTO;
 
 namespace Service
@@ -42,6 +43,14 @@ namespace Service
             var medicationToReturn = _mapper.Map<MedicationScheduleDTO>(medicationEntity);
 
             return medicationToReturn;
+        }
+
+        public async Task UpdateMedicationAsync(Guid medicationId, MedicationScheduleForUpdateDTO medicationForUpdate, bool trackChanges)
+        {
+            var animalEntity = await GetMedicationAndCheckIfItExists(medicationId, trackChanges);
+
+            _mapper.Map(medicationForUpdate, animalEntity);
+            await _repository.SaveAsync();
         }
 
         public async Task DeleteMedicationAsync(Guid medicationId, bool trackChanges)
