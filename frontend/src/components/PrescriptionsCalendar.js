@@ -23,6 +23,13 @@ function PrescriptionsCalendar({ prescriptions }) {
             prescription.end >= format(today, "yyyy-MM-dd")
     );
 
+    const unitMapping = {
+        0: "day",
+        1: "week",
+        2: "month",
+        3: "year"
+      };
+
     return (
         <div className="flex gap-8">
             {/* Left Column: Today's Medications */}
@@ -41,7 +48,7 @@ function PrescriptionsCalendar({ prescriptions }) {
                                 <p className="font-bold text-black">{prescription.animalName}</p>
                                 <p className="text-sm text-black">{prescription.drug}</p>
                                 <p className="text-sm text-black">
-                                    {prescription.dailyDoseCount} per {prescription.frequencyInWeeks}
+                                    {prescription.count} per {unitMapping[prescription.unit]}
                                 </p>
                             </div>
                         </div>
@@ -101,8 +108,8 @@ function PrescriptionsCalendar({ prescriptions }) {
                                                 <strong>Medication:</strong> {prescription.drug}
                                             </p>
                                             <p className="text-black">
-                                                <strong>Frequency:</strong> {prescription.dailyDoseCount} 
-                                                    per {" "} {prescription.frequencyInWeeks}
+                                                <strong>Frequency:</strong> {prescription.count} 
+                                                    per {" "} {unitMapping[prescription.unit]}
                                             </p>
                                         </div>
                                     </div>
