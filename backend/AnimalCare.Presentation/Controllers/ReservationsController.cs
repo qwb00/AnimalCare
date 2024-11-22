@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -37,10 +38,27 @@ namespace AnimalCare.Presentation.Controllers
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
 
+            // Получаем пользователя по ID из DTO
+            var user = await _userManager.FindByIdAsync(reservationRequest.UserId.ToString());
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Проверяем, является ли пользователь волонтером
+            var isVolunteer = await _userManager.IsInRoleAsync(user, "Volunteer");
+            if (isVolunteer)
+            {
+                // Проверяем, что пользователь - верифицированный волонтер
+                if (user is Volunteer volunteer && !volunteer.IsVerified)
+                {
+                    return BadRequest("Unverified volunteers cannot create reservations.");
+                }
+            }
+
+            // Создаем резерв
             var createdReservation = await _service.ReservationService.CreateReservationAsync(reservationRequest);
             return CreatedAtRoute("GetReservationById", new { id = createdReservation.Id }, createdReservation);
         }
-
+        
         // GET: api/Reservations/{id}
         [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
         [HttpGet("{id:guid}", Name = "GetReservationById")]
