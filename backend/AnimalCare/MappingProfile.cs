@@ -142,7 +142,12 @@ namespace AnimalCare
                     (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
                 );
             CreateMap<MedicationSchedule, MedicationScheduleForCreationDTO>().ReverseMap();
-            CreateMap<MedicationSchedule, MedicationScheduleDTO>();
+            CreateMap<MedicationSchedule, MedicationScheduleDTO>()
+                .MapMembers(
+                    (dst => dst.AnimalName, src => src.Animal.Name),
+                    (dst => dst.AnimalBreed, src => src.Animal.Breed),
+                    (dst => dst.AnimalPhoto, src => src.Animal.Photo)
+                );
         }
     }
 }

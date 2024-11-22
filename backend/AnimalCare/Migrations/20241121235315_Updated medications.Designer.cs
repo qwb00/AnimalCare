@@ -12,7 +12,7 @@ using Repositories;
 namespace AnimalCare.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241121170709_Updated medications")]
+    [Migration("20241121235315_Updated medications")]
     partial class Updatedmedications
     {
         /// <inheritdoc />
@@ -46,25 +46,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e1dccffa-8823-40db-ac8e-2d5e8b9bc99f",
+                            Id = "80c3ba68-b170-48a6-8e47-95f3ebb62821",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "bb6c0b91-e886-4ce9-81b7-c8f152e9149f",
+                            Id = "7355cd98-de9b-4808-8721-b0eb9eb37097",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "03aaf590-d163-4771-8494-20baafb27373",
+                            Id = "0c9c64ac-c6a3-4a11-9380-43cdd1977029",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "98cdb7ea-b40e-4635-944c-7c58d216b5c5",
+                            Id = "d4049210-01d0-43a8-8d9c-9f084d714cd0",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -324,6 +324,9 @@ namespace AnimalCare.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AnimalId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("DailyDoseCount")
                         .HasColumnType("int");
 
@@ -352,6 +355,8 @@ namespace AnimalCare.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AnimalId");
 
                     b.HasIndex("VeterinarianId");
 
@@ -590,11 +595,19 @@ namespace AnimalCare.Migrations
 
             modelBuilder.Entity("Models.Entities.MedicationSchedule", b =>
                 {
+                    b.HasOne("Models.Entities.Animal", "Animal")
+                        .WithMany("Medications")
+                        .HasForeignKey("AnimalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Models.Entities.Veterinarian", "Veterinarian")
                         .WithMany("Medications")
                         .HasForeignKey("VeterinarianId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Animal");
 
                     b.Navigation("Veterinarian");
                 });
@@ -621,6 +634,8 @@ namespace AnimalCare.Migrations
             modelBuilder.Entity("Models.Entities.Animal", b =>
                 {
                     b.Navigation("Examinations");
+
+                    b.Navigation("Medications");
 
                     b.Navigation("Reservations");
                 });

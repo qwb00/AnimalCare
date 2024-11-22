@@ -254,11 +254,18 @@ namespace AnimalCare.Migrations
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    VeterinarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    VeterinarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AnimalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Medications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Medications_Animals_AnimalId",
+                        column: x => x.AnimalId,
+                        principalTable: "Animals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Medications_AspNetUsers_VeterinarianId",
                         column: x => x.VeterinarianId,
@@ -299,10 +306,10 @@ namespace AnimalCare.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "03aaf590-d163-4771-8494-20baafb27373", null, "Veterinarian", "VETERINARIAN" },
-                    { "98cdb7ea-b40e-4635-944c-7c58d216b5c5", null, "Volunteer", "VOLUNTEER" },
-                    { "bb6c0b91-e886-4ce9-81b7-c8f152e9149f", null, "Administrator", "ADMINISTRATOR" },
-                    { "e1dccffa-8823-40db-ac8e-2d5e8b9bc99f", null, "Caretaker", "CARETAKER" }
+                    { "0c9c64ac-c6a3-4a11-9380-43cdd1977029", null, "Veterinarian", "VETERINARIAN" },
+                    { "7355cd98-de9b-4808-8721-b0eb9eb37097", null, "Administrator", "ADMINISTRATOR" },
+                    { "80c3ba68-b170-48a6-8e47-95f3ebb62821", null, "Caretaker", "CARETAKER" },
+                    { "d4049210-01d0-43a8-8d9c-9f084d714cd0", null, "Volunteer", "VOLUNTEER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -372,6 +379,11 @@ namespace AnimalCare.Migrations
                 name: "IX_ExaminationRecord_VeterinarianId",
                 table: "ExaminationRecord",
                 column: "VeterinarianId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medications_AnimalId",
+                table: "Medications",
+                column: "AnimalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Medications_VeterinarianId",
