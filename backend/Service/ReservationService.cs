@@ -67,7 +67,6 @@ namespace Service
             return reservationToReturn;
         }
 
-
         public async Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDto reservationForUpdate, bool trackChanges)
         {
             var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);

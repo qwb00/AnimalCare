@@ -22,6 +22,7 @@ namespace Models.Entities
         public Guid UserId { get; set; }
 
         [ForeignKey("UserId")]
+        [JsonIgnore]
         public User User { get; set; }
 
         [Required]
