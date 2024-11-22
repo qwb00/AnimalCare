@@ -62,7 +62,7 @@ function UserNav({ role }) {
             )}
             {itemsToShow.includes("Medical Prescriptions") && (
                 <Link to={`/${userID}/medical-prescriptions`} className={getLinkClass(`/medical-prescriptions`)}>
-                    Medical Treatments
+                    Medical Prescriptions
                 </Link>
 
             )}
