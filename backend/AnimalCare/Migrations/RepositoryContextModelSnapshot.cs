@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "80c3ba68-b170-48a6-8e47-95f3ebb62821",
+                            Id = "b1d46b59-52df-48d7-ad1d-0a638a6d0c1f",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "7355cd98-de9b-4808-8721-b0eb9eb37097",
+                            Id = "b8fb83ee-6252-4fa5-b561-903ffc3af555",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "0c9c64ac-c6a3-4a11-9380-43cdd1977029",
+                            Id = "42a12b38-0461-4778-b791-a734b6c28880",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "d4049210-01d0-43a8-8d9c-9f084d714cd0",
+                            Id = "73280559-ce83-4b90-ab47-a5bad8b7d443",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -324,16 +324,18 @@ namespace AnimalCare.Migrations
                     b.Property<Guid>("AnimalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DailyDoseCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DaysOfWeek")
+                    b.Property<int>("Count")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Drug")
                         .IsRequired()
@@ -342,11 +344,11 @@ namespace AnimalCare.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FrequencyInWeeks")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("VeterinarianId")
                         .HasColumnType("uniqueidentifier");
