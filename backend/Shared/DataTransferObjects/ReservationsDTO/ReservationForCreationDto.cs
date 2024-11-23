@@ -30,7 +30,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         [CustomValidation(typeof(ReservationForCreationDto), nameof(ValidateTimeRange))]
         public TimeSpan EndTime { get; set; }
 
-        private static ValidationResult ValidateReservationDate(DateTime reservationDate, ValidationContext context)
+        public static ValidationResult ValidateReservationDate(DateTime reservationDate, ValidationContext context)
         {
             if (reservationDate < DateTime.UtcNow.Date)
             {
@@ -40,7 +40,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         }
 
         // Custom Validation for Time Range
-        private static ValidationResult ValidateTimeRange(TimeSpan endTime, ValidationContext context)
+        public static ValidationResult ValidateTimeRange(TimeSpan endTime, ValidationContext context)
         {
             var instance = (ReservationForCreationDto)context.ObjectInstance;
             if (instance.StartTime >= endTime)
