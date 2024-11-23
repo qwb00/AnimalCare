@@ -34,7 +34,6 @@ function Users() {
     message: "",
   });
   const navigate = useNavigate();
-  const [errorData, setErrorData] = useState(null);
 
   const fetchAllUsers = async () => {
     try {
