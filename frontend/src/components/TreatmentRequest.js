@@ -1,25 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '../components/Card';
 import API_BASE_URL from '../config';
 
-// Component to display a treatment request card with actions for approve, decline, or delete
-const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) => {
-  const token = sessionStorage.getItem('token');
+const ExaminationStatus = {
+  InProgress: 0,
+  Completed: 1,
+  Cancelled: 2,
+  NotDecided: 3,
+};
 
-  // sending patch request to change status request status for approved, same with handleDecline
-  // 1 - approved, 2 - declined
+const RequestCard = ({
+                       request,
+                       showActions,
+                       onApprove,
+                       onDecline,
+                       onDelete,
+                       onConfirm,
+                     }) => {
+  const token = sessionStorage.getItem('token');
+  const [finalDiagnosis, setFinalDiagnosis] = useState(
+      request.finalDiagnosis || ''
+  );
+
   const handleApprove = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/examinations/${request.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json-patch+json',
-        },
-        body: JSON.stringify([{ op: "replace", path: "/status", value: 1 }]),
-      });
+      const response = await fetch(
+          `${API_BASE_URL}/examinations/${request.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json-patch+json',
+            },
+            body: JSON.stringify([
+              { op: 'replace', path: '/status', value: ExaminationStatus.InProgress },
+            ]),
+          }
+      );
       if (response.ok) {
-        // Call parent handler to update the UI
         onApprove(request.id);
       } else {
         console.error('Failed to approve request');
@@ -31,14 +49,19 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
 
   const handleDecline = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/examinations/${request.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json-patch+json',
-        },
-        body: JSON.stringify([{ op: "replace", path: "/status", value: 2 }]),
-      });
+      const response = await fetch(
+          `${API_BASE_URL}/examinations/${request.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json-patch+json',
+            },
+            body: JSON.stringify([
+              { op: 'replace', path: '/status', value: ExaminationStatus.Cancelled },
+            ]),
+          }
+      );
       if (response.ok) {
         onDecline(request.id);
       } else {
@@ -51,12 +74,15 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/examinations/${request.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+          `${API_BASE_URL}/examinations/${request.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+      );
       if (response.ok) {
         onDelete(request.id);
       } else {
@@ -67,37 +93,147 @@ const RequestCard = ({ request, showActions, onApprove, onDecline, onDelete }) =
     }
   };
 
-  // Determine status text and color based on the request status
-  const statusText = request.status === 0 ? "In Progress" : request.status === 1 ? "Completed" : "Declined";
-  const statusColor = request.status === 0 ? "text-blue-500" : request.status === 1 ? "text-green-500" : "text-red-500";
-
-  // Render the Card component with information and actions specific to the request
-  return (
-    <Card
-      title={`Request for ${request.animalName} (${request.animalBreed})`}
-      imageSrc={request.animalPhoto || "/icons/placeholder.png"}
-      infoItems={[
-        { label: "Veterinarian", value: request.veterinarianName },
-        { label: "Date", value: new Date(request.examinationDate).toLocaleDateString() },
-        { label: "Type", value: request.type === 0 ? "Planned treatment" : "Emergency treatment" },
-        { label: "Description", value: request.description },
-        { label: "Status", value: statusText, customClass: statusColor },
-        { label: "Final Diagnosis", value: request.finalDiagnosis, customClass: "text-green-500" },
-      ]}
-      // Conditionally render buttons based on user role and request status
-      buttons={
-        showActions === 'Veterinarian'
-          ? [
-              { text: 'Decline', variant: 'red', icon: '/icons/cancel_white.png', onClick: handleDecline, className: 'px-5 py-2' },
-              { text: 'Approve', variant: 'blue', icon: '/icons/confirm_white.png', onClick: handleApprove, className: 'px-5 py-2' },
-            ]
-          : showActions === 'Caretaker' && request.status === 2
-          ? [
-              { text: 'Delete', variant: 'red', icon: '/icons/cancel_white.png', onClick: handleDelete, className: 'px-5 py-2' },
-            ]
-          : []
+  const handleConfirm = async () => {
+    if (!finalDiagnosis.trim()) {
+      alert('Final diagnosis cannot be empty.');
+      return;
+    }
+    try {
+      const patchData = [
+        { op: 'replace', path: '/finalDiagnosis', value: finalDiagnosis },
+        { op: 'replace', path: '/status', value: ExaminationStatus.Completed },
+      ];
+      const response = await fetch(
+          `${API_BASE_URL}/examinations/${request.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json-patch+json',
+            },
+            body: JSON.stringify(patchData),
+          }
+      );
+      if (response.ok) {
+        onConfirm(request.id, finalDiagnosis);
+      } else {
+        console.error('Failed to confirm request');
       }
-    />
+    } catch (error) {
+      console.error('Error confirming request:', error);
+    }
+  };
+
+  const statusText =
+      request.status === ExaminationStatus.InProgress
+          ? 'In Progress'
+          : request.status === ExaminationStatus.Completed
+              ? 'Completed'
+              : request.status === ExaminationStatus.Cancelled
+                  ? 'Declined'
+                  : request.status === ExaminationStatus.NotDecided
+                      ? 'Not Decided'
+                      : 'Unknown';
+
+  const statusColor =
+      request.status === ExaminationStatus.InProgress
+          ? 'text-blue-500'
+          : request.status === ExaminationStatus.Completed
+              ? 'text-green-500'
+              : request.status === ExaminationStatus.Cancelled
+                  ? 'text-red-500'
+                  : request.status === ExaminationStatus.NotDecided
+                      ? 'text-yellow-500'
+                      : 'text-gray-500';
+
+  let buttons = [];
+  if (showActions === 'Veterinarian' && request.status === ExaminationStatus.NotDecided) {
+    buttons = [
+      {
+        text: 'Decline',
+        variant: 'red',
+        icon: '/icons/cancel_white.png',
+        onClick: handleDecline,
+        className: 'px-5 py-2',
+      },
+      {
+        text: 'Approve',
+        variant: 'blue',
+        icon: '/icons/confirm_white.png',
+        onClick: handleApprove,
+        className: 'px-5 py-2',
+      },
+    ];
+  } else if (
+      showActions === 'InProgress' &&
+      request.status === ExaminationStatus.InProgress
+  ) {
+    buttons = [
+      {
+        text: 'Confirm',
+        variant: 'blue',
+        icon: '/icons/confirm_white.png',
+        onClick: handleConfirm,
+        className: 'px-5 py-2',
+      },
+    ];
+  } else if (showActions === 'Caretaker' && request.status === ExaminationStatus.Cancelled) {
+    buttons = [
+      {
+        text: 'Delete',
+        variant: 'red',
+        icon: '/icons/cancel_white.png',
+        onClick: handleDelete,
+        className: 'px-5 py-2',
+      },
+    ];
+  }
+
+  const infoItems = [
+    { label: 'Veterinarian', value: request.veterinarianName },
+    {
+      label: 'Date',
+      value: new Date(request.examinationDate).toLocaleDateString(),
+    },
+    {
+      label: 'Type',
+      value:
+          request.type === 0 ? 'Planned treatment' : 'Emergency treatment',
+    },
+    { label: 'Description', value: request.description },
+    { label: 'Status', value: statusText, customClass: statusColor },
+  ];
+
+  if (request.status === ExaminationStatus.Completed) {
+    infoItems.push({
+      label: 'Final Diagnosis',
+      value: request.finalDiagnosis,
+      customClass: 'text-green-500',
+    });
+  }
+
+  return (
+      <Card
+          title={`Request for ${request.animalName} (${request.animalBreed})`}
+          imageSrc={request.animalPhoto || '/icons/placeholder.png'}
+          infoItems={infoItems}
+          buttons={buttons}
+      >
+        {showActions === 'InProgress' &&
+            request.status === ExaminationStatus.InProgress && (
+                <div className="mt-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Final Diagnosis:
+                  </label>
+                  <textarea
+                      className="w-3/4 h-10 p-2 border-2 border-light-blue rounded-md resize-none focus:border-main-blue outline-none"
+                      placeholder="Enter final diagnosis"
+                      value={finalDiagnosis}
+                      onChange={(e) => setFinalDiagnosis(e.target.value)}
+                  />
+                </div>
+            )}
+      </Card>
   );
 };
 
