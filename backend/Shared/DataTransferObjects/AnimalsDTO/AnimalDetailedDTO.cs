@@ -5,7 +5,7 @@ using Shared.DataTransferObjects.ReservationsDTO;
 namespace Shared.DataTransferObjects.AnimalsDTO;
 
 // dto for a detailed animal page
-public record AnimalDetailedDto : AnimalForCreating
+public record AnimalDetailedDto : AnimalForUpdateDTO
 {
     public Guid Id { get; set; }
     public List<ExaminationRecordDetailDTO> ExaminationRecords { get; set;}

@@ -12,5 +12,5 @@ public record AnimalForCardsDto
 
     [MaxLength(500)]
     [Url]
-    public string Photo { get; set; }
+    public string? Photo { get; set; }
 }

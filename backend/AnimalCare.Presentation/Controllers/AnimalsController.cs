@@ -4,6 +4,7 @@ using Service.Contracts;
 using Shared.DataTransferObjects.AnimalsDTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using AnimalCare.Presentation.ActionFilters;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -36,6 +37,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> CreateAnimal([FromBody] AnimalForCreating animal)
         {
@@ -53,6 +55,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> UpdateAnimal(Guid id, [FromBody] AnimalForUpdateDTO animal)
         {
@@ -61,6 +64,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPatch("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> PartiallyUpdateAnimal(Guid id,
        [FromBody] JsonPatchDocument<AnimalForUpdateDTO> patchDoc)
