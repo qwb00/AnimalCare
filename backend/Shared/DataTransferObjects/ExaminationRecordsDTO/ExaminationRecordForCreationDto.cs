@@ -7,23 +7,24 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 {
     public class ExaminationRecordForCreationDto
     {
-        [Required]
+        [Required(ErrorMessage = "Please select an animal.")]
         public Guid AnimalId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a veterinarian.")]
         public Guid VeterinarianId { get; set; }
 
-        [Required]
+        // automatically generated
         public Guid CareTakerId { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "Examination date is required.")]
         [DataType(DataType.Date)]
         public DateTime ExaminationDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Examination type is required.")]
+        [EnumDataType(typeof(ExaminationType), ErrorMessage = "Invalid examination type.")]
         public ExaminationType Type { get; set; }
 
-        [Required]
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string Description { get; set; }
     }
 }

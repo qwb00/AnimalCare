@@ -3,6 +3,9 @@ using Service.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Security.Claims;
+using AnimalCare.Presentation.ActionFilters;
+using Microsoft.AspNetCore.Identity;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -37,12 +40,10 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Examinations
         [HttpPost(Name = "CreateExamination")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> CreateExamination([FromBody] ExaminationRecordForCreationDto examinationForCreation)
         {
-            if (examinationForCreation == null)
-                return BadRequest("ExaminationRecordForCreationDto object is null");
-
             var createdExamination = await _service.ExaminationService.CreateExaminationAsync(examinationForCreation);
 
             return CreatedAtRoute("GetExaminationById", new { id = createdExamination.Id }, createdExamination);
@@ -50,6 +51,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // PATCH: api/Examinations/{id}
         [HttpPatch("{id:guid}", Name = "PatchExamination")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Administrator,Veterinarian")]
         public async Task<IActionResult> UpdateExamination(Guid id, [FromBody] JsonPatchDocument<ExaminationRecordForUpdateDto> patchDoc)
         {

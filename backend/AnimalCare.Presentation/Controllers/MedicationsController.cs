@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AnimalCare.Presentation.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -35,6 +36,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Veterinarian,Administrator")]
         public async Task<IActionResult> CreateMedication([FromBody] MedicationScheduleForCreationDTO medicationForCreation)
         {
@@ -47,6 +49,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Administrator,Veterinarian")]
         public async Task<IActionResult> UpdateMedication(Guid id, [FromBody] MedicationScheduleForUpdateDTO medication)
         {
