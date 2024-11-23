@@ -44,12 +44,11 @@ function Prescriptions() {
                 const response = await axios.get(`${API_BASE_URL}/medications`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                      },
+                    },
                 });
-                console.log(response.data); // Log available animals
-                setPrescriptions(response.data); // Save the list of animals with name and ID
+                setPrescriptions(response.data);
             } catch (error) {
-                console.error("Error fetching animals:", error);
+                console.error("Error fetching prescriptions:", error);
             }
         };
 
@@ -75,7 +74,6 @@ function Prescriptions() {
             <UserNav role={user.role} />
 
             <div className="w-full max-w-[1024px] mx-auto mb-14">
-
                 {user.role === 'Veterinarian' && (
                     <>
                         <div className="mb-8">
