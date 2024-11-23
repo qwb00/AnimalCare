@@ -21,7 +21,15 @@ function VeterinarianExaminations() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddRequestForm, setShowAddRequestForm] = useState(false);
-    const [visibleRequests, setVisibleRequests] = useState(2);
+
+    // Caretaker visible requests
+    const [visibleCancelledRequests, setVisibleCancelledRequests] = useState(2);
+    const [visibleInProgressRequests, setVisibleInProgressRequests] = useState(2);
+    const [visibleCompletedRequests, setVisibleCompletedRequests] = useState(2);
+
+    // Veterinarian visible requests
+    const [visibleVeterinarianRequests, setVisibleVeterinarianRequests] = useState(2);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,6 +51,7 @@ function VeterinarianExaminations() {
                 navigate('/login');
             }
         };
+
         const fetchRequests = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/examinations`, {
@@ -63,44 +72,37 @@ function VeterinarianExaminations() {
                 setLoading(false);
             }
         };
+
         fetchUser();
         fetchRequests();
     }, [navigate]);
 
     if (loading || !user) return <p>Loading...</p>;
 
-    const userRequests = requests.filter(
-        (request) => request.veterinarianName === user.name
-    );
-    const newRequests = userRequests.filter(
-        (request) => request.status === ExaminationStatus.NotDecided
-    );
-    const inProgressRequests = userRequests.filter(
-        (request) => request.status === ExaminationStatus.InProgress
-    );
-    const completedRequests = userRequests.filter(
-        (request) => request.status === ExaminationStatus.Completed
-    );
-
-    // For Caretaker
-    const caretakerRequests = requests.filter(
-        (request) => request.careTakerId === user.id
-    );
-
-    const cancelledRequests = caretakerRequests.filter(
+    // Filtering requests for Caretaker
+    const cancelledRequests = requests.filter(
         (request) => request.status === ExaminationStatus.Cancelled
     );
-    const pendingRequests = caretakerRequests.filter(
-        (request) => request.status === ExaminationStatus.NotDecided
-    );
-    const inProgressCaretakerRequests = caretakerRequests.filter(
+    const inProgressRequests = requests.filter(
         (request) => request.status === ExaminationStatus.InProgress
     );
-    const completedCaretakerRequests = caretakerRequests.filter(
+    const completedRequests = requests.filter(
         (request) => request.status === ExaminationStatus.Completed
     );
 
-
+    // Filtering requests for Veterinarian
+    const vetRequests = requests.filter(
+        (request) => request.veterinarianName === user.name
+    );
+    const newRequests = vetRequests.filter(
+        (request) => request.status === ExaminationStatus.NotDecided
+    );
+    const vetInProgressRequests = vetRequests.filter(
+        (request) => request.status === ExaminationStatus.InProgress
+    );
+    const vetCompletedRequests = vetRequests.filter(
+        (request) => request.status === ExaminationStatus.Completed
+    );
 
     const handleAddRequestClick = () => {
         setShowAddRequestForm(true);
@@ -124,11 +126,7 @@ function VeterinarianExaminations() {
         setRequests((prevRequests) =>
             prevRequests.map((request) =>
                 request.id === requestId
-                    ? {
-                        ...request,
-                        status: ExaminationStatus.Completed,
-                        finalDiagnosis,
-                    }
+                    ? { ...request, status: ExaminationStatus.Completed, finalDiagnosis }
                     : request
             )
         );
@@ -136,7 +134,11 @@ function VeterinarianExaminations() {
 
     const handleDecline = (requestId) => {
         setRequests((prevRequests) =>
-            prevRequests.filter((request) => request.id !== requestId)
+            prevRequests.map((request) =>
+                request.id === requestId
+                    ? { ...request, status: ExaminationStatus.Cancelled }
+                    : request
+            )
         );
     };
 
@@ -144,10 +146,6 @@ function VeterinarianExaminations() {
         setRequests((prevRequests) =>
             prevRequests.filter((request) => request.id !== requestId)
         );
-    };
-
-    const handleShowMoreRequests = () => {
-        setVisibleRequests((prev) => prev + 2);
     };
 
     return (
@@ -169,9 +167,12 @@ function VeterinarianExaminations() {
                                 onClick={handleAddRequestClick}
                             />
                         </div>
+
+                        {/* Cancelled Requests Section */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                            <h2 className="text-2xl font-bold">Cancelled Requests</h2>
                             <div className="flex flex-wrap gap-10">
-                                {requests.slice(0, visibleRequests).map((request) => (
+                                {cancelledRequests.slice(0, visibleCancelledRequests).map((request) => (
                                     <RequestCard
                                         key={request.id}
                                         request={request}
@@ -180,17 +181,67 @@ function VeterinarianExaminations() {
                                     />
                                 ))}
                             </div>
+                            {cancelledRequests.length > visibleCancelledRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleCancelledRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        {requests.length > visibleRequests && (
-                            <div className="flex justify-center my-4">
-                                <button
-                                    onClick={handleShowMoreRequests}
-                                    className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                                >
-                                    <span className="text-lg font-bold">...</span>
-                                </button>
+
+                        {/* In Progress Requests Section */}
+                        <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                            <h2 className="text-2xl font-bold">In Progress Requests</h2>
+                            <div className="flex flex-wrap gap-10">
+                                {inProgressRequests.slice(0, visibleInProgressRequests).map((request) => (
+                                    <RequestCard
+                                        key={request.id}
+                                        request={request}
+                                        showActions={'Caretaker'}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
                             </div>
-                        )}
+                            {inProgressRequests.length > visibleInProgressRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleInProgressRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Completed Requests Section */}
+                        <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                            <h2 className="text-2xl font-bold">Completed Requests</h2>
+                            <div className="flex flex-wrap gap-10">
+                                {completedRequests.slice(0, visibleCompletedRequests).map((request) => (
+                                    <RequestCard
+                                        key={request.id}
+                                        request={request}
+                                        showActions={'Caretaker'}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </div>
+                            {completedRequests.length > visibleCompletedRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleCompletedRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </>
                 )}
 
@@ -198,10 +249,8 @@ function VeterinarianExaminations() {
                     <>
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                             <h2 className="text-2xl font-bold">New Requests</h2>
-                        </div>
-                        <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                             <div className="flex flex-wrap gap-10">
-                                {newRequests.slice(0, visibleRequests).map((request) => (
+                                {newRequests.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard
                                         key={request.id}
                                         request={request}
@@ -211,24 +260,23 @@ function VeterinarianExaminations() {
                                     />
                                 ))}
                             </div>
+                            {newRequests.length > visibleVeterinarianRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        {newRequests.length > visibleRequests && (
-                            <div className="flex justify-center my-4">
-                                <button
-                                    onClick={handleShowMoreRequests}
-                                    className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                                >
-                                    <span className="text-lg font-bold">...</span>
-                                </button>
-                            </div>
-                        )}
 
+                        {/* In Progress Section */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <h2 className="text-2xl font-bold">In Progress Treatments</h2>
-                        </div>
-                        <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                            <h2 className="text-2xl font-bold">In Progress Requests</h2>
                             <div className="flex flex-wrap gap-10">
-                                {inProgressRequests.slice(0, visibleRequests).map((request) => (
+                                {vetInProgressRequests.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard
                                         key={request.id}
                                         request={request}
@@ -237,38 +285,37 @@ function VeterinarianExaminations() {
                                     />
                                 ))}
                             </div>
+                            {vetInProgressRequests.length > visibleVeterinarianRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        {inProgressRequests.length > visibleRequests && (
-                            <div className="flex justify-center my-4">
-                                <button
-                                    onClick={handleShowMoreRequests}
-                                    className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                                >
-                                    <span className="text-lg font-bold">...</span>
-                                </button>
-                            </div>
-                        )}
 
+                        {/* Completed Section */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <h2 className="text-2xl font-bold">Completed Treatments</h2>
-                        </div>
-                        <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
+                            <h2 className="text-2xl font-bold">Completed Requests</h2>
                             <div className="flex flex-wrap gap-10">
-                                {completedRequests.slice(0, visibleRequests).map((request) => (
+                                {vetCompletedRequests.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard key={request.id} request={request} />
                                 ))}
                             </div>
+                            {vetCompletedRequests.length > visibleVeterinarianRequests && (
+                                <div className="flex justify-center my-4">
+                                    <button
+                                        onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
+                                        className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
+                                    >
+                                        <span className="text-lg font-bold">...</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        {completedRequests.length > visibleRequests && (
-                            <div className="flex justify-center my-4">
-                                <button
-                                    onClick={handleShowMoreRequests}
-                                    className="w-20 h-8 border-2 border-main-blue text-main-blue rounded-full hover:bg-light-blue"
-                                >
-                                    <span className="text-lg font-bold">...</span>
-                                </button>
-                            </div>
-                        )}
                     </>
                 )}
 
