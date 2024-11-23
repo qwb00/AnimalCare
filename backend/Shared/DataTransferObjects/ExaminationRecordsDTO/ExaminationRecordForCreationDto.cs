@@ -1,6 +1,7 @@
 // Shared/DataTransferObjects/ExaminationRecordForCreationDto.cs
 using System;
 using System.ComponentModel.DataAnnotations;
+using Shared.DataTransferObjects.ReservationsDTO;
 using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ExaminationRecordsDTO
@@ -14,10 +15,12 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
         public Guid VeterinarianId { get; set; }
 
         // automatically generated
+        [Required]
         public Guid CareTakerId { get; set; }
 
         [Required(ErrorMessage = "Examination date is required.")]
-        [DataType(DataType.Date)]
+        [CustomValidation(typeof(ExaminationRecordForCreationDto), nameof(ValidateExaminationDate))]
+        [DataType(DataType.Date, ErrorMessage = "Examination date must be a valid date.")]
         public DateTime ExaminationDate { get; set; }
 
         [Required(ErrorMessage = "Examination type is required.")]
@@ -26,5 +29,14 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string Description { get; set; }
+
+        public static ValidationResult ValidateExaminationDate(DateTime exminationDate, ValidationContext context)
+        {
+            if (exminationDate < DateTime.UtcNow.Date)
+            {
+                return new ValidationResult("Examination date cannot be in the past.");
+            }
+            return ValidationResult.Success;
+        }
     }
 }
