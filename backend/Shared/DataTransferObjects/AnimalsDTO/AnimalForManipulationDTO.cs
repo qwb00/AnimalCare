@@ -6,12 +6,12 @@ namespace Shared.DataTransferObjects.AnimalsDTO
     public abstract record AnimalForManipulationDTO
     {
         [Required(ErrorMessage = "Name is required.")]
-        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
+        [StringLength(30, ErrorMessage = "Name cannot exceed 30 characters.")]
         [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Name can only contain English letters, spaces, and hyphens.")]
         public string Name { get; init; }
 
         [Required(ErrorMessage = "Breed is required.")]
-        [StringLength(100, ErrorMessage = "Breed cannot exceed 100 characters.")]
+        [StringLength(40, ErrorMessage = "Breed cannot exceed 40 characters.")]
         [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Breed can only contain English letters, spaces, and hyphens.")]
         public string Breed { get; init; }
 

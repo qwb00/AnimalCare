@@ -56,6 +56,29 @@ function Animals() {
     }
   };
 
+  const extractErrorMessages = (errorResponse) => {
+    const errorMessages = [];
+    try {
+      if (typeof errorResponse === "string") {
+        errorMessages.push(errorResponse);
+      } else if (errorResponse.errors) {
+        for (const key in errorResponse.errors) {
+          if (Array.isArray(errorResponse.errors[key])) {
+            errorMessages.push(...errorResponse.errors[key]);
+          } else {
+            errorMessages.push(errorResponse.errors[key]);
+          }
+        }
+      } else {
+        errorMessages.push("An unknown error occurred.");
+      }
+    } catch (err) {
+      errorMessages.push("Failed to process error messages.");
+    }
+    return errorMessages;
+  };
+
+
   useEffect(() => {
     const storedUserRole = sessionStorage.getItem("role");
     setUserRole(storedUserRole);
@@ -109,77 +132,24 @@ function Animals() {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  // Generate unique ID for new animals
-  function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  }
-
   // Add new animal
   const handleAddAnimal = async () => {
-    if (
-      !name ||
-      !breed ||
-      !age ||
-      !species ||
-      !sex ||
-      !size ||
-      !health ||
-      !photoUrl
-    ) {
-      setNotification({ message: "Please fill all fields.", isSuccess: false });
-      setIsNotificationOpen(true);
-      return;
-    }
-
-    const newAnimalID = generateGUID();
-
     try {
       const animalData = {
-        name: name,
-        breed: breed,
+        name,
+        breed,
         age: parseInt(age),
         photo: photoUrl,
-        weight: "0 kg",
         sex: sex === "Male" ? 0 : 1,
-        size:
-          size === "Small"
-            ? 0
-            : size === "Medium"
-            ? 1
-            : size === "Large"
-            ? 2
-            : 3,
+        size: size === "Small" ? 0 : size === "Medium" ? 1 : size === "Large" ? 2 : 3,
         health: health === "Good" ? 0 : health === "Fair" ? 1 : 2,
         species: species === "Dog" ? 0 : 1,
-        history: history,
-        personality: personality,
-        isVaccinated: true,
-        isSterilized: true,
-        isChipped: true,
-        lastExamination: new Date().toISOString(),
-        isPeopleFriendly: true,
-        isAnimalFriendly: true,
-        isCommandsTaught: true,
-        isLeashTrained: true,
+        history,
+        personality,
         dateFound: new Date(foundDate).toISOString(),
       };
 
       const authToken = sessionStorage.getItem("token");
-
-      console.log("Animal data:", animalData);
-
-      console.log("Photo URL:", photoUrl);
-
-      console.log("Token data:", authToken);
-
-      console.log("New animal ID:", newAnimalID);
 
       const response = await axios.post(`${API_BASE_URL}/animals`, animalData, {
         headers: {
@@ -188,22 +158,20 @@ function Animals() {
         },
       });
 
-      console.log("Response:", response);
-
       if (response.status === 201) {
-        setNotification({
-          isSuccess: true,
-          message: "Animal added successfully!",
-        });
+        setNotification({ isSuccess: true, message: "Animal added successfully!" });
         setIsNotificationOpen(true);
+        loadAllAnimals(); // Refresh list
         handleCloseModal();
       }
     } catch (error) {
       console.error("Error adding animal:", error);
-      setNotification({ isSuccess: false, message: "Failed to add animal." });
+      const errorMessages = extractErrorMessages(error.response?.data || "An unknown error occurred.");
+      setNotification({ isSuccess: false, message: errorMessages.join(" ") });
       setIsNotificationOpen(true);
     }
   };
+
 
   return (
     <div className="max-w-screen-lg mx-auto">
@@ -323,7 +291,6 @@ function Animals() {
                 className="w-full p-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-xs"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
               />
             </div>
 
@@ -336,7 +303,6 @@ function Animals() {
                   className="w-full p-1.5 pr-8 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue focus:appearance-none text-xs"
                   value={species}
                   onChange={(e) => setSpecies(e.target.value)}
-                  required
                 >
                   <option value="">Select species</option>
                   <option value="Dog">Dog</option>
@@ -354,7 +320,6 @@ function Animals() {
                 placeholder="Enter animal’s breed"
                 className="w-full p-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-xs"
                 onChange={(e) => setBreed(e.target.value)}
-                required
               />
             </div>
 
@@ -370,7 +335,6 @@ function Animals() {
                   max="25"
                   className="w-full p-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-xs"
                   onChange={(e) => setAge(e.target.value)}
-                  required
                 />
               </div>
 
@@ -386,7 +350,6 @@ function Animals() {
                   <option value="">Select sex</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  required
                 </select>
               </div>
             </div>
@@ -400,7 +363,6 @@ function Animals() {
                   className="w-full p-1.5 pr-8 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue focus:appearance-none text-xs"
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
-                  required
                 >
                   <option value="">Select size</option>
                   <option value="Small">Small</option>
@@ -418,7 +380,6 @@ function Animals() {
                   className="w-full p-1.5 pr-8 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue focus:appearance-none text-xs"
                   value={health}
                   onChange={(e) => setHealth(e.target.value)}
-                  required
                 >
                   <option value="">Select health conditions</option>
                   <option value="Good">Good</option>
@@ -438,7 +399,6 @@ function Animals() {
                 placeholder="Enter when animal was found"
                 value={foundDate}
                 onChange={(e) => setFoundDate(e.target.value)}
-                required
               />
             </div>
 
@@ -452,7 +412,6 @@ function Animals() {
                 placeholder="Enter animal’s personality"
                 value={personality}
                 onChange={(e) => setPersonality(e.target.value)}
-                required
               />
             </div>
 
@@ -467,7 +426,6 @@ function Animals() {
                 rows="4"
                 value={history}
                 onChange={(e) => setHistory(e.target.value)}
-                required
               ></textarea>
             </div>
 
@@ -514,38 +472,38 @@ function Animals() {
       )}
 
       {isNotificationOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={() => setIsNotificationOpen(false)}
-        >
           <div
-            className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
-              notification.isSuccess ? "border-green-600" : "border-red-600"
-            }`}
-            onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+              onClick={() => setIsNotificationOpen(false)}
           >
-            <h3
-              className={`text-2xl font-bold mb-6 text-center ${
-                notification.isSuccess ? "text-green-600" : "text-red-600"
-              }`}
+            <div
+                className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
+                    notification.isSuccess ? "border-green-600" : "border-red-600"
+                }`}
+                onClick={(e) => e.stopPropagation()}
             >
-              {notification.isSuccess ? "Success!" : "Error"}
-            </h3>
-            <p className="text-lg mb-6 text-center text-gray-800">
-              {notification.message}
-            </p>
-            <div className="flex justify-center">
-              <Button
-                text="Close"
-                variant="blue"
-                icon="/icons/cancel_white.png"
-                iconPosition="right"
-                className="px-5 py-2"
-                onClick={() => setIsNotificationOpen(false)}
-              />
+              <h3
+                  className={`text-2xl font-bold mb-6 text-center ${
+                      notification.isSuccess ? "text-green-600" : "text-red-600"
+                  }`}
+              >
+                {notification.isSuccess ? "Success!" : "Error"}
+              </h3>
+              <p className="text-lg mb-6 text-center text-gray-800">
+                {notification.message}
+              </p>
+              <div className="flex justify-center">
+                <Button
+                    text="Close"
+                    variant="blue"
+                    icon="/icons/cancel_white.png"
+                    iconPosition="right"
+                    className="px-5 py-2"
+                    onClick={() => setIsNotificationOpen(false)}
+                />
+              </div>
             </div>
           </div>
-        </div>
       )}
 
       <Footer />
