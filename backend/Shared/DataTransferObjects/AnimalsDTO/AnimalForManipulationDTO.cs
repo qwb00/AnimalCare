@@ -52,6 +52,11 @@ namespace Shared.DataTransferObjects.AnimalsDTO
 
         public static ValidationResult ValidateDateFound(DateTime dateFound, ValidationContext context)
         {
+            if (dateFound == null)
+            {
+                return ValidationResult.Success;
+            }
+
             if (dateFound > DateTime.UtcNow)
             {
                 return new ValidationResult("Date found cannot be in the future.");
