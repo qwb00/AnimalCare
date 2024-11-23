@@ -5,12 +5,12 @@ namespace Shared.DataTransferObjects.UsersDTO
     public abstract record UserForManipulationDTO
     {
         [Required(ErrorMessage = "First name is required")]
-        [MaxLength(150, ErrorMessage = "Name is too long")]
+        [MaxLength(50, ErrorMessage = "Name is too long")]
         [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Name can only contain English letters, spaces, and hyphens.")]
         public string FirstName { get; init; }
 
         [Required(ErrorMessage = "Last name is required")]
-        [MaxLength(150, ErrorMessage = "Name is too long")]
+        [MaxLength(50, ErrorMessage = "Name is too long")]
         [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Name can only contain English letters, spaces, and hyphens.")]
         public string LastName { get; init; }
 
