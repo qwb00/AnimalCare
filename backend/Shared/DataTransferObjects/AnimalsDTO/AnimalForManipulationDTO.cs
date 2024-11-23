@@ -16,7 +16,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         public string Breed { get; init; }
 
         [Range(0, 25, ErrorMessage = "Age must be between 0 and 30.")]
-        public int Age { get; init; }
+        public int? Age { get; init; }
 
         [MaxLength(500, ErrorMessage = "Photo URL cannot exceed 500 characters.")]
         [Url(ErrorMessage = "Photo must be a valid URL.")]
@@ -31,10 +31,10 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         public Sex Sex { get; set; }
 
         [EnumDataType(typeof(Size), ErrorMessage = "Invalid size type.")]
-        public Size Size { get; set; }
+        public Size? Size { get; set; }
 
         [EnumDataType(typeof(Health), ErrorMessage = "Invalid health type.")]
-        public Health Health { get; set; }
+        public Health? Health { get; set; }
 
         [Required(ErrorMessage = "Species is required.")]
         [EnumDataType(typeof(Species), ErrorMessage = "Invalid species type.")]
