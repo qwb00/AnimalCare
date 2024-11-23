@@ -6,27 +6,31 @@ namespace Shared.DataTransferObjects.UsersDTO
     {
         [Required(ErrorMessage = "First name is required")]
         [MaxLength(150, ErrorMessage = "Name is too long")]
-        public string? FirstName { get; init; }
+        [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Name can only contain English letters, spaces, and hyphens.")]
+        public string FirstName { get; init; }
 
         [Required(ErrorMessage = "Last name is required")]
         [MaxLength(150, ErrorMessage = "Name is too long")]
-        public string? LastName { get; init; }
+        [RegularExpression(@"^[a-zA-Z\s\-]+$", ErrorMessage = "Name can only contain English letters, spaces, and hyphens.")]
+        public string LastName { get; init; }
+
         [Required(ErrorMessage = "Username is required")]
-        public string? Username { get; init; }
+        public string Username { get; init; }
 
         [Required(ErrorMessage = "Password is required")]
-        public string? Password { get; init; }
+        public string Password { get; init; }
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email address format")]
-        public string? Email { get; init; }
+        public string Email { get; init; }
 
         [Required(ErrorMessage = "Phone number is required")]
         [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "Invalid phone number format. Must be from 10 to 15 digits")]
-        public string? PhoneNumber { get; init; }
+        public string PhoneNumber { get; init; }
         public ICollection<string>? Roles { get; init; }
-        
-        [Url]
+
+        [MaxLength(500, ErrorMessage = "Photo URL cannot exceed 500 characters.")]
+        [Url(ErrorMessage = "Photo must be a valid URL.")]
         public string? Photo { get; set; }
     }
 }

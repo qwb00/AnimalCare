@@ -4,9 +4,10 @@ namespace Shared.DataTransferObjects.MedicationsDTO
 {
     public record MedicationScheduleForCreationDTO : MedicalScheduleForManipulationDTO
     {
-        [Required]
+        [Required(ErrorMessage = "Please select a veterinarian.")]
         public Guid VeterinarianId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Please select an animal.")]
         public Guid AnimalId { get; set; }
     }
 }

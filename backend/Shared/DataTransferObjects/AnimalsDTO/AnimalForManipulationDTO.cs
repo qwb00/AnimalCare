@@ -27,15 +27,17 @@ namespace Shared.DataTransferObjects.AnimalsDTO
 
         // Enums Attributes
         [Required(ErrorMessage = "Sex is required.")]
+        [EnumDataType(typeof(Sex), ErrorMessage = "Invalid sex type.")]
         public Sex Sex { get; set; }
 
-        [Required(ErrorMessage = "Size is required.")]
+        [EnumDataType(typeof(Size), ErrorMessage = "Invalid size type.")]
         public Size Size { get; set; }
 
-        [Required(ErrorMessage = "Health is required.")]
+        [EnumDataType(typeof(Health), ErrorMessage = "Invalid health type.")]
         public Health Health { get; set; }
 
         [Required(ErrorMessage = "Species is required.")]
+        [EnumDataType(typeof(Species), ErrorMessage = "Invalid species type.")]
         public Species Species { get; set; }
 
         [MaxLength(1000, ErrorMessage = "History cannot exceed 1000 characters.")]
@@ -48,7 +50,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         [CustomValidation(typeof(AnimalForManipulationDTO), nameof(ValidateDateFound))]
         public DateTime? DateFound { get; set; }
 
-        public static ValidationResult ValidateDateFound(DateTime dateFound, ValidationContext context)
+        private static ValidationResult ValidateDateFound(DateTime dateFound, ValidationContext context)
         {
             if (dateFound > DateTime.UtcNow)
             {

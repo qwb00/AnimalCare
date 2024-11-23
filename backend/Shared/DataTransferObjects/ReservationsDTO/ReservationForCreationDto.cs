@@ -10,22 +10,44 @@ namespace Shared.DataTransferObjects.ReservationsDTO
 {
     public class ReservationForCreationDto
     {
-        [Required]
+        [Required(ErrorMessage = "Please select an animal.")]
         public Guid AnimalId { get; set; }
 
         [Required]
         public Guid UserId { get; set; }
 
-        [Required]
-        [DataType(DataType.Date)]
+        [Required(ErrorMessage = "Reservation date is required.")]
+        [DataType(DataType.Date, ErrorMessage = "Reservation date must be a valid date.")]
+        [CustomValidation(typeof(ReservationForCreationDto), nameof(ValidateReservationDate))]
         public DateTime ReservationDate { get; set; }
 
-        [Required]
-        [DataType(DataType.Time)]
+        [Required(ErrorMessage = "Start time is required.")]
+        [DataType(DataType.Time, ErrorMessage = "Start time must be a valid time.")]
         public TimeSpan StartTime { get; set; }
 
-        [Required]
-        [DataType(DataType.Time)]
+        [Required(ErrorMessage = "End time is required.")]
+        [DataType(DataType.Time, ErrorMessage = "End time must be a valid time.")]
+        [CustomValidation(typeof(ReservationForCreationDto), nameof(ValidateTimeRange))]
         public TimeSpan EndTime { get; set; }
+
+        private static ValidationResult ValidateReservationDate(DateTime reservationDate, ValidationContext context)
+        {
+            if (reservationDate < DateTime.UtcNow.Date)
+            {
+                return new ValidationResult("Reservation date cannot be in the past.");
+            }
+            return ValidationResult.Success;
+        }
+
+        // Custom Validation for Time Range
+        private static ValidationResult ValidateTimeRange(TimeSpan endTime, ValidationContext context)
+        {
+            var instance = (ReservationForCreationDto)context.ObjectInstance;
+            if (instance.StartTime >= endTime)
+            {
+                return new ValidationResult("End time must be after start time.");
+            }
+            return ValidationResult.Success;
+        }
     }
 }
