@@ -7,6 +7,7 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
     {
         public ExaminationStatus Status { get; set; }
 
+        [StringLength(300, ErrorMessage = "Diagnosis cannot exceed 1000 characters.")]
         public string FinalDiagnosis { get; set; }
     }
 }
