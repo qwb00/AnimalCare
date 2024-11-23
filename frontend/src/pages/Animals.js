@@ -6,6 +6,7 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 import Button from "../components/Button";
 import FileUploader from "../components/FileUploader";
+import ErrorMessages from '../components/ErrorMessages';
 
 function Animals() {
   const [allAnimals, setAllAnimals] = useState([]);
@@ -38,6 +39,7 @@ function Animals() {
   const [foundDate, setFoundDate] = useState("");
   const [personality, setPersonality] = useState("");
   const [history, setHistory] = useState("");
+  const [errorData, setErrorData] = useState(null);
 
   const loadAllAnimals = async () => {
     try {
@@ -54,28 +56,6 @@ function Animals() {
     } catch (error) {
       console.error("Error fetching animals:", error);
     }
-  };
-
-  const extractErrorMessages = (errorResponse) => {
-    const errorMessages = [];
-    try {
-      if (typeof errorResponse === "string") {
-        errorMessages.push(errorResponse);
-      } else if (errorResponse.errors) {
-        for (const key in errorResponse.errors) {
-          if (Array.isArray(errorResponse.errors[key])) {
-            errorMessages.push(...errorResponse.errors[key]);
-          } else {
-            errorMessages.push(errorResponse.errors[key]);
-          }
-        }
-      } else {
-        errorMessages.push("An unknown error occurred.");
-      }
-    } catch (err) {
-      errorMessages.push("Failed to process error messages.");
-    }
-    return errorMessages;
   };
 
 
@@ -146,11 +126,10 @@ function Animals() {
         species: species === "Dog" ? 0 : 1,
         history,
         personality,
-        dateFound: new Date(foundDate).toISOString(),
+        dateFound: foundDate && !isNaN(new Date(foundDate)) ? new Date(foundDate).toISOString() : null,
       };
 
       const authToken = sessionStorage.getItem("token");
-
       const response = await axios.post(`${API_BASE_URL}/animals`, animalData, {
         headers: {
           "Content-Type": "application/json",
@@ -166,9 +145,10 @@ function Animals() {
       }
     } catch (error) {
       console.error("Error adding animal:", error);
-      const errorMessages = extractErrorMessages(error.response?.data || "An unknown error occurred.");
-      setNotification({ isSuccess: false, message: errorMessages.join(" ") });
+      setErrorData(error);
+      setNotification({ isSuccess: false, message: <ErrorMessages errorData={error.response?.data} />  });
       setIsNotificationOpen(true);
+      return;
     }
   };
 
@@ -470,7 +450,7 @@ function Animals() {
           </div>
         </div>
       )}
-
+      
       {isNotificationOpen && (
           <div
               className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

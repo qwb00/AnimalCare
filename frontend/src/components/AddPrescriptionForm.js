@@ -64,7 +64,6 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
           ...formData,
           veterinarianId
         };
-        console.log(dataToSubmit);
         try {
           const token = sessionStorage.getItem('token');
           const response = await fetch(`${API_BASE_URL}/medications`, {
