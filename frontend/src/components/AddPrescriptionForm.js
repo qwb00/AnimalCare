@@ -3,6 +3,7 @@ import API_BASE_URL from '../config';
 import Button from './Button';
 import Select from 'react-select';
 import {  toast } from 'react-toastify';
+import ErrorMessages from '../components/ErrorMessages';
 
 function AddPrescriptionForm({ onSubmit, onClose }) {
     const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         description: '',
         diagnosis: '',
     });
+    const [errorData, setErrorData] = useState(null);
 
     const handleChange = (event) => {
         const { name, value } = event.target || event;
@@ -76,7 +78,9 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
           });
     
           if (!response.ok) {
-            throw new Error('Failed to create new request');
+            const errorResponse = await response.json();
+            setErrorData(errorResponse);
+            return;
           }
           onClose(); 
           toast.success('Request created successfully', {
@@ -138,6 +142,8 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                         className="w-3 h-3"
                     />
                 </button>
+
+                {errorData && <ErrorMessages errorData={errorData} />}
 
                 <form onSubmit={handleSubmit}>
                     {/* Animal */}
@@ -247,7 +253,6 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             placeholder="Enter description"
                             value={formData.description}
                             onChange={handleChange}
-                            required
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
                         />
                     </div>
@@ -263,7 +268,6 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             placeholder="Enter diagnosis"
                             value={formData.diagnosis}
                             onChange={handleChange}
-                            required
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
                         />
                     </div>
