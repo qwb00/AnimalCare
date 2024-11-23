@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AnimalCare.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -32,29 +33,26 @@ namespace AnimalCare.Presentation.Controllers
 
         // POST: api/Reservations
         [HttpPost(Name = "CreateReservation")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
         {
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
 
-            // Получаем пользователя по ID из DTO
             var user = await _userManager.FindByIdAsync(reservationRequest.UserId.ToString());
             if (user == null)
                 return NotFound("User not found.");
 
-            // Проверяем, является ли пользователь волонтером
             var isVolunteer = await _userManager.IsInRoleAsync(user, "Volunteer");
             if (isVolunteer)
             {
-                // Проверяем, что пользователь - верифицированный волонтер
                 if (user is Volunteer volunteer && !volunteer.IsVerified)
                 {
                     return BadRequest("Unverified volunteers cannot create reservations.");
                 }
             }
 
-            // Создаем резерв
             var createdReservation = await _service.ReservationService.CreateReservationAsync(reservationRequest);
             return CreatedAtRoute("GetReservationById", new { id = createdReservation.Id }, createdReservation);
         }
@@ -73,6 +71,7 @@ namespace AnimalCare.Presentation.Controllers
 
         // PATCH: api/Reservations/{id}
         [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDto> patchDoc)
         {

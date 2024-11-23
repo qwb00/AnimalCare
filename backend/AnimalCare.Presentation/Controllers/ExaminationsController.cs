@@ -5,6 +5,7 @@ using Shared.DataTransferObjects.ExaminationRecordsDTO;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Security.Claims;
 using AnimalCare.Presentation.ActionFilters;
+using Microsoft.AspNetCore.Identity;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -43,7 +44,6 @@ namespace AnimalCare.Presentation.Controllers
         [Authorize(Roles = "Caretaker,Administrator")]
         public async Task<IActionResult> CreateExamination([FromBody] ExaminationRecordForCreationDto examinationForCreation)
         {
-
             var createdExamination = await _service.ExaminationService.CreateExaminationAsync(examinationForCreation);
 
             return CreatedAtRoute("GetExaminationById", new { id = createdExamination.Id }, createdExamination);
