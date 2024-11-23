@@ -50,7 +50,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         [CustomValidation(typeof(AnimalForManipulationDTO), nameof(ValidateDateFound))]
         public DateTime? DateFound { get; set; }
 
-        public static ValidationResult ValidateDateFound(DateTime dateFound, ValidationContext context)
+        public static ValidationResult ValidateDateFound(DateTime? dateFound, ValidationContext context)
         {
             if (dateFound == null)
             {
