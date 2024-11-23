@@ -24,7 +24,7 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid id,
+        public async Task<IActionResult> PartiallyUpdateVolunteer(Guid id,
         [FromBody] JsonPatchDocument<ChangeStatusForVolunteerDTO> patchDoc)
         {
             if (patchDoc is null)
