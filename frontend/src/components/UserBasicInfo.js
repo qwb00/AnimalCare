@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../components/Button';
+import ErrorMessages from '../components/ErrorMessages';
 import API_BASE_URL from "../config";
 
 function UserBasicInfo({ user, updateUser }) {
@@ -10,6 +11,7 @@ function UserBasicInfo({ user, updateUser }) {
         phoneNumber: user.phoneNumber,
         photo: user.photo,
     });
+    const [errorData, setErrorData] = useState(null); // State to store error data
 
     // Toggle edit mode
     const toggleEditMode = () => setEditMode(!editMode);
@@ -44,8 +46,9 @@ function UserBasicInfo({ user, updateUser }) {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to update user information: ${errorText}`);
+                const errorData = await response.json();
+                setErrorData(errorData); // Save error data to display
+                throw new Error('Failed to update user information');
             }
 
             console.log('User information updated successfully');
@@ -57,6 +60,7 @@ function UserBasicInfo({ user, updateUser }) {
                 phoneNumber: formData.phoneNumber,
             });
 
+            setErrorData(null); // Clear any previous error messages
             toggleEditMode(); // Exit edit mode
         } catch (error) {
             console.error('Error updating user information:', error);
@@ -84,6 +88,9 @@ function UserBasicInfo({ user, updateUser }) {
                 />
             </div>
             <div className="space-y-3">
+                {/* Display error messages */}
+                {errorData && <ErrorMessages errorData={errorData} />}
+
                 {/* Full Name */}
                 <div className="flex items-start">
                     <img src="/icons/name.png" alt="User Icon" className="h-8 w-8 mr-4" />
