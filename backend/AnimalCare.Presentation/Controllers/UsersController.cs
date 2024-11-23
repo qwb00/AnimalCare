@@ -66,7 +66,6 @@ namespace AnimalCare.Presentation.Controllers
         }
 
         [HttpPatch("me", Name = "UpdateCurrentUser")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserForUpdateDTO> patchDoc)
         {
             var username = User.Identity.Name;
@@ -77,6 +76,8 @@ namespace AnimalCare.Presentation.Controllers
             var result = await _service.UserService.GetUserForPatchAsync(username);
 
             patchDoc.ApplyTo(result.userForPatch, ModelState);
+
+            TryValidateModel(result.userForPatch);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
