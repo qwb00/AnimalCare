@@ -10,6 +10,7 @@ import Card from "../components/Card";
 import ShowMoreButton from "../components/ShowMoreButton";
 import Button from "../components/Button";
 import { icons } from "../components/icons";
+import ErrorMessages from '../components/ErrorMessages';
 
 function Users() {
   const [user, setUser] = useState(null);
@@ -33,6 +34,7 @@ function Users() {
     message: "",
   });
   const navigate = useNavigate();
+  const [errorData, setErrorData] = useState(null);
 
   const fetchAllUsers = async () => {
     try {
@@ -129,7 +131,7 @@ function Users() {
     } catch (error) {
       setNotification({
         isSuccess: false,
-        message: "Failed to create user. Please try again.",
+        message: <ErrorMessages errorData={error.response?.data} /> ,
       });
       setIsNotificationOpen(true);
     }
