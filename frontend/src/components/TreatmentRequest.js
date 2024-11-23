@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Card from '../components/Card';
 import API_BASE_URL from '../config';
+import ErrorMessages from '../components/ErrorMessages';
 
 const ExaminationStatus = {
   InProgress: 0,
@@ -21,6 +22,8 @@ const RequestCard = ({
   const [finalDiagnosis, setFinalDiagnosis] = useState(
       request.finalDiagnosis || ''
   );
+
+  const [errorData, setErrorData] = useState(null);
 
   const handleApprove = async () => {
     try {
@@ -117,7 +120,9 @@ const RequestCard = ({
       if (response.ok) {
         onConfirm(request.id, finalDiagnosis);
       } else {
-        console.error('Failed to confirm request');
+        const errorResponse = await response.json();
+        setErrorData(errorResponse);
+        return;
       }
     } catch (error) {
       console.error('Error confirming request:', error);
@@ -219,6 +224,7 @@ const RequestCard = ({
           infoItems={infoItems}
           buttons={buttons}
       >
+        {errorData && <ErrorMessages errorData={errorData} />}
         {showActions === 'InProgress' &&
             request.status === ExaminationStatus.InProgress && (
                 <div className="mt-4">
@@ -226,7 +232,7 @@ const RequestCard = ({
                     Final Diagnosis:
                   </label>
                   <textarea
-                      className="w-3/4 h-10 p-2 border-2 border-light-blue rounded-md resize-none focus:border-main-blue outline-none"
+                      className="w-3/4 h-10 max-h-32 p-2 border-2 border-light-blue rounded-md resize-none focus:border-main-blue outline-none"
                       placeholder="Enter final diagnosis"
                       value={finalDiagnosis}
                       onChange={(e) => setFinalDiagnosis(e.target.value)}

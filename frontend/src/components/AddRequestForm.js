@@ -7,6 +7,7 @@ import enUS from 'date-fns/locale/en-US';
 import Select from 'react-select';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ErrorMessages from '../components/ErrorMessages';
 
 registerLocale('en-US', enUS);
 
@@ -18,6 +19,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
     type: '',
     description: '',
   });
+  const [errorData, setErrorData] = useState(null);
 
   const [animals, setAnimals] = useState([]);
   const [veterinarians, setVeterinarians] = useState([]);
@@ -102,7 +104,9 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create new request');
+        const errorResponse = await response.json();
+        setErrorData(errorResponse);
+        return;
       }
       onClose(); 
       toast.success('Request created successfully', {
@@ -136,6 +140,8 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
             className="w-3 h-3"
           />
         </button>
+
+        {errorData && <ErrorMessages errorData={errorData} />}
 
         <form onSubmit={handleSubmit}>
           {/* Animal */}
@@ -210,6 +216,8 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
               </option>
               <option value="Planned treatment">Planned treatment</option>
               <option value="Emergency treatment">Emergency treatment</option>
+              <option value="Vaccination">Vaccination</option>
+              <option value="Surgery"> Surgery</option>
             </select>
           </div>
 
@@ -223,7 +231,6 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder="Type description here"
-              required
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
             />
           </div>
