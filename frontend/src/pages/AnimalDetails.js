@@ -7,12 +7,14 @@ import Footer from "../components/Footer";
 import Button from "../components/Button";
 import AnimalCard from "../components/AnimalCard";
 import FileUploader from "../components/FileUploader";
+import ErrorMessages from "../components/ErrorMessages";
 
 function AnimalDetails() {
   const { animalID } = useParams();
   const [animalData, setAnimalData] = useState(null); // Detailed data of the selected animal
   const [otherAnimals, setOtherAnimals] = useState([]); // Other animals for suggestions
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [errorMessages, setErrorMessages] = useState([]);
 
   const authToken = sessionStorage.getItem("token");
 
@@ -68,13 +70,47 @@ function AnimalDetails() {
   const userRole = sessionStorage.getItem("role");
   const isEditable = userRole === "Caretaker" || userRole === "Administrator";
 
+  const extractErrorMessages = (errorData) => {
+    const errorMessages = [];
+    try {
+      if (typeof errorData === "string") {
+        errorMessages.push(errorData);
+      } else if (typeof errorData === "object" && errorData.errors) {
+        for (const key in errorData.errors) {
+          if (Array.isArray(errorData.errors[key])) {
+            errorMessages.push(...errorData.errors[key]);
+          } else {
+            errorMessages.push(errorData.errors[key]);
+          }
+        }
+      } else if (typeof errorData === "object") {
+        for (const key in errorData) {
+          if (Array.isArray(errorData[key])) {
+            errorMessages.push(...errorData[key]);
+          } else {
+            errorMessages.push(errorData[key]);
+          }
+        }
+      } else {
+        errorMessages.push("An unknown error occurred.");
+      }
+    } catch (err) {
+      console.error("Error extracting error messages:", err);
+      errorMessages.push("Failed to process error messages.");
+    }
+    return errorMessages;
+  };
+
   // Fetch detailed data of the selected animal
   const fetchAnimalDetails = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals/${animalID}`);
       setAnimalData(response.data);
+      setErrorMessages([]); // Очистить ошибки при успешном запросе
     } catch (error) {
       console.error("Error fetching animal details:", error);
+      const errorData = error.response?.data || "An unknown error occurred.";
+      setErrorMessages(extractErrorMessages(errorData));
     } finally {
       setIsLoading(false);
     }
@@ -109,29 +145,39 @@ function AnimalDetails() {
     console.log(`Updating ${path} with value:`, value);
 
     try {
-      // Send a PATCH request to update the specific attribute that is passed as a parameter
+      // Отправка PATCH-запроса для обновления данных
       const response = await axios.patch(
-        `${API_BASE_URL}/animals/${animalID}`,
-        [
+          `${API_BASE_URL}/animals/${animalID}`,
+          [
+            {
+              op: "replace",
+              path: `/${path}`,
+              value: value,
+            },
+          ],
           {
-            op: "replace",
-            path: `/${path}`,
-            value: value,
-          },
-        ],
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json-patch+json",
-          },
-        }
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json-patch+json",
+            },
+          }
       );
-
+      // Очистить ошибки при успешном запросе
+      setErrorMessages([]);
       return response;
     } catch (error) {
-      console.error(`Error updating ${path}:`, error);
+      console.error(`Ошибка при обновлении ${path}:`, error);
+
+      // Извлечь ошибки и обновить состояние
+      const errorData = error.response?.data || "Неизвестная ошибка.";
+      const extractedErrors = extractErrorMessages(errorData);
+
+      setErrorMessages((prevErrors) => [...prevErrors, ...extractedErrors]);
+
+      throw error; // Бросить ошибку, если нужно обработать её выше
     }
   }
+
 
   // Functions to handle editing and saving changes
   const handleEditGeneralToggle = () => {
@@ -155,39 +201,29 @@ function AnimalDetails() {
   // Fuction to apply changes to general data
   const handleSaveGeneralChanges = async () => {
     try {
+      await updateAnimalAttribute("name", editedGeneralData.name);
+      await updateAnimalAttribute("species", editedGeneralData.species);
+      await updateAnimalAttribute("breed", editedGeneralData.breed);
+      await updateAnimalAttribute("age", editedGeneralData.age);
+      await updateAnimalAttribute("sex", editedGeneralData.sex);
+      await updateAnimalAttribute("size", editedGeneralData.size);
+      await updateAnimalAttribute("weight", editedGeneralData.weight);
+      await updateAnimalAttribute("health", editedGeneralData.health);
+      await updateAnimalAttribute("personality", editedGeneralData.personality);
 
-      // PATCH request for each attribute of the animal data
-      updateAnimalAttribute("name", editedGeneralData.name);
-      updateAnimalAttribute("species", editedGeneralData.species);
-      updateAnimalAttribute("breed", editedGeneralData.breed);
-      updateAnimalAttribute("age", editedGeneralData.age);
-      updateAnimalAttribute("sex", editedGeneralData.sex);
-      updateAnimalAttribute("size", editedGeneralData.size);
-      updateAnimalAttribute("weight", editedGeneralData.weight);
-      updateAnimalAttribute("health", editedGeneralData.health);
-      updateAnimalAttribute("personality", editedGeneralData.personality);
-
-      // Update animal data with updated attributes
+      // Обновить локальные данные, если все запросы успешны
       setAnimalData({
         ...animalData,
-        name: editedGeneralData.name,
-        species: editedGeneralData.species,
-        breed: editedGeneralData.breed,
-        age: editedGeneralData.age,
-        sex: editedGeneralData.sex,
-        size: editedGeneralData.size,
-        weight: editedGeneralData.weight,
-        health: editedGeneralData.health,
-        personality: editedGeneralData.personality,
+        ...editedGeneralData,
       });
-      console.log("General info updated:", editedGeneralData);
 
-      // Close editor mode
+      // Закрыть режим редактирования
       setIsEditingGeneral(false);
     } catch (error) {
-      console.error("Error updating general info:", error);
+      console.error("Ошибка сохранения общих изменений:", error);
     }
   };
+
 
   // Close editor mode and reset data to initial data
   const handleCancelGeneralChanges = () => {
@@ -394,6 +430,7 @@ function AnimalDetails() {
       </div>
 
       <div className="container mx-auto p-8">
+        {errorMessages.length > 0 && <ErrorMessages errorData={errorMessages} />}
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="relative">
             <img
@@ -744,26 +781,13 @@ function AnimalDetails() {
             {isEditingMedical ? (
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Last medical examination:</strong>
-                  <input
-                    type="date"
-                    value={
-                      toDateInputFormat(editedMedicalData.lastExamination) ||
-                      toDateInputFormat(animalData.lastExamination)
-                    }
-                    onChange={(e) =>
-                      setEditedMedicalData({
-                        ...editedMedicalData,
-                        lastExamination: e.target.value,
-                      })
-                    }
-                    className="ml-2 border-b-2 border-gray-300 focus:outline-none"
-                  />
+                  <strong>Last medical examination:</strong>{" "}
+                  {toDateInputFormat(animalData.lastExamination) || "Not specified"}
                 </li>
                 <li>
                   <strong>Vaccinations:</strong>
                   <select
-                    value={editedMedicalData.isVaccinated}
+                      value={editedMedicalData.isVaccinated}
                     onChange={(e) =>
                       setEditedMedicalData({
                         ...editedMedicalData,
