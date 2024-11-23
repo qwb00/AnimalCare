@@ -16,7 +16,7 @@ function Animals() {
     isSuccess: true,
     message: "",
   });
-  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoUrl, setPhotoUrl] = useState(null);
   const [userRole, setUserRole] = useState("");
 
   const animalsPerPageForAdmin = 5;
