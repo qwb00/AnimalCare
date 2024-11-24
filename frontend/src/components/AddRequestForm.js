@@ -37,6 +37,13 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
       }
     };
 
+    const typeMapping = {
+      'Planned treatment': 0,
+      'Emergency treatment': 1,
+      'Vaccination': 2,
+      'Surgery': 3,
+    };
+
     // Get veterinarians list
     const fetchVeterinarians = async () => {
       try {
@@ -88,7 +95,7 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
     const dataToSubmit = {
       ...formData,
       careTakerId,
-      type: formData.type === 'Planned treatment' ? 0 : 1,
+      type: typeMapping[formData.type] ?? null,
     };
 
     try {
