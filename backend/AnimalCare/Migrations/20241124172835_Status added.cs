@@ -21,7 +21,7 @@ namespace AnimalCare.Migrations
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Breed = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Age = table.Column<int>(type: "int", nullable: false),
-                    Weight = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Weight = table.Column<int>(type: "int", nullable: true),
                     Sex = table.Column<int>(type: "int", nullable: false),
                     Size = table.Column<int>(type: "int", nullable: true),
                     Health = table.Column<int>(type: "int", nullable: true),
@@ -308,10 +308,10 @@ namespace AnimalCare.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "5ae69d78-02c4-4ce2-99e2-35aaab9d2330", null, "Veterinarian", "VETERINARIAN" },
-                    { "aa04f2b5-9dea-4c34-a4f4-286333c5a866", null, "Administrator", "ADMINISTRATOR" },
-                    { "e62419d5-aace-4bf2-92ce-c60de86b42f5", null, "Volunteer", "VOLUNTEER" },
-                    { "eb4f0efb-6735-4109-9f10-c33537f86f87", null, "Caretaker", "CARETAKER" }
+                    { "0f636599-ac4d-425f-a16c-819e640f22a4", null, "Volunteer", "VOLUNTEER" },
+                    { "2eac60c9-7bff-4195-b3f2-8c52d1b7cba8", null, "Administrator", "ADMINISTRATOR" },
+                    { "753e305a-4714-4b6a-a775-11bb0787c0c2", null, "Caretaker", "CARETAKER" },
+                    { "d9d71c4c-2bec-47d7-bfc9-a5129313f170", null, "Veterinarian", "VETERINARIAN" }
                 });
 
             migrationBuilder.CreateIndex(

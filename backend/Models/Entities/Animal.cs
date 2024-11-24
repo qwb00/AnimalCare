@@ -9,7 +9,7 @@ namespace Models.Entities
         public string Name { get; set; }
         public string? Breed { get; set; }
         public int Age { get; set; }
-		public string? Weight { get; set; }
+		public int? Weight { get; set; }
 		
 		// Enums Atributes
 		public Sex Sex { get; set; }

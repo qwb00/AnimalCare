@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "eb4f0efb-6735-4109-9f10-c33537f86f87",
+                            Id = "753e305a-4714-4b6a-a775-11bb0787c0c2",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "aa04f2b5-9dea-4c34-a4f4-286333c5a866",
+                            Id = "2eac60c9-7bff-4195-b3f2-8c52d1b7cba8",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "5ae69d78-02c4-4ce2-99e2-35aaab9d2330",
+                            Id = "d9d71c4c-2bec-47d7-bfc9-a5129313f170",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "e62419d5-aace-4bf2-92ce-c60de86b42f5",
+                            Id = "0f636599-ac4d-425f-a16c-819e640f22a4",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });
@@ -264,8 +264,8 @@ namespace AnimalCare.Migrations
                     b.Property<int>("Species")
                         .HasColumnType("int");
 
-                    b.Property<string>("Weight")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Weight")
+                        .HasColumnType("int");
 
                     b.Property<bool>("isActive")
                         .HasColumnType("bit");

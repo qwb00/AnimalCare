@@ -23,7 +23,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         public string? Photo { get; set; }
 
         [Range(0, 30, ErrorMessage = "Weight must be between 0 and 30.")]
-        public string? Weight { get; set; }
+        public int? Weight { get; set; }
 
         // Enums Attributes
         [Required(ErrorMessage = "Sex is required.")]
