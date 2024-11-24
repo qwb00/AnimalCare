@@ -43,25 +43,25 @@ namespace AnimalCare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "753e305a-4714-4b6a-a775-11bb0787c0c2",
+                            Id = "ea9008af-59bd-455a-88c1-0ba9f23e80d9",
                             Name = "Caretaker",
                             NormalizedName = "CARETAKER"
                         },
                         new
                         {
-                            Id = "2eac60c9-7bff-4195-b3f2-8c52d1b7cba8",
+                            Id = "33124d3f-14a2-45e2-884a-faef628076a4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "d9d71c4c-2bec-47d7-bfc9-a5129313f170",
+                            Id = "468cdf18-1ee1-4ab8-929b-dcb9c4fe7dd6",
                             Name = "Veterinarian",
                             NormalizedName = "VETERINARIAN"
                         },
                         new
                         {
-                            Id = "0f636599-ac4d-425f-a16c-819e640f22a4",
+                            Id = "6bffe3d9-b511-4617-ae0b-9325442741d2",
                             Name = "Volunteer",
                             NormalizedName = "VOLUNTEER"
                         });

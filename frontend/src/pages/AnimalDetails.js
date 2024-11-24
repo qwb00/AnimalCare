@@ -662,7 +662,7 @@ function AnimalDetails() {
                   <strong>Size:</strong> {getAnimalSize(animalData.size)}
                 </p>
                 <p>
-                  <strong>Weight:</strong> {`${animalData.weight}`}
+                  <strong>Weight:</strong> {`${animalData.weight}`} kg
                 </p>
                 <p>
                   <strong>Health conditions:</strong>{" "}
