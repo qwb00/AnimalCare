@@ -6,8 +6,8 @@ import ErrorMessages from '../components/ErrorMessages';
 const ExaminationStatus = {
   InProgress: 0,
   Completed: 1,
-  Cancelled: 2,
-  NotDecided: 3,
+  NotDecided: 2,
+  Cancelled: 3,
 };
 
 const RequestCard = ({
