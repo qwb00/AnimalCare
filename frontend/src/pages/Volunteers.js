@@ -14,7 +14,7 @@ function Volunteers() {
     const [currentVolunteers, setCurrentVolunteers] = useState([]); // Stores verified volunteers
     const [displayCountRequests, setDisplayCountRequests] = useState(2); // Controls number of displayed requests
     const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2); // Controls number of displayed volunteers
-    const navigate = useNavigate(); // Navigation hook for redirecting
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');

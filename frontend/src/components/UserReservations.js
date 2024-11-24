@@ -3,15 +3,15 @@ import API_BASE_URL from "../config";
 
 // Status Mapping according to ReservationStatus enum
 const statusMap = {
-    0: { text: "Not Decided", colorClass: "bg-gray-200 text-gray-700" },    // NOTDECIDED
-    1: { text: "Upcoming", colorClass: "bg-yellow-200 text-yellow-700" },   // UPCOMING
-    2: { text: "Completed", colorClass: "bg-green-200 text-green-700" },    // COMPLETED
-    3: { text: "Missed", colorClass: "bg-red-200 text-red-700" },           // MISSED
-    4: { text: "Canceled", colorClass: "bg-red-400 text-red-800" },       // CANCELED
+    0: { text: "Not Decided", colorClass: "bg-gray-200 text-gray-700" },
+    1: { text: "Upcoming", colorClass: "bg-yellow-200 text-yellow-700" },
+    2: { text: "Completed", colorClass: "bg-green-200 text-green-700" }, 
+    3: { text: "Missed", colorClass: "bg-red-200 text-red-700" },        
+    4: { text: "Canceled", colorClass: "bg-red-400 text-red-800" },    
 };
 
 function UserReservations({ userId }) {
-    const [reservations, setReservations] = useState([]); // State to store fetched reservations
+    const [reservations, setReservations] = useState([]); 
     const [visibleReservations, setVisibleReservations] = useState(3); // State to control number of displayed reservations
 
     useEffect(() => {

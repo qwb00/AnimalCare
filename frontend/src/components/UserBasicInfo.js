@@ -11,9 +11,8 @@ function UserBasicInfo({ user, updateUser }) {
         phoneNumber: user.phoneNumber,
         photo: user.photo,
     });
-    const [errorData, setErrorData] = useState(null); // State to store error data
+    const [errorData, setErrorData] = useState(null); 
 
-    // Toggle edit mode
     const toggleEditMode = () => setEditMode(!editMode);
 
     // Handle input changes
@@ -25,7 +24,6 @@ function UserBasicInfo({ user, updateUser }) {
         }));
     };
 
-    // Function to send PATCH request
     const updateUserInfo = async () => {
         const patchData = [
             { op: "replace", path: "/FirstName", value: formData.name.split(" ")[0] || user.name.split(" ")[0] },
@@ -47,13 +45,12 @@ function UserBasicInfo({ user, updateUser }) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorData(errorData); // Save error data to display
+                setErrorData(errorData);
                 throw new Error('Failed to update user information');
             }
 
             console.log('User information updated successfully');
 
-            // Update user info in the parent component
             updateUser({
                 name: formData.name,
                 email: formData.email,

@@ -12,7 +12,6 @@ function BackToTop() {
     }
   };
 
-  // Scroll to the top when button is clicked
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,

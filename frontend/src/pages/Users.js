@@ -71,6 +71,7 @@ function Users() {
     fetchAllUsers();
   }, [navigate]);
 
+
   // Deactivate a user by setting isActive to false
   const handleDelete = async () => {
     try {
@@ -102,7 +103,6 @@ function Users() {
     }
   };
 
-  // Open delete confirmation modal
   const openDeleteModal = (user) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);

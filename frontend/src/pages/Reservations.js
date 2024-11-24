@@ -7,10 +7,9 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 
 function Reservations() {
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null); // Store the selected animal's ID
-  const [availableAnimals, setAvailableAnimals] = useState([]); // Store the list of available animals
+  const [selectedAnimalId, setSelectedAnimalId] = useState(null); 
+  const [availableAnimals, setAvailableAnimals] = useState([]); 
 
-  // Load animals from the API when the component mounts
   useEffect(() => {
     const loadAnimals = async () => {
       try {
@@ -19,8 +18,8 @@ function Reservations() {
           name: animal.name,
           id: animal.id,
         }));
-        console.log("Available animals from API:", animalData); // Log available animals
-        setAvailableAnimals(animalData); // Save the list of animals with name and ID
+        console.log("Available animals from API:", animalData); 
+        setAvailableAnimals(animalData); 
       } catch (error) {
         console.error("Error fetching animals:", error);
       }
@@ -29,16 +28,15 @@ function Reservations() {
     loadAnimals();
   }, []);
 
-  // Handle search result
   const handleSearchResult = (animalId) => {
-    console.log("Search result:", animalId); // Log the selected animal ID
+    console.log("Search result:", animalId); 
     const foundAnimal = availableAnimals.find(
       (animal) => animal.id === animalId
     );
 
     if (foundAnimal) {
       console.log("Animal found:", foundAnimal);
-      setSelectedAnimalId(animalId); // Save the selected animal ID
+      setSelectedAnimalId(animalId); 
     } else {
       console.log("Animal not found in available animals list.");
       setSelectedAnimalId(null);

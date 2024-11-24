@@ -8,8 +8,8 @@ import UserReservations from "../components/UserReservations";
 import API_BASE_URL from "../config";
 
 function UserGeneral() {
-    const [user, setUser] = useState(null); // User data state
-    const navigate = useNavigate(); // Navigation object
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -18,7 +18,6 @@ function UserGeneral() {
             return;
         }
 
-        // getting user data
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -52,7 +51,7 @@ function UserGeneral() {
     };
 
     if (!user) {
-        return <div>Loading...</div>; // Return null if user data is not available
+        return <div>Loading...</div>; // Return Loading... if user data is not available
     }
 
     return (

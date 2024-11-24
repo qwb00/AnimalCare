@@ -12,7 +12,6 @@ function Button({
   const baseClasses =
     "inline-flex py-2 px-4 font-semibold rounded-xl shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center";
 
-  // Variant-specific styles for button color options
   const variantClasses = (() => {
     switch (variant) {
       case "blue":

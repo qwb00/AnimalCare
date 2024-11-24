@@ -114,7 +114,6 @@ function Animals() {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  // Add new animal
   const handleAddAnimal = async () => {
     try {
       const animalData = {

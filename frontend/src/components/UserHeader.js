@@ -32,7 +32,6 @@ function UserHeader({ user, updateUser }) {
         setAvatarUrl(user.photo || "/icons/name.png");
     }, [user]);
 
-    // function to update user profile
     async function updateUserProfile(newPhotoUrl) {
         const updatedData = {
             ...userData,
@@ -57,8 +56,8 @@ function UserHeader({ user, updateUser }) {
 
             if (response.status === 204) {
                 setUserData(updatedData);
-                setAvatarUrl(updatedData.photo); // Обновляем аватар в локальном состоянии
-                updateUser(updatedData); // Обновляем данные пользователя в родительском компоненте
+                setAvatarUrl(updatedData.photo); // local update avatar
+                updateUser(updatedData); // change user data in parent component
                 console.log("User profile updated successfully");
             }
         } catch (error) {

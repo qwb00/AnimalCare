@@ -55,11 +55,8 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        // Retrieve current caretaker's ID from sessionStorage
         const veterinarianId = sessionStorage.getItem('userID');
     
-        // Prepare data to submit, including converting type to a numerical format
         const dataToSubmit = {
           ...formData,
           veterinarianId
@@ -94,7 +91,6 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
     const [animals, setAnimals] = useState([]);
 
   useEffect(() => {
-    // Function to get list of animals
     const fetchAnimals = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/animals`);
