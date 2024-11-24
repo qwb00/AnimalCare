@@ -36,6 +36,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = true,
                         IsCommandsTaught = true,
                         IsLeashTrained = true,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-30)
                     },
                     new Animal
@@ -60,6 +61,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = true,
                         IsCommandsTaught = true,
                         IsLeashTrained = true,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-40)
                     },
                     new Animal
@@ -84,6 +86,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = false,
                         IsCommandsTaught = false,
                         IsLeashTrained = false,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-20)
                     },
                     new Animal
@@ -108,6 +111,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = true,
                         IsCommandsTaught = true,
                         IsLeashTrained = true,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-25)
                     },
                     new Animal
@@ -132,6 +136,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = false,
                         IsCommandsTaught = false,
                         IsLeashTrained = false,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-15)
                     },
                     new Animal
@@ -156,6 +161,7 @@ namespace Repositories.Configuration
                         IsAnimalFriendly = true,
                         IsCommandsTaught = false,
                         IsLeashTrained = false,
+                        isActive = true,
                         DateFound = DateTime.UtcNow.AddDays(-10)
                     }
                 );

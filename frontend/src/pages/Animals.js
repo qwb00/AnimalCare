@@ -50,8 +50,10 @@ function Animals() {
       });
 
       const data = response.data;
-      if (data && data.length > 0) {
-        setAllAnimals(data);
+      if (response.data) {
+        // Filter only active animals
+        const activeAnimals = data.filter((animal) => animal.isActive);
+        setAllAnimals(activeAnimals);
       }
     } catch (error) {
       console.error("Error fetching animals:", error);
@@ -128,6 +130,8 @@ function Animals() {
         personality,
         dateFound: foundDate && !isNaN(new Date(foundDate)) ? new Date(foundDate).toISOString() : null,
       };
+
+      console.log("Animal data:", animalData);
 
       const authToken = sessionStorage.getItem("token");
       const response = await axios.post(`${API_BASE_URL}/animals`, animalData, {
