@@ -40,9 +40,9 @@ namespace AnimalCare.Extensions
         public static void ConfigureServiceManager(this IServiceCollection services) =>
             services.AddScoped<IServiceManager, ServiceManager>();
 
-        public static void ConfigureSqlContext(this IServiceCollection services) =>
+        public static void ConfigureSqlContext(this IServiceCollection services, string connectionString) =>
             services.AddDbContextPool<RepositoryContext>(
-                options => options.UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING"),
+                options => options.UseSqlServer(connectionString,
                 sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
         public static void ConfigureIdentity(this IServiceCollection services)

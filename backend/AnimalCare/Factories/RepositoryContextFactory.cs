@@ -13,8 +13,11 @@ namespace AnimalCare.Factories
                 .AddJsonFile("appsettings.json")
                 .Build();
 
+            var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING")
+                              ?? configuration.GetConnectionString("sqlConnection");
+
             var builder = new DbContextOptionsBuilder<RepositoryContext>()
-                .UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING"),
+                .UseSqlServer(connectionString,
                 b => b.MigrationsAssembly("AnimalCare"));
 
             return new RepositoryContext(builder.Options);

@@ -1,6 +1,5 @@
 ﻿namespace Shared.Enums
 {
-    [Flags]
     public enum Unit
     {
         day = 0,
