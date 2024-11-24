@@ -1,4 +1,3 @@
-// src/pages/Users.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -71,7 +70,6 @@ function Users() {
     fetchAllUsers();
   }, [navigate]);
 
-  // Delete a user by ID
   const handleDelete = async () => {
     try {
       await axios.delete(`${API_BASE_URL}/users/${selectedUser.id}`, {
@@ -88,7 +86,6 @@ function Users() {
     }
   };
 
-  // Open delete confirmation modal
   const openDeleteModal = (user) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);

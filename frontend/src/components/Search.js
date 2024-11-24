@@ -3,15 +3,13 @@ import Button from "./Button";
 import axios from "axios";
 import API_BASE_URL from "../config";
 
-// Component for searching animals
 function Search({ placeholder, icon, onSearch }) {
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [animals, setAnimals] = useState([]); // Stores list of animals from API
-  const [isInputError, setIsInputError] = useState(false); // Tracks input error state
+  const [animals, setAnimals] = useState([]); 
+  const [isInputError, setIsInputError] = useState(false); 
   const dropdownRef = useRef(null); // Ref for dropdown to detect outside clicks
 
-  // Load animal list from API
   useEffect(() => {
     const loadAnimals = async () => {
       try {
@@ -20,7 +18,7 @@ function Search({ placeholder, icon, onSearch }) {
           name: animal.name,
           id: animal.id,
         }));
-        setAnimals(animalData); // Set animal objects (with name and id)
+        setAnimals(animalData); 
         console.log("Loaded animals from API:", animalData);
       } catch (error) {
         console.error("Error fetching animals:", error);
@@ -33,7 +31,7 @@ function Search({ placeholder, icon, onSearch }) {
   // Search function for finding an animal by name
   const handleSearch = () => {
     if (!searchValue) {
-      setIsInputError(true); // Set error if input is empty
+      setIsInputError(true); 
       return;
     }
 
@@ -43,12 +41,12 @@ function Search({ placeholder, icon, onSearch }) {
 
     if (foundAnimal) {
       setIsInputError(false);
-      onSearch(foundAnimal.id); // Pass the animal id to the parent
+      onSearch(foundAnimal.id);
     } else {
       setIsInputError(true);
     }
 
-    setIsDropdownOpen(false); // Close dropdown on search
+    setIsDropdownOpen(false);
   };
 
   // Select an animal from the dropdown menu
@@ -56,10 +54,9 @@ function Search({ placeholder, icon, onSearch }) {
     setSearchValue(animal.name); // Display selected name in input
     setIsDropdownOpen(false); // Close menu on selection
     setIsInputError(false);
-    onSearch(animal.id); // Pass the animal id to the parent
+    onSearch(animal.id); 
   };
 
-  // Close dropdown when clicking outside of it
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsDropdownOpen(false); // Close menu on outside click
@@ -67,11 +64,9 @@ function Search({ placeholder, icon, onSearch }) {
   };
 
   useEffect(() => {
-    // Add event listener for outside clicks
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      // Remove event listener on component unmount
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);

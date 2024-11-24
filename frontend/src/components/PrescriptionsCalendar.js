@@ -57,7 +57,7 @@ function PrescriptionsCalendar({ prescriptions }) {
         const viewportHeight =
           window.innerHeight || document.documentElement.clientHeight;
         const spaceBelow = viewportHeight - rect.bottom;
-        const popupHeight = 150; // Adjust this to the approximate height of your popup
+        const popupHeight = 150; 
 
         if (spaceBelow < popupHeight) {
           setShowAbove(true);

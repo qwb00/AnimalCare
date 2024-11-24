@@ -29,7 +29,7 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-// Импортируем базовый URL
+// Import base url
 function Search(_ref) {
   var placeholder = _ref.placeholder,
       icon = _ref.icon,
@@ -38,7 +38,7 @@ function Search(_ref) {
   var _useState = (0, _react.useState)([]),
       _useState2 = _slicedToArray(_useState, 2),
       animals = _useState2[0],
-      setAnimals = _useState2[1]; // Храним список животных
+      setAnimals = _useState2[1]; // store animals list
 
 
   var _useState3 = (0, _react.useState)(''),
@@ -49,23 +49,23 @@ function Search(_ref) {
   var _useState5 = (0, _react.useState)(false),
       _useState6 = _slicedToArray(_useState5, 2),
       isDropdownOpen = _useState6[0],
-      setIsDropdownOpen = _useState6[1]; // Управляет состоянием выпадающего меню
+      setIsDropdownOpen = _useState6[1]; // handle state of menu
 
 
   var _useState7 = (0, _react.useState)(null),
       _useState8 = _slicedToArray(_useState7, 2),
       searchResult = _useState8[0],
-      setSearchResult = _useState8[1]; // Хранит результат поиска
+      setSearchResult = _useState8[1]; // store search's result
 
 
   var _useState9 = (0, _react.useState)(false),
       _useState10 = _slicedToArray(_useState9, 2),
       isInputError = _useState10[0],
-      setIsInputError = _useState10[1]; // Управляет состоянием ошибки ввода
+      setIsInputError = _useState10[1]; // handle state of input's error
 
 
-  var dropdownRef = (0, _react.useRef)(null); // Ссылка на выпадающее меню для отслеживания кликов вне его
-  // Загружаем список животных с API
+  var dropdownRef = (0, _react.useRef)(null); // A reference to a dropdown menu for tracking clicks outside of it.
+  // Fetch animals from API
 
   (0, _react.useEffect)(function () {
     var loadAnimals = function loadAnimals() {
@@ -83,7 +83,7 @@ function Search(_ref) {
               animalNames = response.data.map(function (animal) {
                 return animal.name;
               });
-              console.log('Loaded animals from API:', animalNames); // Лог загруженных животных
+              console.log('Loaded animals from API:', animalNames); 
 
               setAnimals(animalNames);
               _context.next = 12;
@@ -103,33 +103,33 @@ function Search(_ref) {
     };
 
     loadAnimals();
-  }, []); // Функция для поиска животного
+  }, []); // Function to find animal
 
   var handleSearch = function handleSearch() {
-    console.log('Search value:', searchValue); // Лог значения поиска
+    console.log('Search value:', searchValue); 
 
     if (!searchValue) {
-      setIsInputError(true); // Установить ошибку, если поле пустое
+      setIsInputError(true); 
 
       return;
     }
 
     if (animals.includes(searchValue)) {
-      console.log("Animal \"".concat(searchValue, "\" is selected!")); // Лог, если животное выбрано
+      console.log("Animal \"".concat(searchValue, "\" is selected!")); 
 
       setSearchResult("Animal \"".concat(searchValue, "\" is selected!"));
-      onSearch(searchValue); // Передаем выбранное имя животного в родительский компонент
+      onSearch(searchValue); // Passing the selected animal name to the parent component.
     } else {
-      console.log("Animal \"".concat(searchValue, "\" not found.")); // Лог, если животное не найдено
+      console.log("Animal \"".concat(searchValue, "\" not found.")); 
 
       setSearchResult("Animal \"".concat(searchValue, "\" not found."));
       onSearch(null);
     }
 
-    setIsDropdownOpen(false); // Закрыть выпадающее меню при нажатии на кнопку Search
+    setIsDropdownOpen(false);
 
-    setIsInputError(false); // Сбросить ошибку
-  }; // Остальной код компонента не меняется...
+    setIsInputError(false); // Reset an error
+  }; 
 
 }
 

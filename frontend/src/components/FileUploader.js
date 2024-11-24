@@ -39,7 +39,7 @@ function FileUploader({
       const response = await axios.post(CLOUDINARY_UPLOAD_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const uploadedUrl = response.data.secure_url; // Extract the uploaded file URL
+      const uploadedUrl = response.data.secure_url; 
       onUpload(uploadedUrl); // Trigger onUpload callback with the file URL
 
       // Reset button text after successful upload
@@ -50,7 +50,7 @@ function FileUploader({
       setFileName(buttonText); // Reset button text if upload failed
       onStatusChange && onStatusChange("error"); // Notify about upload error
     } finally {
-      setIsUploading(false); // End uploading state
+      setIsUploading(false); 
     }
   };
 
@@ -69,12 +69,11 @@ function FileUploader({
         type="button"
         className={`${buttonClassName} ${
           isUploading ? "opacity-50 cursor-not-allowed" : ""
-        }`} // Apply additional styles if uploading
-        onClick={() => document.getElementById("fileInput").click()} // Trigger file input click on button click
-        disabled={isUploading} // Disable button while uploading
+        }`} 
+        onClick={() => document.getElementById("fileInput").click()} 
+        disabled={isUploading} 
       >
         {icon && (
-          // Display icon if provided
           <img
             src={icon}
             alt="Upload Icon"

@@ -15,7 +15,7 @@ function UserReservationsConfirm() {
     const [plannedWalks, setPlannedWalks] = useState([]); // Stores planned walks with status "UPCOMING"
     const [displayCountRequests, setDisplayCountRequests] = useState(2); // Controls the number of displayed requests
     const [displayCountPlanned, setDisplayCountPlanned] = useState(2); // Controls the number of displayed planned walks
-    const navigate = useNavigate(); // Used to navigate between routes
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -60,7 +60,6 @@ function UserReservationsConfirm() {
         fetchReservations();
     }, [navigate]);
 
-    // Approve Reservation
     const handleApprove = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
@@ -155,12 +154,10 @@ function UserReservationsConfirm() {
         }
     };
 
-    // Show more logic for requests
     const handleShowMoreRequests = () => {
         setDisplayCountRequests((prev) => (prev >= newRequests.length ? 2 : prev + 2));
     };
 
-    // Show more logic for planned walks
     const handleShowMorePlanned = () => {
         setDisplayCountPlanned((prev) => (prev >= plannedWalks.length ? 2 : prev + 2));
     };

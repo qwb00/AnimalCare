@@ -7,10 +7,10 @@ function HomeSlider() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveSlide((prevSlide) => (prevSlide === 0 ? 1 : 0)); // Toggle slides
+      setActiveSlide((prevSlide) => (prevSlide === 0 ? 1 : 0)); 
     }, 5000); // 5-second interval
 
-    return () => clearInterval(interval); // Clear interval on unmount
+    return () => clearInterval(interval); 
   }, []);
 
   return (

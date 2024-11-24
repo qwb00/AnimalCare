@@ -51,8 +51,6 @@ function Home() {
           <h1 className="text-4xl font-black text-center mt-16 mb-16">
             WELCOME TO OUR TINY WORLD
           </h1>
-
-          {/* Slider */}
           <HomeSlider />
         </div>
 
@@ -245,7 +243,6 @@ function Home() {
         </div>
       )}
 
-      {/* Thank you message above footer */}
       <h2 className="text-4xl font-black text-center my-8">
         THANK YOU FOR YOUR TIME!
       </h2>
