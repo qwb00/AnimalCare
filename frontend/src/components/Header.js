@@ -23,7 +23,8 @@ function Header() {
   const handleLogout = () => {
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("userID");
-    sessionStorage.removeItem("token"); // Remove token if used
+    sessionStorage.removeItem("token");
+    sessionStorage.clear();
     setUsername(null);
     setUserID(null);
     navigate("/");
