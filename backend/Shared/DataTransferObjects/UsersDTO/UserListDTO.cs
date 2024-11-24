@@ -12,5 +12,6 @@ namespace Shared.DataTransferObjects.UsersDTO
         public string Role { get; set; }
         [Url]
         public string? Photo { get; set; }
+        public bool isActive { get; set; }
     }
 }

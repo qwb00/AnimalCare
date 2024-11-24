@@ -69,7 +69,7 @@ namespace Repositories
                  .HasMany(user => user.Requests)
                  .WithOne(r => r.Veterinarian)
                  .HasForeignKey(r => r.VeterinarianId)
-                 .OnDelete(DeleteBehavior.NoAction);
+                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Veterinarian>()
                  .HasMany(user => user.Medications)
                  .WithOne(r => r.Veterinarian)

@@ -11,6 +11,7 @@ namespace Models.Entities
         public string FullName { get; set; }
         [Url]
         public string? Photo { get; set; }
+        public bool isActive { get; set; }
         public ICollection<Reservation>? Reservations { get; set; } = new List<Reservation>();
     }
 }
