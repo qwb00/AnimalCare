@@ -32,6 +32,7 @@ function Volunteers() {
                 if (!response.ok) throw new Error('Failed to fetch user information');
 
                 const userData = await response.json();
+
                 setUser(userData);
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -49,9 +50,10 @@ function Volunteers() {
 
                 const data = await response.json();
 
+                console.log(data);
                 // Filter out inactive volunteers
-                const activeVolunteers = data.filter((volunteer) => volunteer.isActive !== false);
-
+                const activeVolunteers = data.filter((volunteer) => volunteer.isActive === true);
+                console.log(activeVolunteers);
                 setNewRequests(activeVolunteers.filter((volunteer) => !volunteer.isVerified));
                 setCurrentVolunteers(activeVolunteers.filter((volunteer) => volunteer.isVerified));
             } catch (error) {
