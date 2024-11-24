@@ -7,16 +7,16 @@ namespace Service.Contracts
 {
     public interface IReservationService
     {
-        Task<IEnumerable<ReservationForConfirmationDto>> GetAllReservationsAsync(bool trackChanges);
-        Task<ReservationForConfirmationDto> GetReservationByIdAsync(Guid reservationId, bool trackChanges);
-        Task<ReservationForConfirmationDto> CreateReservationAsync(ReservationForCreationDto reservationRequest);
-        Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDto reservationForUpdate, bool trackChanges);
+        Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges);
+        Task<ReservationForConfirmationDTO> GetReservationByIdAsync(Guid reservationId, bool trackChanges);
+        Task<ReservationForConfirmationDTO> CreateReservationAsync(ReservationForCreationDTO reservationRequest);
+        Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDTO reservationForUpdate, bool trackChanges);
         Task DeleteReservationAsync(Guid reservationId, bool trackChanges);
         // Additional methods for getting user's reservations
-        Task<IEnumerable<ReservationForUserDto>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges);
-        Task<ReservationForUpdateDto> GetReservationForPatchAsync(Guid reservationId, bool trackChanges);
+        Task<IEnumerable<ReservationForUserDTO>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges);
+        Task<ReservationForUpdateDTO> GetReservationForPatchAsync(Guid reservationId, bool trackChanges);
 
-        Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDto reservationToPatch,
+        Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDTO reservationToPatch,
             bool trackChanges);
     }
 }

@@ -6,7 +6,7 @@ using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 {
-    public class ExaminationRecordForCreationDto
+    public class ExaminationRecordForCreationDTO
     {
         [Required(ErrorMessage = "Please select an animal.")]
         public Guid AnimalId { get; set; }
@@ -19,7 +19,7 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
         public Guid CareTakerId { get; set; }
 
         [Required(ErrorMessage = "Examination date is required.")]
-        [CustomValidation(typeof(ExaminationRecordForCreationDto), nameof(ValidateExaminationDate))]
+        [CustomValidation(typeof(ExaminationRecordForCreationDTO), nameof(ValidateExaminationDate))]
         [DataType(DataType.Date, ErrorMessage = "Examination date must be a valid date.")]
         public DateTime ExaminationDate { get; set; }
 

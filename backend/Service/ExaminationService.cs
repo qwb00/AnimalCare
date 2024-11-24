@@ -32,7 +32,7 @@ namespace Service
             return examinationDto;
         }
 
-        public async Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDto examinationForCreation)
+        public async Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDTO examinationForCreation)
         {
             var examinationEntity = _mapper.Map<ExaminationRecord>(examinationForCreation);
             examinationEntity.Id = Guid.NewGuid();
@@ -50,7 +50,7 @@ namespace Service
             return examinationToReturn;
         }
 
-        public async Task UpdateExaminationAsync(Guid examinationId, ExaminationRecordForUpdateDto examinationForUpdate, bool trackChanges)
+        public async Task UpdateExaminationAsync(Guid examinationId, ExaminationRecordForUpdateDTO examinationForUpdate, bool trackChanges)
         {
             var examinationEntity = await GetExaminationAndCheckIfItExists(examinationId, trackChanges);
 
@@ -59,15 +59,15 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task<(ExaminationRecordForUpdateDto examinationForPatch, ExaminationRecord examinationEntity)> GetExaminationForPatchAsync(Guid id)
+        public async Task<(ExaminationRecordForUpdateDTO examinationForPatch, ExaminationRecord examinationEntity)> GetExaminationForPatchAsync(Guid id)
         {
             var examination = await GetExaminationAndCheckIfItExists(id, true);
 
-            var examinationDto = _mapper.Map<ExaminationRecordForUpdateDto>(examination);
+            var examinationDto = _mapper.Map<ExaminationRecordForUpdateDTO>(examination);
             return (examinationForPatch: examinationDto, examinationEntity: examination);
         }
 
-        public async Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDto patch, ExaminationRecord examination)
+        public async Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDTO patch, ExaminationRecord examination)
         {
             _mapper.Map(patch, examination);
             await _repository.SaveAsync();

@@ -2,7 +2,7 @@ using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
-    public class ReservationForUserDto
+    public class ReservationForUserDTO
     {
         public Guid Id { get; set; }
         public string AnimalName { get; set; }

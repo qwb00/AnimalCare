@@ -42,7 +42,7 @@ namespace AnimalCare.Presentation.Controllers
         [HttpPost(Name = "CreateExamination")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
-        public async Task<IActionResult> CreateExamination([FromBody] ExaminationRecordForCreationDto examinationForCreation)
+        public async Task<IActionResult> CreateExamination([FromBody] ExaminationRecordForCreationDTO examinationForCreation)
         {
             var createdExamination = await _service.ExaminationService.CreateExaminationAsync(examinationForCreation);
 
@@ -53,7 +53,7 @@ namespace AnimalCare.Presentation.Controllers
         [HttpPatch("{id:guid}", Name = "PatchExamination")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Administrator,Veterinarian")]
-        public async Task<IActionResult> UpdateExamination(Guid id, [FromBody] JsonPatchDocument<ExaminationRecordForUpdateDto> patchDoc)
+        public async Task<IActionResult> UpdateExamination(Guid id, [FromBody] JsonPatchDocument<ExaminationRecordForUpdateDTO> patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("patchDoc object sent from client is null.");

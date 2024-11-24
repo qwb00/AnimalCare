@@ -5,7 +5,7 @@ using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
-    public class ReservationForUpdateDto
+    public class ReservationForUpdateDTO
     {
         [DataType(DataType.DateTime)]
         public DateTime Date { get; set; }

@@ -33,7 +33,7 @@ namespace Service
             return animalDTO;
         }
 
-        public async Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreating animal)
+        public async Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreatingDTO animal)
         {
             var animalEntity = _mapper.Map<Animal>(animal);
 
