@@ -86,8 +86,30 @@ namespace AnimalCare.Presentation.Controllers
 
             return NoContent();
         }
+        
+        [HttpPatch("{id:guid}", Name = "PatchUserById")]
+        [Authorize(Roles = "Administrator,Caretaker")]
+        public async Task<IActionResult> PatchUserById(Guid id, [FromBody] JsonPatchDocument<UserForUpdateDTO> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest("Patch document is null");
+            }
 
+            var userForPatchResult = await _service.UserService.GetUserForPatchAsync(id);
 
+            patchDoc.ApplyTo(userForPatchResult.userForPatch, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _service.UserService.SaveChangesForPatchAsync(userForPatchResult.userForPatch, userForPatchResult.userEntity);
+
+            return NoContent();
+        }
+        
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Administrator,Caretaker")]
         public async Task<IActionResult> DeleteUser(Guid id)

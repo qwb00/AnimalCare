@@ -127,7 +127,7 @@ function Volunteers() {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/volunteers/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,

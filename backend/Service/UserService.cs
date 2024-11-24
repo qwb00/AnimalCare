@@ -82,6 +82,17 @@ namespace Service
             _mapper.Map(patch, user);
             return await _repository.UpdateAsync(user);
         }
+        
+        public async Task<(UserForUpdateDTO userForPatch, User userEntity)> GetUserForPatchAsync(Guid id)
+        {
+            var user = await GetUserAndCheckIfItExists(id);
+
+            var userDTO = _mapper.Map<UserForUpdateDTO>(user);
+
+            return (userForPatch: userDTO, userEntity: user);
+        }
+
+
 
         public async Task<IdentityResult> SaveChangesForPatchAsync(ChangeStatusForVolunteerDTO patch, Volunteer volunteer)
         {

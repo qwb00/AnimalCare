@@ -216,7 +216,7 @@ function AnimalDetails() {
       // close editing mode
       setIsEditingGeneral(false);
     } catch (error) {
-      console.error("Ошибка сохранения общих изменений:", error);
+      console.error("Error of saving: ", error);
     }
   };
 
@@ -432,7 +432,7 @@ function AnimalDetails() {
             <img
               src={animalData.photo}
               alt={animalData.name}
-              className="w-full max-w-md h-[350px] object-cover rounded-xl border-2 border-black shadow-lg mb-4"
+              className="w-full min-w-[300px] max-w-md h-[350px] object-cover rounded-xl border-2 border-black shadow-lg mb-4"
             />
 
             {isEditable && (
