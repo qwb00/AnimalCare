@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
 using AnimalCare.Presentation.ActionFilters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,11 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
-builder.Services.ConfigureSqlContext();
+
+var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING")
+                              ?? builder.Configuration.GetConnectionString("sqlConnection");
+
+builder.Services.ConfigureSqlContext(connectionString);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddAuthentication();
