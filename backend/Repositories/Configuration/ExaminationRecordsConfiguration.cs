@@ -30,8 +30,8 @@ namespace Repositories.Configuration
                         VeterinarianId = Guid.Parse("ad2d34eb-d2a8-4e0a-9a17-c0d295d8995a"), // Veterinarian 2
                         Description = "Sterilization procedure.",
                         Status = ExaminationStatus.InProgress,
-                        FinalDiagnosis = "Recovery is going well.",
-                        Date = DateTime.UtcNow.AddDays(-5),
+                        FinalDiagnosis = "Not specified",
+                        Date = DateTime.UtcNow.AddDays(10),
                     },
                     new ExaminationRecord
                     {
@@ -52,8 +52,30 @@ namespace Repositories.Configuration
                         VeterinarianId = Guid.Parse("ad2d34eb-d2a8-4e0a-9a17-c0d295d8995a"), // Veterinarian 2
                         Description = "Routine check-up.",
                         Status = ExaminationStatus.InProgress,
-                        FinalDiagnosis = "No known issues.",
+                        FinalDiagnosis = "Not specified",
                         Date = DateTime.UtcNow.AddDays(2),
+                    },
+                    new ExaminationRecord
+                    {
+                        Id = Guid.NewGuid(),
+                        AnimalId = Guid.Parse("8b6c94e7-5ea9-4e56-a0c6-5586f01fa570"), // Animal: Lucy
+                        CareTakerId = Guid.Parse("e920f477-7f53-4bba-b1b6-d8d9376b4d30"), // CareTaker 1
+                        VeterinarianId = Guid.Parse("c2ad823a-c3bc-49cb-a930-2fd719c0e997"), // Veterinarian 1
+                        Description = "Follow-up check-up.",
+                        Status = ExaminationStatus.Cancelled,
+                        FinalDiagnosis = "Not specified",
+                        Date = DateTime.UtcNow.AddDays(-1),
+                    },
+                    new ExaminationRecord
+                    {
+                        Id = Guid.NewGuid(),
+                        AnimalId = Guid.Parse("be7426eb-8305-46f3-9d59-dbd2bf0d6fa3"), // Animal: Milo
+                        CareTakerId = Guid.Parse("e920f477-7f53-4bba-b1b6-d8d9376b4d30"), // CareTaker 1
+                        VeterinarianId = Guid.Parse("ad2d34eb-d2a8-4e0a-9a17-c0d295d8995a"), // Veterinarian 2
+                        Description = "Vaccination appointment.",
+                        Status = ExaminationStatus.Cancelled,
+                        FinalDiagnosis = "Not specified",
+                        Date = DateTime.UtcNow.AddDays(-3),
                     }
                 );
                 await context.SaveChangesAsync();

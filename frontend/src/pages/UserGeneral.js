@@ -58,7 +58,7 @@ function UserGeneral() {
     return (
         <div className="container mx-auto px-10">
             <Header/>
-            <UserHeader user={user} />
+            <UserHeader user={user} updateUser={updateUser} />
 
             {/* Navigation Menu */}
             <UserNav role={user.role} />
