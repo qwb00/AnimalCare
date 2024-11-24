@@ -15,6 +15,10 @@ namespace Shared.DataTransferObjects.UsersDTO
         [EmailAddress(ErrorMessage = "Invalid email address format")]
         public string? Email { get; init; }
 
+        [MaxLength(500, ErrorMessage = "Photo URL cannot exceed 500 characters.")]
+        [Url(ErrorMessage = "Photo must be a valid URL.")]
+        public string? Photo { get; set; }
+
         [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "Invalid phone number format. Must be from 10 to 15 digits")]
         public string? PhoneNumber { get; init; }
         public bool? isActive { get; set; }
