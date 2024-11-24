@@ -12,8 +12,8 @@ import { ToastContainer } from 'react-toastify';
 const ExaminationStatus = {
     InProgress: 0,
     Completed: 1,
-    Cancelled: 2,
-    NotDecided: 3,
+    NotDecided: 2,
+    Cancelled: 3,
 };
 
 function VeterinarianExaminations() {
@@ -65,6 +65,7 @@ function VeterinarianExaminations() {
                     throw new Error('Failed to fetch records');
                 }
                 const data = await response.json();
+                console.log(data);
                 setRequests(data);
             } catch (error) {
                 console.error('Error fetching records:', error);
