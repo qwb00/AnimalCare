@@ -13,8 +13,6 @@ namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 
         [Required(ErrorMessage = "Please select a veterinarian.")]
         public Guid VeterinarianId { get; set; }
-
-        // automatically generated
         [Required]
         public Guid CareTakerId { get; set; }
 
