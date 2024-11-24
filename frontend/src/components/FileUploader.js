@@ -15,27 +15,23 @@ function FileUploader({
   iconSize = "w-4 h-4", // Size of the icon if provided
   isButton = true,      // Determines if the component should display as a button or as a circular loading indicator
 }) {
-  // State to track if the file is currently uploading
   const [isUploading, setIsUploading] = useState(false);
-  // State to store the displayed file name on the button
   const [fileName, setFileName] = useState(buttonText);
 
   // Function to handle file selection and uploading
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    if (!file) return; // Exit if no file is selected
+    if (!file) return; 
 
-    setIsUploading(true); // Set uploading state
-    setFileName(file.name); // Display selected file name on button
+    setIsUploading(true); 
+    setFileName(file.name); 
     onStatusChange && onStatusChange("uploading"); // Notify about upload status
 
-    // Prepare form data for uploading
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
     try {
-      // Send the file to Cloudinary using Axios
       const response = await axios.post(CLOUDINARY_UPLOAD_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });

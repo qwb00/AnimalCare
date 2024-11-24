@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 
 function AchievementsSlider() {
-  const [activeSlide, setActiveSlide] = useState(0); // Manage the current slide
-  const intervalRef = useRef(null); // Store the interval reference
+  const [activeSlide, setActiveSlide] = useState(0); 
+  const intervalRef = useRef(null); 
 
   const achievements = [
     {
@@ -39,9 +39,9 @@ function AchievementsSlider() {
 
   // Automatically switch slides every 5 seconds
   useEffect(() => {
-    startSliderInterval(); // Start the slider on component mount
+    startSliderInterval(); 
 
-    return () => clearInterval(intervalRef.current); // Clear interval on component unmount
+    return () => clearInterval(intervalRef.current);
   }, [achievements.length]);
 
   // Function to start the interval
@@ -66,7 +66,7 @@ function AchievementsSlider() {
     setActiveSlide((prevSlide) =>
       prevSlide === achievements.length - 1 ? 0 : prevSlide + 1
     );
-    startSliderInterval(); // Restart timer
+    startSliderInterval(); 
   };
 
   // Function to get previous and next slide images for previews

@@ -33,7 +33,6 @@ function Calendar({ selectedAnimalId }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const MAX_SLOTS = 10;
 
-  // Fetch animal data from API
   useEffect(() => {
     const fetchAnimalData = async () => {
       try {
@@ -56,7 +55,6 @@ function Calendar({ selectedAnimalId }) {
     }
   }, [selectedAnimalId]);
 
-  // Fetch reservation data for the selected animal and filter it
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -89,7 +87,7 @@ function Calendar({ selectedAnimalId }) {
             return `${formattedDate}-${formattedStartTime}`;
           });
 
-          setReservedSlots(occupiedSlots); // Update reserved slots
+          setReservedSlots(occupiedSlots);
         }
       } catch (error) {
         console.error("Error fetching reservations:", error);
@@ -97,17 +95,15 @@ function Calendar({ selectedAnimalId }) {
     };
 
     if (selectedAnimalId) {
-      fetchReservations(); // Call function if selectedAnimalId exists
+      fetchReservations(); 
     }
   }, [selectedAnimalId]);
 
-  // Notification display helper
   const showNotification = (message, isSuccess) => {
     setNotification({ message, isSuccess });
     setIsNotificationOpen(true);
   };
 
-  // Week navigation
   const handleNextWeek = () => {
     setCurrentWeek((prevWeek) => addDays(prevWeek, 7));
   };
@@ -134,7 +130,6 @@ function Calendar({ selectedAnimalId }) {
     }
   };
 
-  // Days of the current week for display
   const daysOfWeek = [];
   for (let i = 0; i < 7; i++) {
     const day = addDays(currentWeek, i);
@@ -148,10 +143,8 @@ function Calendar({ selectedAnimalId }) {
     return formattedTime;
   });
 
-  // Format inactive time slots
   const inactiveTimes = ["11:00 AM", "03:00 PM"];
 
-  // Modal controls for authentication and booking
   const handleOpenModal = () => {
     const authToken = sessionStorage.getItem("token");
     if (!authToken) {
@@ -169,7 +162,6 @@ function Calendar({ selectedAnimalId }) {
     setIsAuthModalOpen(false);
   };
 
-  // Animal image path
   const animalImagePath = animalData?.photo;
 
   // Format a time slot with start and end time for display
@@ -185,7 +177,6 @@ function Calendar({ selectedAnimalId }) {
     );
     const endTime = addHours(parsedStartTime, 1); // Calculate end time by adding 1 hour
 
-    // Format date, start, and end times
     const formattedDate = format(parsedStartTime, "MMM dd yyyy");
     const formattedStartTime = format(parsedStartTime, "hh:mm a");
     const formattedEndTime = format(endTime, "hh:mm a");
@@ -208,14 +199,12 @@ function Calendar({ selectedAnimalId }) {
       if (!acc[slot.date]) {
         acc[slot.date] = [];
       }
-      // Add slot to the list for this specific date
       acc[slot.date].push(slot);
       return acc;
     }, {});
 
     const mergedSlots = []; // Array to store the final merged intervals
 
-    // Loop through each date to process and merge slots within that day
     Object.keys(groupedByDate).forEach((date) => {
       // Sort slots by start time to ensure correct chronological merging
       const times = groupedByDate[date].sort((a, b) => {
@@ -232,13 +221,10 @@ function Calendar({ selectedAnimalId }) {
         return parsedA - parsedB;
       });
 
-      // Initialize the first interval to start merging
       let currentStart = times[0].startTime;
       let currentEnd = times[0].endTime;
 
-      // Loop through each time slot starting from the second one
       for (let i = 1; i < times.length; i++) {
-        // Convert end time of previous slot and start time of the current slot to compare
         const previousEnd = parse(
           `${date} ${currentEnd}`,
           "MMM dd yyyy hh:mm a",
@@ -250,7 +236,6 @@ function Calendar({ selectedAnimalId }) {
           new Date()
         );
 
-        // Check if the current slot directly follows the previous one (is consecutive)
         if (differenceInHours(currentStartTime, previousEnd) === 0) {
           // Extend the current interval to include this slot if consecutive
           currentEnd = times[i].endTime;
@@ -270,13 +255,11 @@ function Calendar({ selectedAnimalId }) {
       mergedSlots.push({ date, startTime: currentStart, endTime: currentEnd });
     });
 
-    return mergedSlots; // Return all merged intervals for use in reservation
+    return mergedSlots; 
   };
 
-  // Confirm the reservation by sending selected time slots to the server for booking
   const handleConfirmReservation = async () => {
     try {
-      // Retrieve authentication token and user ID from session storage
       const authToken = sessionStorage.getItem("token");
       const userID = sessionStorage.getItem("userID");
 
@@ -288,7 +271,6 @@ function Calendar({ selectedAnimalId }) {
       for (const { date, startTime, endTime } of mergeTimeSlots(
         selectedSlots
       )) {
-        // Prepare reservation data in the required format
         const reservationData = {
           userId: userID,
           animalId: selectedAnimalId,
@@ -304,7 +286,6 @@ function Calendar({ selectedAnimalId }) {
         };
 
         try {
-          // Send reservation data to API endpoint
           const response = await axios.post(
             `${API_BASE_URL}/reservations`,
             reservationData,
@@ -316,9 +297,7 @@ function Calendar({ selectedAnimalId }) {
             }
           );
 
-          // If the reservation was created successfully (status 201)
           if (response.status === 201) {
-            // Format date and start time to match reserved slot key format
             const formattedDate = format(
               parse(date, "MMM dd yyyy", new Date()),
               "yyyy-MM-dd"
@@ -333,17 +312,14 @@ function Calendar({ selectedAnimalId }) {
             newReservedSlots.push(newSlotKey);
             successfullyReservedSlots.push(newSlotKey);
 
-            // Display success notification to the user
             showNotification("Reservation created successfully!", true);
           } else {
-            // If response is not successful, show error notification
             showNotification(
               "Failed to create reservation. Please try again.",
               false
             );
           }
         } catch (error) {
-          // Handle errors and display appropriate message if reservation fails
           const errorMessage =
             error.response?.data?.message ||
             "Your account is not verified. Please wait for verification.";
@@ -361,10 +337,8 @@ function Calendar({ selectedAnimalId }) {
         )
       );
 
-      // Close the reservation modal after completing booking
       handleCloseModal();
     } catch (error) {
-      // Catch unexpected errors and display general error notification
       showNotification("Unexpected error. Please try again.", false);
     }
   };

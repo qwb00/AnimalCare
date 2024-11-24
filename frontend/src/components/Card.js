@@ -61,7 +61,6 @@ Card.propTypes = {
     children: PropTypes.node,
 };
 
-// Default props
 Card.defaultProps = {
     infoItems: [],
     buttons: [],

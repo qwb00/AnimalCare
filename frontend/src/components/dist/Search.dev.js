@@ -65,7 +65,6 @@ function Search(_ref) {
 
 
   var dropdownRef = (0, _react.useRef)(null); // A reference to a dropdown menu for tracking clicks outside of it.
-  // Fetch animals from API
 
   (0, _react.useEffect)(function () {
     var loadAnimals = function loadAnimals() {
@@ -103,7 +102,7 @@ function Search(_ref) {
     };
 
     loadAnimals();
-  }, []); // Function to find animal
+  }, []); 
 
   var handleSearch = function handleSearch() {
     console.log('Search value:', searchValue); 
@@ -128,7 +127,7 @@ function Search(_ref) {
 
     setIsDropdownOpen(false);
 
-    setIsInputError(false); // Reset an error
+    setIsInputError(false); 
   }; 
 
 }
