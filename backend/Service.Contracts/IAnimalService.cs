@@ -7,7 +7,7 @@ namespace Service.Contracts
     {
         Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(bool trackChanges);
         Task<AnimalDetailedDto> GetAnimalAsync(Guid id, bool trackChanges);
-        Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreating animal);
+        Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreatingDTO animal);
         Task UpdateAnimalAsync(Guid animalId, AnimalForUpdateDTO animalForUpdate, bool trackChanges);
 
         Task<(AnimalForUpdateDTO animalForPatch, Animal animalEntity)> GetAnimalForPatchAsync(Guid id);

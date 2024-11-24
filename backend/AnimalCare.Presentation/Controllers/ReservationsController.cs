@@ -35,7 +35,7 @@ namespace AnimalCare.Presentation.Controllers
         [HttpPost(Name = "CreateReservation")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
-        public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservationRequest)
+        public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDTO reservationRequest)
         {
             if (reservationRequest == null)
                 return BadRequest("ReservationForCreationDto object is null");
@@ -73,7 +73,7 @@ namespace AnimalCare.Presentation.Controllers
         [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
-        public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDto> patchDoc)
+        public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDTO> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest("patchDoc object is null");

@@ -39,7 +39,7 @@ namespace AnimalCare.Presentation.Controllers
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize(Roles = "Caretaker,Administrator")]
-        public async Task<IActionResult> CreateAnimal([FromBody] AnimalForCreating animal)
+        public async Task<IActionResult> CreateAnimal([FromBody] AnimalForCreatingDTO animal)
         {
             var createdAnimal = await _service.AnimalService.CreateAnimalAsync(animal);
 

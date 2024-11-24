@@ -9,5 +9,5 @@ public record AnimalDetailedDto : AnimalForUpdateDTO
 {
     public Guid Id { get; set; }
     public List<ExaminationRecordDetailDTO> ExaminationRecords { get; set;}
-    public List<ReservationForUserDto> Reservations { get; set;}
+    public List<ReservationForUserDTO> Reservations { get; set;}
 }

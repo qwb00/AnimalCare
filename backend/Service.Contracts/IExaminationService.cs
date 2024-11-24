@@ -12,10 +12,10 @@ namespace Service.Contracts
     {
         Task<IEnumerable<ExaminationRecordDetailDTO>> GetAllExaminationsAsync(bool trackChanges);
         Task<ExaminationRecordDetailDTO> GetExaminationByIdAsync(Guid examinationId, bool trackChanges);
-        Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDto examinationForCreation);
-        Task UpdateExaminationAsync(Guid examinationId, ExaminationRecordForUpdateDto examinationForUpdate, bool trackChanges);
-        Task<(ExaminationRecordForUpdateDto examinationForPatch, ExaminationRecord examinationEntity)> GetExaminationForPatchAsync(Guid id);
-        Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDto patch, ExaminationRecord examination);
+        Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDTO examinationForCreation);
+        Task UpdateExaminationAsync(Guid examinationId, ExaminationRecordForUpdateDTO examinationForUpdate, bool trackChanges);
+        Task<(ExaminationRecordForUpdateDTO examinationForPatch, ExaminationRecord examinationEntity)> GetExaminationForPatchAsync(Guid id);
+        Task SaveChangesForPatchAsync(ExaminationRecordForUpdateDTO patch, ExaminationRecord examination);
         Task DeleteExaminationAsync(Guid examinationId, bool trackChanges);
     }
 }

@@ -5,7 +5,7 @@ using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
-    public class ReservationForConfirmationDto
+    public class ReservationForConfirmationDTO
     {
         public Guid Id { get; set; }
         public string VolunteerName { get; set; }

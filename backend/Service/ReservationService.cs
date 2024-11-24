@@ -17,29 +17,29 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReservationForConfirmationDto>> GetAllReservationsAsync(bool trackChanges)
+        public async Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges)
         {
             var reservations = await _repository.Reservation.GetAllReservationsAsync(trackChanges);
-            var reservationsDto = _mapper.Map<IEnumerable<ReservationForConfirmationDto>>(reservations);
+            var reservationsDto = _mapper.Map<IEnumerable<ReservationForConfirmationDTO>>(reservations);
             return reservationsDto;
         }
 
-        public async Task<ReservationForConfirmationDto> GetReservationByIdAsync(Guid reservationId, bool trackChanges)
+        public async Task<ReservationForConfirmationDTO> GetReservationByIdAsync(Guid reservationId, bool trackChanges)
         {
             var reservation = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
-            var reservationDto = _mapper.Map<ReservationForConfirmationDto>(reservation);
+            var reservationDto = _mapper.Map<ReservationForConfirmationDTO>(reservation);
             return reservationDto;
         }
         
-        public async Task<ReservationForUpdateDto> GetReservationForPatchAsync(Guid reservationId, bool trackChanges)
+        public async Task<ReservationForUpdateDTO> GetReservationForPatchAsync(Guid reservationId, bool trackChanges)
         {
             var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
 
-            var reservationToPatch = _mapper.Map<ReservationForUpdateDto>(reservationEntity);
+            var reservationToPatch = _mapper.Map<ReservationForUpdateDTO>(reservationEntity);
             return reservationToPatch;
         }
         
-        public async Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDto reservationToPatch, bool trackChanges)
+        public async Task SavePatchedReservationAsync(Guid reservationId, ReservationForUpdateDTO reservationToPatch, bool trackChanges)
         {
             var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
 
@@ -48,7 +48,7 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task<ReservationForConfirmationDto> CreateReservationAsync(ReservationForCreationDto reservationRequest)
+        public async Task<ReservationForConfirmationDTO> CreateReservationAsync(ReservationForCreationDTO reservationRequest)
         {
             var reservationEntity = _mapper.Map<Reservation>(reservationRequest);
 
@@ -63,11 +63,11 @@ namespace Service
                 r => r.Animal,
                 r => r.User);
 
-            var reservationToReturn = _mapper.Map<ReservationForConfirmationDto>(reservationFromDb);
+            var reservationToReturn = _mapper.Map<ReservationForConfirmationDTO>(reservationFromDb);
             return reservationToReturn;
         }
 
-        public async Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDto reservationForUpdate, bool trackChanges)
+        public async Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDTO reservationForUpdate, bool trackChanges)
         {
             var reservationEntity = await GetReservationAndCheckIfItExists(reservationId, trackChanges);
 
@@ -82,10 +82,10 @@ namespace Service
             await _repository.SaveAsync();
         }
         
-        public async Task<IEnumerable<ReservationForUserDto>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges)
+        public async Task<IEnumerable<ReservationForUserDTO>> GetReservationsByVolunteerIdAsync(Guid volunteerId, bool trackChanges)
         {
             var reservations = await _repository.Reservation.GetReservationsByVolunteerIdAsync(volunteerId, trackChanges);
-            var reservationsDto = _mapper.Map<IEnumerable<ReservationForUserDto>>(reservations);
+            var reservationsDto = _mapper.Map<IEnumerable<ReservationForUserDTO>>(reservations);
             return reservationsDto;
         }
 

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
  */
 namespace Shared.DataTransferObjects.ReservationsDTO
 {
-    public class ReservationForCreationDto
+    public class ReservationForCreationDTO
     {
         [Required(ErrorMessage = "Please select an animal.")]
         public Guid AnimalId { get; set; }
@@ -18,7 +18,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
 
         [Required(ErrorMessage = "Reservation date is required.")]
         [DataType(DataType.Date, ErrorMessage = "Reservation date must be a valid date.")]
-        [CustomValidation(typeof(ReservationForCreationDto), nameof(ValidateReservationDate))]
+        [CustomValidation(typeof(ReservationForCreationDTO), nameof(ValidateReservationDate))]
         public DateTime ReservationDate { get; set; }
 
         [Required(ErrorMessage = "Start time is required.")]
@@ -27,7 +27,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
 
         [Required(ErrorMessage = "End time is required.")]
         [DataType(DataType.Time, ErrorMessage = "End time must be a valid time.")]
-        [CustomValidation(typeof(ReservationForCreationDto), nameof(ValidateTimeRange))]
+        [CustomValidation(typeof(ReservationForCreationDTO), nameof(ValidateTimeRange))]
         public TimeSpan EndTime { get; set; }
 
         public static ValidationResult ValidateReservationDate(DateTime reservationDate, ValidationContext context)
@@ -42,7 +42,7 @@ namespace Shared.DataTransferObjects.ReservationsDTO
         // Custom Validation for Time Range
         public static ValidationResult ValidateTimeRange(TimeSpan endTime, ValidationContext context)
         {
-            var instance = (ReservationForCreationDto)context.ObjectInstance;
+            var instance = (ReservationForCreationDTO)context.ObjectInstance;
             if (instance.StartTime >= endTime)
             {
                 return new ValidationResult("End time must be after start time.");

@@ -23,16 +23,16 @@ namespace AnimalCare
                 );
             CreateMap<AnimalDetailedDto, Animal>().Ignore(dst => dst.Examinations, dst => dst.Reservations);
             CreateMap<Animal, AnimalForUpdateDTO>().ReverseMap();
-            CreateMap<AnimalForCreating, Animal>();
+            CreateMap<AnimalForCreatingDTO, Animal>();
 
-            CreateMap<ReservationForCreationDto, Reservation>()
+            CreateMap<ReservationForCreationDTO, Reservation>()
                 .MapMembers(
                     (dst => dst.StartDate, src => src.ReservationDate.Date + src.StartTime),
                     (dst => dst.EndDate, src => src.ReservationDate.Date + src.EndTime)
                 )
                 .UseValue(dst => dst.Status, ReservationStatus.NOTDECIDED);
             
-            CreateMap<Reservation, ReservationForConfirmationDto>()
+            CreateMap<Reservation, ReservationForConfirmationDTO>()
                 .MapMembers(
                     (dst => dst.VolunteerName, src => src.User.FullName),
                     (dst => dst.AnimalName, src => src.Animal.Name),
@@ -44,21 +44,21 @@ namespace AnimalCare
                     (dst=>dst.phoneNumber, src => src.User.PhoneNumber!)
                 );
 
-            CreateMap<Reservation, ReservationForUserDto>()
+            CreateMap<Reservation, ReservationForUserDTO>()
                 .MapMembers(
                     (dst => dst.Date, src => src.StartDate.Date),
                     (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
                 );
             
-            CreateMap<Reservation, ReservationForUpdateDto>()
+            CreateMap<Reservation, ReservationForUpdateDTO>()
                 .MapMembers(
                     (dst => dst.Date, src => src.StartDate.Date),
                     (dst => dst.StartTime, src => src.StartDate.TimeOfDay),
                     (dst => dst.EndTime, src => src.EndDate.TimeOfDay)
                 );
             
-            CreateMap<ReservationForUpdateDto, Reservation>()
+            CreateMap<ReservationForUpdateDTO, Reservation>()
                 .MapMembers(
                     (dst => dst.StartDate, src => src.Date.Date + src.StartTime),
                     (dst => dst.EndDate, src => src.Date.Date + src.EndTime)
@@ -97,7 +97,7 @@ namespace AnimalCare
                 (dest => dest.IsVerified, src => src.IsVerified)
                 );
 
-            CreateMap<ExaminationRecordForCreationDto, ExaminationRecord>()
+            CreateMap<ExaminationRecordForCreationDTO, ExaminationRecord>()
                 .MapMembers(
                     (dst => dst.Date, src => src.ExaminationDate),
                     (dst => dst.Type, src => src.Type),
@@ -112,7 +112,7 @@ namespace AnimalCare
                     dst => dst.Id
                 );
             
-            CreateMap<ExaminationRecordForUpdateDto, ExaminationRecord>()
+            CreateMap<ExaminationRecordForUpdateDTO, ExaminationRecord>()
                 .MapMembers(
                     (dst => dst.Status, src => src.Status),
                     (dst => dst.FinalDiagnosis, src => src.FinalDiagnosis)
@@ -126,7 +126,7 @@ namespace AnimalCare
                     dst => dst.Description
                 );
 
-            CreateMap<ExaminationRecord, ExaminationRecordForUpdateDto>();
+            CreateMap<ExaminationRecord, ExaminationRecordForUpdateDTO>();
 
             CreateMap<ExaminationRecord, ExaminationRecordDetailDTO>()
                 .MapMembers(

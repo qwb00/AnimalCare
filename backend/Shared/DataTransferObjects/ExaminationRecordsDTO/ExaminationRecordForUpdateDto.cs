@@ -3,7 +3,7 @@ using Shared.Enums;
 
 namespace Shared.DataTransferObjects.ExaminationRecordsDTO
 {
-    public class ExaminationRecordForUpdateDto
+    public class ExaminationRecordForUpdateDTO
     {
         public ExaminationStatus Status { get; set; }
 
