@@ -33,8 +33,9 @@ public class UsersConfiguration
                 UserName = "admin",
                 Email = "admin1@gmail.com",
                 FullName = "Admin One",
-                PhoneNumber = "12345678",
-                EmailConfirmed = true
+                PhoneNumber = "1234567890",
+                EmailConfirmed = true,
+                Photo = "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(admin, "Admin123!");
             if (result.Succeeded)
@@ -58,8 +59,9 @@ public class UsersConfiguration
                 UserName = "vet1",
                 Email = "vet1@gmail.com",
                 FullName = "Veterinarian One",
-                PhoneNumber = "123456781",
-                EmailConfirmed = true
+                PhoneNumber = "1234567819",
+                EmailConfirmed = true,
+                Photo = "https://images.unsplash.com/photo-1644675272883-0c4d582528d8?q=80&w=2582&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(vet, "Vet123!");
             if (result.Succeeded)
@@ -83,8 +85,9 @@ public class UsersConfiguration
                 UserName = "vet2",
                 Email = "vet2@gmail.com",
                 FullName = "Veterinarian 2",
-                PhoneNumber = "123456782",
-                EmailConfirmed = true
+                PhoneNumber = "1234567820",
+                EmailConfirmed = true,
+                Photo = "https://plus.unsplash.com/premium_photo-1670071482460-5c08776521fe?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(vet, "Vet123!");
             if (result.Succeeded)
@@ -108,8 +111,9 @@ public class UsersConfiguration
                 UserName = "caretaker1",
                 Email = "caretaker1@gmail.com",
                 FullName = "Caretaker One",
-                PhoneNumber = "123456783",
-                EmailConfirmed = true
+                PhoneNumber = "1234567830",
+                EmailConfirmed = true,
+                Photo = "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(caretaker, "CareTaker123!");
             if (result.Succeeded)
@@ -133,9 +137,10 @@ public class UsersConfiguration
                 UserName = "volunteer1",
                 Email = "volunteer1@gmail.com",
                 FullName = "Volunteer One",
-                PhoneNumber = "123456784",
+                PhoneNumber = "1234567840",
                 EmailConfirmed = true,
-                IsVerified = false
+                IsVerified = false,
+                Photo = "https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(volunteer, "Volunteer123!");
             if (result.Succeeded)
@@ -159,9 +164,10 @@ public class UsersConfiguration
                 UserName = "volunteer2",
                 Email = "volunteer2@gmail.com",
                 FullName = "Volunteer 2",
-                PhoneNumber = "123456785",
+                PhoneNumber = "1234567850",
                 EmailConfirmed = true,
-                IsVerified = true
+                IsVerified = true,
+                Photo = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(volunteer, "Volunteer123!");
             if (result.Succeeded)

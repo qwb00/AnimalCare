@@ -52,6 +52,7 @@ using (var scope = app.Services.CreateScope())
     await AnimalsConfiguration.SeedAnimalsAsync(context);
     await ReservationsConfiguration.SeedReservations(context);
     await ExaminationRecordsConfiguration.SeedExaminationRecordsAsync(context);
+    await MedicationScheduleConfiguration.SeedMedicationSchedulesAsync(context);
 
 }
 

@@ -21,7 +21,18 @@ function UserHeader({ user, updateUser }) {
     };
     const { backgroundColor, borderColor, textColor } = roleStyles[userData.role.toLowerCase()] || {};
 
-    // Функция обновления данных пользователя
+    useEffect(() => {
+        setUserData({
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            role: user.role,
+            photo: user.photo,
+        });
+        setAvatarUrl(user.photo || "/icons/name.png");
+    }, [user]);
+
+    // function to update user profile
     async function updateUserProfile(newPhotoUrl) {
         const updatedData = {
             ...userData,
