@@ -35,6 +35,7 @@ public class UsersConfiguration
                 FullName = "Admin One",
                 PhoneNumber = "1234567890",
                 EmailConfirmed = true,
+                isActive = true,
                 Photo = "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(admin, "Admin123!");
@@ -61,6 +62,7 @@ public class UsersConfiguration
                 FullName = "Veterinarian One",
                 PhoneNumber = "1234567819",
                 EmailConfirmed = true,
+                isActive = true,
                 Photo = "https://images.unsplash.com/photo-1644675272883-0c4d582528d8?q=80&w=2582&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(vet, "Vet123!");
@@ -87,6 +89,7 @@ public class UsersConfiguration
                 FullName = "Veterinarian 2",
                 PhoneNumber = "1234567820",
                 EmailConfirmed = true,
+                isActive = true,
                 Photo = "https://plus.unsplash.com/premium_photo-1670071482460-5c08776521fe?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(vet, "Vet123!");
@@ -113,6 +116,7 @@ public class UsersConfiguration
                 FullName = "Caretaker One",
                 PhoneNumber = "1234567830",
                 EmailConfirmed = true,
+                isActive = true,
                 Photo = "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(caretaker, "CareTaker123!");
@@ -140,6 +144,7 @@ public class UsersConfiguration
                 PhoneNumber = "1234567840",
                 EmailConfirmed = true,
                 IsVerified = false,
+                isActive = true,
                 Photo = "https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(volunteer, "Volunteer123!");
@@ -167,6 +172,7 @@ public class UsersConfiguration
                 PhoneNumber = "1234567850",
                 EmailConfirmed = true,
                 IsVerified = true,
+                isActive = true,
                 Photo = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             };
             var result = await userManager.CreateAsync(volunteer, "Volunteer123!");
