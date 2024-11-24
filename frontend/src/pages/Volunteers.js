@@ -42,14 +42,18 @@ function Volunteers() {
         const fetchVolunteers = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/volunteers`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
                 });
 
                 if (!response.ok) throw new Error('Failed to fetch volunteers');
 
                 const data = await response.json();
-                setNewRequests(data.filter((volunteer) => !volunteer.isVerified));
-                setCurrentVolunteers(data.filter((volunteer) => volunteer.isVerified));
+
+                // Filter out inactive volunteers
+                const activeVolunteers = data.filter((volunteer) => volunteer.isActive !== false);
+
+                setNewRequests(activeVolunteers.filter((volunteer) => !volunteer.isVerified));
+                setCurrentVolunteers(activeVolunteers.filter((volunteer) => volunteer.isVerified));
             } catch (error) {
                 console.error('Error fetching volunteers:', error);
             }
@@ -123,24 +127,31 @@ function Volunteers() {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-                method: 'DELETE',
+            const response = await fetch(`${API_BASE_URL}/volunteers/${id}`, {
+                method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-                    'X-Request-Type': 'DeleteUser',
+                    'Content-Type': 'application/json-patch+json',
                 },
+                body: JSON.stringify([
+                    {
+                        op: 'replace',
+                        path: '/isActive',
+                        value: false,
+                    },
+                ]),
             });
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Failed to delete volunteer: ${errorText}`);
+                throw new Error(`Failed to deactivate volunteer: ${errorText}`);
             }
 
-            // Remove volunteer from both lists
-            setNewRequests((prev) => prev.filter((v) => v.id !== id));
-            setCurrentVolunteers((prev) => prev.filter((v) => v.id !== id));
+            // Update local state to remove the deactivated volunteer
+            setNewRequests((prev) => prev.filter((volunteer) => volunteer.id !== id));
+            setCurrentVolunteers((prev) => prev.filter((volunteer) => volunteer.id !== id));
         } catch (error) {
-            console.error('Error deleting volunteer:', error);
+            console.error('Error deactivating volunteer:', error);
         }
     };
 

@@ -151,6 +151,30 @@ function Animals() {
     }
   };
 
+  const handleDeactivateAnimal = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/animals/${id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          "Content-Type": "application/json-patch+json",
+        },
+        body: JSON.stringify([
+          { op: "replace", path: "/isActive", value: false },
+        ]),
+      });
+
+      if (!response.ok) throw new Error(`Failed to deactivate animal: ${await response.text()}`);
+
+      // Remove deactivated animal from the list
+      setAllAnimals((prev) => prev.filter((animal) => animal.id !== id));
+    } catch (error) {
+      console.error("Error deactivating animal:", error);
+      setNotification({ isSuccess: false, message: "Error deactivating animal." });
+      setIsNotificationOpen(true);
+    }
+  };
+
 
   return (
     <div className="max-w-screen-lg mx-auto">
@@ -170,6 +194,8 @@ function Animals() {
               name={animal.name}
               age={`${animal.age} years`}
               breed={animal.breed}
+              userRole={userRole}
+              onDelete={handleDeactivateAnimal}
             />
           ))}
 

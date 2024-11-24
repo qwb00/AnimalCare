@@ -106,7 +106,7 @@ function AnimalDetails() {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals/${animalID}`);
       setAnimalData(response.data);
-      setErrorMessages([]); // Очистить ошибки при успешном запросе
+      setErrorMessages([]);
     } catch (error) {
       console.error("Error fetching animal details:", error);
       const errorData = error.response?.data || "An unknown error occurred.";
@@ -145,7 +145,6 @@ function AnimalDetails() {
     console.log(`Updating ${path} with value:`, value);
 
     try {
-      // Отправка PATCH-запроса для обновления данных
       const response = await axios.patch(
           `${API_BASE_URL}/animals/${animalID}`,
           [
@@ -162,19 +161,17 @@ function AnimalDetails() {
             },
           }
       );
-      // Очистить ошибки при успешном запросе
       setErrorMessages([]);
       return response;
     } catch (error) {
-      console.error(`Ошибка при обновлении ${path}:`, error);
+      console.error(`Error on update ${path}:`, error);
 
-      // Извлечь ошибки и обновить состояние
-      const errorData = error.response?.data || "Неизвестная ошибка.";
+      const errorData = error.response?.data || "Unknown error";
       const extractedErrors = extractErrorMessages(errorData);
 
       setErrorMessages((prevErrors) => [...prevErrors, ...extractedErrors]);
 
-      throw error; // Бросить ошибку, если нужно обработать её выше
+      throw error;
     }
   }
 
@@ -211,13 +208,12 @@ function AnimalDetails() {
       await updateAnimalAttribute("health", editedGeneralData.health);
       await updateAnimalAttribute("personality", editedGeneralData.personality);
 
-      // Обновить локальные данные, если все запросы успешны
       setAnimalData({
         ...animalData,
         ...editedGeneralData,
       });
 
-      // Закрыть режим редактирования
+      // close editing mode
       setIsEditingGeneral(false);
     } catch (error) {
       console.error("Ошибка сохранения общих изменений:", error);
@@ -666,7 +662,7 @@ function AnimalDetails() {
                   <strong>Size:</strong> {getAnimalSize(animalData.size)}
                 </p>
                 <p>
-                  <strong>Weight:</strong> {`${animalData.weight} kg`}
+                  <strong>Weight:</strong> {`${animalData.weight}`}
                 </p>
                 <p>
                   <strong>Health conditions:</strong>{" "}

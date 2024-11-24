@@ -40,7 +40,8 @@ function Users() {
       const response = await axios.get(`${API_BASE_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(response.data);
+      const activeUsers = response.data.filter((user) => user.isActive !== false);
+      setUsers(activeUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -70,19 +71,35 @@ function Users() {
     fetchAllUsers();
   }, [navigate]);
 
+
+  // Deactivate a user by setting isActive to false
   const handleDelete = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/users/${selectedUser.id}`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          "X-Request-Type": "DeleteUser",
-        },
-      });
-      setUsers((prev) => prev.filter((user) => user.id !== selectedUser.id));
+      await axios.patch(
+          `${API_BASE_URL}/users/${selectedUser.id}`,
+          [{ op: "replace", path: "/isActive", value: false }],
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+              "Content-Type": "application/json-patch+json",
+            },
+          }
+      );
+
+      // Remove the user from the list without refreshing the page
+      setUsers((prev) =>
+          prev.filter((user) => user.id !== selectedUser.id)
+      );
+
       setSelectedUser(null);
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error deactivating user:", error);
+      setNotification({
+        isSuccess: false,
+        message: "Error deactivating user.",
+      });
+      setIsNotificationOpen(true);
     }
   };
 
