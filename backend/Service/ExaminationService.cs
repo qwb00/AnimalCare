@@ -4,6 +4,7 @@ using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.ExaminationRecordsDTO;
+using Shared.Enums;
 
 namespace Service
 {
@@ -35,6 +36,7 @@ namespace Service
         public async Task<ExaminationRecordDetailDTO> CreateExaminationAsync(ExaminationRecordForCreationDTO examinationForCreation)
         {
             var examinationEntity = _mapper.Map<ExaminationRecord>(examinationForCreation);
+            examinationEntity.Status = ExaminationStatus.NotDecided;
             examinationEntity.Id = Guid.NewGuid();
 
             _repository.Examination.CreateExamination(examinationEntity);
@@ -45,7 +47,7 @@ namespace Service
                 trackChanges: false,
                 e => e.Animal,
                 e => e.Veterinarian);
-
+            
             var examinationToReturn = _mapper.Map<ExaminationRecordDetailDTO>(examinationFromDb);
             return examinationToReturn;
         }
