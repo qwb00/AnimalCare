@@ -9,5 +9,6 @@ namespace Shared.DataTransferObjects.UsersDTO
     public record VolunteerListDTO : UserDetailDTO
     {
         public bool IsVerified {  get; init; }
+        public bool IsActive { get; init; }
     }
 }
