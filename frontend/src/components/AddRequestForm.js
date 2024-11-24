@@ -103,6 +103,8 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
 
       });
 
+      console.log('Data to submit:', dataToSubmit);
+
       if (!response.ok) {
         const errorResponse = await response.json();
         setErrorData(errorResponse);
