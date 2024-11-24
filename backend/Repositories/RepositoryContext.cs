@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using Repositories.Configuration;
 
-//using Repositories.Configuration;
-
 namespace Repositories
 {
     public class RepositoryContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>

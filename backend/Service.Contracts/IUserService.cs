@@ -15,5 +15,6 @@ namespace Service.Contracts
         Task<IdentityResult> SaveChangesForPatchAsync(UserForUpdateDTO patch, User user);
         Task<IdentityResult> SaveChangesForPatchAsync(ChangeStatusForVolunteerDTO patch, Volunteer volunteer);
         Task<UserDetailDTO> GetUserByUsernameAsync(string username);
+        Task<(UserForUpdateDTO userForPatch, User userEntity)> GetUserForPatchAsync(Guid id);
     }
 }
