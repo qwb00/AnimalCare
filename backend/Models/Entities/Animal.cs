@@ -40,6 +40,8 @@ namespace Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime DateFound { get; set; }
 
+        public bool isActive { get; set; }
+
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         public ICollection<ExaminationRecord> Examinations { get; set; } = new List<ExaminationRecord>();
         public ICollection<MedicationSchedule> Medications { get; set; }

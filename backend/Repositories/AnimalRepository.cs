@@ -18,6 +18,10 @@ namespace Repositories
             await GetByCondition(c => c.Name.Equals(name), trackChanges)
         .SingleOrDefaultAsync();
 
-        public void CreateAnimal(Animal animal) => Create(animal);
+        public void CreateAnimal(Animal animal)
+        {
+            animal.isActive = true;
+            Create(animal);
+        }
     }
 }

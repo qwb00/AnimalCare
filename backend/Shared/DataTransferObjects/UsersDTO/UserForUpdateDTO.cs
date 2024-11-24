@@ -8,5 +8,6 @@ namespace Shared.DataTransferObjects.UsersDTO
 {
     public record UserForUpdateDTO : UserForManipulationDTO
     {
+        public bool? isActive { get; set; }
     }
 }

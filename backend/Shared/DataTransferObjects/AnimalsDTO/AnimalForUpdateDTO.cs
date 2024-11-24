@@ -27,5 +27,7 @@ namespace Shared.DataTransferObjects.AnimalsDTO
         public bool IsCommandsTaught { get; set; }
 
         public bool IsLeashTrained { get; set; }
+
+        public bool? isActive { get; set; }
     }
 }
