@@ -37,13 +37,6 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
       }
     };
 
-    const typeMapping = {
-      'Planned treatment': 0,
-      'Emergency treatment': 1,
-      'Vaccination': 2,
-      'Surgery': 3,
-    };
-
     // Get veterinarians list
     const fetchVeterinarians = async () => {
       try {
@@ -83,6 +76,13 @@ const AddRequestForm = ({ onSubmit, onClose }) => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const typeMapping = {
+    'Planned treatment': 0,
+    'Emergency treatment': 1,
+    'Vaccination': 2,
+    'Surgery': 3,
   };
 
   const handleSubmit = async (e) => {
