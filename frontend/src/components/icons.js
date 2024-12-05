@@ -13,4 +13,5 @@ export const icons = {
     cancel: '/icons/cancel_white.png',
     unverify: '/icons/unverify_white.png',
     plus_white: '/icons/plus_white.png',
+    role: '/icons/role.png',
 };
