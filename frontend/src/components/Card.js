@@ -37,7 +37,11 @@ function Card({ title, imageSrc, infoItems, buttons, children }) {
             {buttons && buttons.length > 0 && (
                 <div className="flex justify-center gap-16">
                     {buttons.map((buttonProps, index) => (
-                        <Button key={index} {...buttonProps} />
+                        <Button
+                            key={index}
+                            {...buttonProps}
+                            className={`${buttons.length === 1 ? "w-full" : "w-auto"} ${buttonProps.className}`}
+                        />
                     ))}
                 </div>
             )}
