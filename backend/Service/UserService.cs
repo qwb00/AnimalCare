@@ -25,7 +25,7 @@ namespace Service
 
             var veterinarians = await _repository.GetUsersInRoleAsync("Veterinarian");
 
-            var users = caretakers.Union(veterinarians).ToList();
+            var users = caretakers.Union(veterinarians).Where(u => u.isActive == true).ToList();
 
             var usersDTO = await users.MapUsersToDTOsAsync<UserListDTO>(_repository, _mapper);
             return usersDTO;
@@ -35,7 +35,7 @@ namespace Service
         {
             var users = await _repository.GetUsersInRoleAsync("Volunteer");
 
-            var volunteers = users.OfType<Volunteer>().ToList();
+            var volunteers = users.OfType<Volunteer>().Where(u => u.isActive == true).ToList();
 
            // var volunteersDTO = await volunteers.MapUsersToDTOsAsync<VolunteerListDTO>(_repository, _mapper);
             var volunteersDTO = volunteers.Select(v => _mapper.Map<VolunteerListDTO>(v));

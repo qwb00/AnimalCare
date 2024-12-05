@@ -18,6 +18,7 @@ namespace Repositories
                     animalParameters.Sex, animalParameters.Type, animalParameters.Weight)
                 .Search(animalParameters.SearchTerm)
                 .OrderBy(c => c.Name)
+                .Where(a => a.isActive == true)
                 .ToListAsync();
 
         #pragma warning disable CS8603 // Possible null reference return.
