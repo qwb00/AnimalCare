@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
+using Shared.RequestFeatures;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -16,12 +17,13 @@ namespace AnimalCare.Presentation.Controllers
         public VolunteersController(IServiceManager service) => _service = service;
 
         [HttpGet(Name = "GetVolunteers")]
-        public async Task<IActionResult> GetVolunteers()
+        public async Task<IActionResult> GetVolunteers([FromQuery] VolunteerParameters volunteerParameters)
         {
-            var companies = await _service.UserService.GetVolunteersAsync();
+            var volunteers = await _service.UserService.GetVolunteersAsync(volunteerParameters);
 
-            return Ok(companies);
+            return Ok(volunteers);
         }
+
 
         [HttpPatch("{id:guid}")]
         public async Task<IActionResult> PartiallyUpdateVolunteer(Guid id,

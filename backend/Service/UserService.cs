@@ -5,6 +5,7 @@ using Models.Entities;
 using Service.Contracts;
 using Service.Extensions;
 using Shared.DataTransferObjects.UsersDTO;
+using Shared.RequestFeatures;
 
 namespace Service
 {
@@ -19,28 +20,85 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserListDTO>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserListDTO>> GetAllUsersAsync(UserParameters userParameters)
         {
-            var caretakers = await _repository.GetUsersInRoleAsync("Caretaker");
+            IEnumerable<User> users;
 
-            var veterinarians = await _repository.GetUsersInRoleAsync("Veterinarian");
+            // Если роль указана, используем методы для получения пользователей по роли
+            if (!string.IsNullOrWhiteSpace(userParameters.Role))
+            {
+                var role = userParameters.Role.Trim().ToLower();
 
-            var users = caretakers.Union(veterinarians).Where(u => u.isActive == true).ToList();
+                users = role switch
+                {
+                    "caretaker" => await _repository.GetUsersInRoleAsync("Caretaker"),
+                    "veterinarian" => await _repository.GetUsersInRoleAsync("Veterinarian"),
+                    _ => Enumerable.Empty<User>() // Если роль не поддерживается
+                };
+            }
+            else
+            {
+                // Если роль не указана, получаем всех пользователей
+                var caretakers = await _repository.GetUsersInRoleAsync("Caretaker");
+                var veterinarians = await _repository.GetUsersInRoleAsync("Veterinarian");
+                users = caretakers.Union(veterinarians);
+            }
 
-            var usersDTO = await users.MapUsersToDTOsAsync<UserListDTO>(_repository, _mapper);
+            // Фильтруем только активных пользователей
+            users = users.Where(u => u.isActive);
+
+            // Применяем фильтры по Email, PhoneNumber и Name
+            if (!string.IsNullOrWhiteSpace(userParameters.Email))
+            {
+                users = users.Where(u => u.Email.Equals(userParameters.Email.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(userParameters.PhoneNumber))
+            {
+                users = users.Where(u => u.PhoneNumber.Contains(userParameters.PhoneNumber.Trim()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(userParameters.Name))
+            {
+                users = users.Where(u => u.FullName.Contains(userParameters.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Преобразуем пользователей в DTO
+            
+            var usersDTO = await users.ToList().MapUsersToDTOsAsync<UserListDTO>(_repository, _mapper);
+
             return usersDTO;
         }
 
-        public async Task<IEnumerable<VolunteerListDTO>> GetVolunteersAsync()
+
+        public async Task<IEnumerable<VolunteerListDTO>> GetVolunteersAsync(VolunteerParameters volunteerParameters)
         {
+            // Получаем всех волонтеров с ролью "Volunteer"
             var users = await _repository.GetUsersInRoleAsync("Volunteer");
 
-            var volunteers = users.OfType<Volunteer>().Where(u => u.isActive == true).ToList();
+            // Применяем фильтры
+            var volunteers = users.Where(u => u.isActive);
 
-           // var volunteersDTO = await volunteers.MapUsersToDTOsAsync<VolunteerListDTO>(_repository, _mapper);
+            if (!string.IsNullOrWhiteSpace(volunteerParameters.Email))
+            {
+                volunteers = volunteers.Where(u => u.Email.Equals(volunteerParameters.Email.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(volunteerParameters.PhoneNumber))
+            {
+                volunteers = volunteers.Where(u => u.PhoneNumber.Contains(volunteerParameters.PhoneNumber.Trim()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(volunteerParameters.Name))
+            {
+                volunteers = volunteers.Where(u => u.FullName.Contains(volunteerParameters.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Преобразуем волонтеров в DTO
             var volunteersDTO = volunteers.Select(v => _mapper.Map<VolunteerListDTO>(v));
             return volunteersDTO;
         }
+
 
         public async Task<UserDetailDTO> GetUserByUsernameAsync(string username)
         {
