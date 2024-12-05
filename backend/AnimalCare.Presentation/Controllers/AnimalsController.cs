@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Shared.RequestFeatures;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.AnimalsDTO;
@@ -21,9 +21,9 @@ namespace AnimalCare.Presentation.Controllers
         /// <returns>The animals list</returns>
         [HttpGet(Name = "GetAnimals")]
         //[Authorize(Roles = "All")]
-        public async Task<IActionResult> GetAnimals()
+        public async Task<IActionResult> GetAnimals([FromQuery] AnimalParameters animalParameters)
         {
-            var animals = await _service.AnimalService.GetAllAnimalsAsync(trackChanges: false);
+            var animals = await _service.AnimalService.GetAllAnimalsAsync(animalParameters, trackChanges: false);
 
             return Ok(animals);
         }

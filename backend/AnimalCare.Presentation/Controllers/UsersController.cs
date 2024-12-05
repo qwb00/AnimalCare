@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
+using Shared.RequestFeatures;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -17,12 +18,12 @@ namespace AnimalCare.Presentation.Controllers
 
         [HttpGet(Name = "GetUsers")]
         [Authorize(Roles = "Administrator,Caretaker")]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
         {
-            var users = await _service.UserService.GetAllUsersAsync();
-
+            var users = await _service.UserService.GetAllUsersAsync(userParameters);
             return Ok(users);
         }
+
 
         [HttpGet("{id:guid}", Name = "GetUserById")]
         [Authorize(Roles = "Administrator")]

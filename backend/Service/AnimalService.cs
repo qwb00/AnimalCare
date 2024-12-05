@@ -3,6 +3,7 @@ using Contracts;
 using Service.Contracts;
 using Models.Entities;
 using Shared.DataTransferObjects.AnimalsDTO;
+using Shared.RequestFeatures;
 
 namespace Service
 {
@@ -17,9 +18,12 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(bool trackChanges)
+        public async Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(AnimalParameters animalParameters, bool trackChanges)
         {
-            var animals = await _repository.Animal.GetAllAnimalsAsync(trackChanges);
+            if (!animalParameters.ValidAgeRange)
+                throw new Exception("Can't validate age!");
+
+            var animals = await _repository.Animal.GetAllAnimalsAsync(animalParameters, trackChanges);
 
             var animalsDTO = _mapper.Map<IEnumerable<AnimalForCardsDto>>(animals);
             return animalsDTO;

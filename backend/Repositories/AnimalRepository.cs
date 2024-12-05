@@ -1,6 +1,8 @@
 ﻿using Contracts;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
+using Repositories.Extensions;
+using Shared.RequestFeatures;
 
 namespace Repositories
 {
@@ -10,8 +12,14 @@ namespace Repositories
         {
         }
 
-        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync(bool trackChanges) =>
-            await GetAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
+        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync(AnimalParameters animalParameters, bool trackChanges) =>
+            await GetAll(trackChanges)
+                .FilterAnimals(animalParameters.MinAge, animalParameters.MaxAge, animalParameters.Breed,
+                    animalParameters.Sex, animalParameters.Type, animalParameters.Weight)
+                .Search(animalParameters.SearchTerm)
+                .OrderBy(c => c.Name)
+                .Where(a => a.isActive == true)
+                .ToListAsync();
 
         #pragma warning disable CS8603 // Possible null reference return.
         public async Task<Animal> GetAnimalByNameAsync(string name, bool trackChanges) =>

@@ -1,11 +1,12 @@
 ﻿using Models.Entities;
 using Shared.DataTransferObjects.AnimalsDTO;
+using Shared.RequestFeatures;
 
 namespace Service.Contracts
 {
     public interface IAnimalService
     {
-        Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(bool trackChanges);
+        Task<IEnumerable<AnimalForCardsDto>> GetAllAnimalsAsync(AnimalParameters animalParameters, bool trackChanges);
         Task<AnimalDetailedDto> GetAnimalAsync(Guid id, bool trackChanges);
         Task<AnimalDetailedDto> CreateAnimalAsync(AnimalForCreatingDTO animal);
         Task UpdateAnimalAsync(Guid animalId, AnimalForUpdateDTO animalForUpdate, bool trackChanges);
