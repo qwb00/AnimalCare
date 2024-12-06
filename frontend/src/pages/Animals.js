@@ -7,6 +7,8 @@ import API_BASE_URL from "../config";
 import Button from "../components/Button";
 import FileUploader from "../components/FileUploader";
 import ErrorMessages from '../components/ErrorMessages';
+import "react-range-slider-input/dist/style.css";
+import RangeSlider from "react-range-slider-input";
 
 function Animals() {
   const [allAnimals, setAllAnimals] = useState([]);
@@ -236,27 +238,36 @@ function Animals() {
     }}
     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
   >
-    <input
-      type="number"
-      placeholder="Min Age"
-      value={filters.minAge}
-      onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <input
-      type="number"
-      placeholder="Max Age"
-      value={filters.maxAge}
-      onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <input
-      type="number"
-      placeholder="Max Weight"
-      value={filters.weight}
-      onChange={(e) => setFilters({ ...filters, weight: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
+
+      <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            Age Range: {filters.minAge} - {filters.maxAge} years
+          </label>
+          <RangeSlider
+            min={0}
+            max={25}
+            value={[filters.minAge, filters.maxAge]}
+            onInput={(values) =>
+              setFilters({ ...filters, minAge: values[0], maxAge: values[1] })
+            }
+            className="range-slider"
+          />
+        </div>
+
+    <div className="flex flex-col">
+      <label className="text-sm font-semibold text-gray-700 mb-2">
+        Max Weight: {filters.weight} kg
+      </label>
+      <input
+        type="range"
+        min="0"
+        max="35"
+        value={filters.weight}
+        onChange={(e) => setFilters({ ...filters, weight: Number(e.target.value) })}
+        className="w-full"
+      />
+    </div>
+
     <select
       value={filters.sex}
       onChange={(e) => setFilters({ ...filters, sex: e.target.value })}
@@ -299,8 +310,6 @@ function Animals() {
     </div>
   </form>
 </div>
-
-
 
       <div className="container mx-auto p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
