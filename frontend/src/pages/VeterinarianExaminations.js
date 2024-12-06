@@ -1,19 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import UserHeader from '../components/UserHeader';
-import UserNav from '../components/UserNav';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/Button';
-import API_BASE_URL from '../config';
-import RequestCard from '../components/TreatmentRequest';
-import Header from '../components/Header';
-import AddRequestForm from '../components/AddRequestForm';
-import { ToastContainer } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import UserHeader from "../components/UserHeader";
+import UserNav from "../components/UserNav";
+import RequestCard from "../components/TreatmentRequest";
+import Button from "../components/Button";
+import AddRequestForm from "../components/AddRequestForm";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../config";
 
 const ExaminationStatus = {
     InProgress: 0,
     Completed: 1,
     NotDecided: 2,
     Cancelled: 3,
+};
+
+const ExaminationType = {
+    PlannedTreatment: 0,
+    Emergency: 1,
+    Vaccination: 2,
+    Surgery: 3,
 };
 
 function VeterinarianExaminations() {
@@ -31,6 +39,20 @@ function VeterinarianExaminations() {
     const [visibleVeterinarianRequests, setVisibleVeterinarianRequests] = useState(2);
 
     const navigate = useNavigate();
+
+    const [nameFilterNewRequests, setNameFilterNewRequests] = useState("");
+    const [dateFromNewRequests, setDateFromNewRequests] = useState("");
+    const [dateToNewRequests, setDateToNewRequests] = useState("");
+    const [typeFilterNewRequests, setTypeFilterNewRequests] = useState("");
+
+
+    const [nameFilterInProgress, setNameFilterInProgress] = useState("");
+    const [dateFromInProgress, setDateFromInProgress] = useState("");
+    const [dateToInProgress, setDateToInProgress] = useState("");
+
+    const [nameFilterCompleted, setNameFilterCompleted] = useState("");
+    const [dateFromCompleted, setDateFromCompleted] = useState("");
+    const [dateToCompleted, setDateToCompleted] = useState("");
 
     useEffect(() => {
         const token = sessionStorage.getItem('token');
@@ -65,7 +87,6 @@ function VeterinarianExaminations() {
                     throw new Error('Failed to fetch records');
                 }
                 const data = await response.json();
-                console.log(data);
                 setRequests(data);
             } catch (error) {
                 console.error('Error fetching records:', error);
@@ -148,6 +169,52 @@ function VeterinarianExaminations() {
             prevRequests.filter((request) => request.id !== requestId)
         );
     };
+
+    const filteredNewRequests = applyFiltersToRequests(
+        newRequests,
+        nameFilterNewRequests,
+        dateFromNewRequests,
+        dateToNewRequests,
+        typeFilterNewRequests
+    );
+    
+
+    function applyFiltersToRequests(requestsArray, nameFilter, dateFrom, dateTo, typeFilter) {
+        let result = requestsArray;
+        if (nameFilter) {
+            result = result.filter(request =>
+                request.animalName?.toLowerCase().includes(nameFilter.toLowerCase())
+            );
+        }
+        if (dateFrom) {
+            console.log(result)
+            console.log(new Date(dateFrom))
+            result = result.filter(request =>
+                new Date(request.examinationDate) >= new Date(dateFrom)
+            );
+        }
+        if (dateTo) {
+            result = result.filter(request =>
+                new Date(request.examinationDate) <= new Date(dateTo)
+            );
+        }
+
+        if (typeFilter) {
+            result = result.filter((request) => {
+                try {
+                    const enumValue = ExaminationType[typeFilter]; 
+                    return request.type === enumValue; 
+                } catch {
+                    return false; 
+                }
+            });
+        }
+
+        return result;
+    }
+
+    const filteredVetInProgress = applyFiltersToRequests(vetInProgressRequests, nameFilterInProgress, dateFromInProgress, dateToInProgress);
+    const filteredVetCompleted = applyFiltersToRequests(vetCompletedRequests, nameFilterCompleted, dateFromCompleted, dateToCompleted);
 
     return (
         <>
@@ -249,19 +316,65 @@ function VeterinarianExaminations() {
                 {user.role === 'Veterinarian' && (
                     <>
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <h2 className="text-2xl font-bold">New Requests</h2>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold">New Requests</h2>
+                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">From Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateFromNewRequests}
+                                            onChange={(e) => setDateFromNewRequests(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">To Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateToNewRequests}
+                                            onChange={(e) => setDateToNewRequests(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Filter by Animal Name"
+                                            value={nameFilterNewRequests}
+                                            onChange={(e) => setNameFilterNewRequests(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">Request Type</label>
+                                        <select
+                                            value={typeFilterNewRequests}
+                                            onChange={(e) => setTypeFilterNewRequests(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        >
+                                            <option value="">All</option>
+                                            <option value="Emergency">Emergency</option>
+                                            <option value="PlannedTreatment">Planned</option>
+                                            <option value="Surgery">Surgery</option>
+                                            <option value="Vaccination">Vacation</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="flex flex-wrap gap-10">
-                                {newRequests.slice(0, visibleVeterinarianRequests).map((request) => (
+                                {filteredNewRequests.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard
                                         key={request.id}
                                         request={request}
-                                        showActions={'Veterinarian'}
+                                        showActions={"Veterinarian"}
                                         onApprove={handleApprove}
                                         onDecline={handleDecline}
                                     />
                                 ))}
                             </div>
-                            {newRequests.length > visibleVeterinarianRequests && (
+                            {filteredNewRequests.length > visibleVeterinarianRequests && (
                                 <div className="flex justify-center my-4">
                                     <button
                                         onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
@@ -273,20 +386,47 @@ function VeterinarianExaminations() {
                             )}
                         </div>
 
-                        {/* In Progress Section */}
+                        {/* In Progress Requests with filters */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <h2 className="text-2xl font-bold">In Progress Requests</h2>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold">In Progress Requests</h2>
+                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">From Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateFromInProgress}
+                                            onChange={(e) => setDateFromInProgress(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">To Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateToInProgress}
+                                            onChange={(e) => setDateToInProgress(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Filter by Animal Name"
+                                            value={nameFilterInProgress}
+                                            onChange={(e) => setNameFilterInProgress(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="flex flex-wrap gap-10">
-                                {vetInProgressRequests.slice(0, visibleVeterinarianRequests).map((request) => (
-                                    <RequestCard
-                                        key={request.id}
-                                        request={request}
-                                        showActions={'InProgress'}
-                                        onConfirm={handleConfirm}
-                                    />
+                                {filteredVetInProgress.slice(0, visibleVeterinarianRequests).map((request) => (
+                                    <RequestCard key={request.id} request={request} showActions={'InProgress'} onConfirm={handleConfirm} />
                                 ))}
                             </div>
-                            {vetInProgressRequests.length > visibleVeterinarianRequests && (
+                            {filteredVetInProgress.length > visibleVeterinarianRequests && (
                                 <div className="flex justify-center my-4">
                                     <button
                                         onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
@@ -298,15 +438,47 @@ function VeterinarianExaminations() {
                             )}
                         </div>
 
-                        {/* Completed Section */}
+                        {/* Completed Requests with filters */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <h2 className="text-2xl font-bold">Completed Requests</h2>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold">Completed Requests</h2>
+                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">From Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateFromCompleted}
+                                            onChange={(e) => setDateFromCompleted(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">To Date</label>
+                                        <input
+                                            type="date"
+                                            value={dateToCompleted}
+                                            onChange={(e) => setDateToCompleted(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Filter by Animal Name"
+                                            value={nameFilterCompleted}
+                                            onChange={(e) => setNameFilterCompleted(e.target.value)}
+                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="flex flex-wrap gap-10">
-                                {vetCompletedRequests.slice(0, visibleVeterinarianRequests).map((request) => (
+                                {filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard key={request.id} request={request} />
                                 ))}
                             </div>
-                            {vetCompletedRequests.length > visibleVeterinarianRequests && (
+                            {filteredVetCompleted.length > visibleVeterinarianRequests && (
                                 <div className="flex justify-center my-4">
                                     <button
                                         onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}
@@ -332,3 +504,4 @@ function VeterinarianExaminations() {
 }
 
 export default VeterinarianExaminations;
+
