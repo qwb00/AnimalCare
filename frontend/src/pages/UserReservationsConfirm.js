@@ -203,6 +203,7 @@ function UserReservationsConfirm() {
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
+                                    { icon: icons.phone, label: 'Phone number', value: reservation.phoneNumber },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
                                 ]}
@@ -234,6 +235,7 @@ function UserReservationsConfirm() {
                                 infoItems={[
                                     { icon: icons.volunteer, label: 'Volunteer', value: reservation.volunteerName },
                                     { icon: icons.animal, label: 'Animal', value: `${reservation.animalName} (${reservation.animalBreed})` },
+                                    { icon: icons.phone, label: 'Phone number', value: reservation.phoneNumber },
                                     { icon: icons.date, label: 'Date', value: reservationDate },
                                     { icon: icons.time, label: 'Time', value: timeRange },
                                 ]}

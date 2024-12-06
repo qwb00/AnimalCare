@@ -12,8 +12,13 @@ function Volunteers() {
     const [user, setUser] = useState(null); // Stores logged-in user data
     const [newRequests, setNewRequests] = useState([]); // Stores unverified volunteer requests
     const [currentVolunteers, setCurrentVolunteers] = useState([]); // Stores verified volunteers
+    const [filteredVolunteers, setFilteredVolunteers] = useState([]); // Stores filtered volunteers
+    const [filters, setFilters] = useState({
+        name: '',
+        email: '',
+        phoneNumber: '',
+    }); // Filters for volunteers
     const [displayCountRequests, setDisplayCountRequests] = useState(2); // Controls number of displayed requests
-    const [displayCountVolunteers, setDisplayCountVolunteers] = useState(2); // Controls number of displayed volunteers
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,30 +45,66 @@ function Volunteers() {
             }
         };
 
-        const fetchVolunteers = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/volunteers`, {
-                    headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch volunteers');
-
-                const data = await response.json();
-
-                console.log(data);
-                // Filter out inactive volunteers
-                const activeVolunteers = data.filter((volunteer) => volunteer.isActive === true);
-                console.log(activeVolunteers);
-                setNewRequests(activeVolunteers.filter((volunteer) => !volunteer.isVerified));
-                setCurrentVolunteers(activeVolunteers.filter((volunteer) => volunteer.isVerified));
-            } catch (error) {
-                console.error('Error fetching volunteers:', error);
-            }
-        };
-
         fetchUser();
-        fetchVolunteers();
+        fetchFilteredVolunteers(); // Fetch initial volunteers data
     }, [navigate]);
+
+    const fetchFilteredVolunteers = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const queryParams = new URLSearchParams();
+
+            if (filters.name) queryParams.append('name', filters.name);
+            if (filters.email) queryParams.append('email', filters.email);
+            if (filters.phoneNumber) queryParams.append('phoneNumber', filters.phoneNumber);
+
+            const response = await fetch(`${API_BASE_URL}/volunteers?${queryParams.toString()}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch volunteers');
+
+            const data = await response.json();
+
+            // separates unverified and verified volunteers
+            setNewRequests(data.filter((volunteer) => !volunteer.isVerified && volunteer.isActive));
+            const verifiedVolunteers = data.filter((volunteer) => volunteer.isVerified && volunteer.isActive);
+            setCurrentVolunteers(verifiedVolunteers);
+            setFilteredVolunteers(verifiedVolunteers); // Initialize filtered volunteers
+        } catch (error) {
+            console.error('Error fetching filtered volunteers:', error);
+        }
+    };
+
+    useEffect(() => {
+        const debounceFetch = setTimeout(() => {
+            const filtered = currentVolunteers.filter((volunteer) => {
+                const matchesName = filters.name
+                    ? volunteer.name.toLowerCase().includes(filters.name.toLowerCase())
+                    : true;
+                const matchesEmail = filters.email
+                    ? volunteer.email.toLowerCase().includes(filters.email.toLowerCase())
+                    : true;
+                const matchesPhoneNumber = filters.phoneNumber
+                    ? volunteer.phoneNumber.includes(filters.phoneNumber)
+                    : true;
+
+                return matchesName && matchesEmail && matchesPhoneNumber;
+            });
+
+            setFilteredVolunteers(filtered);
+        }, 100);
+
+        return () => clearTimeout(debounceFetch);
+    }, [filters, currentVolunteers]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     const handleApprove = async (id) => {
         try {
@@ -83,14 +124,10 @@ function Volunteers() {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to approve volunteer: ${errorText}`);
+                throw new Error('Failed to approve volunteer');
             }
 
-            // Move volunteer from newRequests to currentVolunteers
-            setNewRequests((prev) => prev.filter((volunteer) => volunteer.id !== id));
-            const approvedVolunteer = newRequests.find((volunteer) => volunteer.id === id);
-            setCurrentVolunteers((prev) => [...prev, { ...approvedVolunteer, isVerified: true }]);
+            fetchFilteredVolunteers(); // Refresh data after approval
         } catch (error) {
             console.error('Error approving volunteer:', error);
         }
@@ -114,14 +151,10 @@ function Volunteers() {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to unverify volunteer: ${errorText}`);
+                throw new Error('Failed to unverify volunteer');
             }
 
-            // Move volunteer from currentVolunteers to newRequests
-            setCurrentVolunteers((prev) => prev.filter((volunteer) => volunteer.id !== id));
-            const unverifiedVolunteer = currentVolunteers.find((volunteer) => volunteer.id === id);
-            setNewRequests((prev) => [...prev, { ...unverifiedVolunteer, isVerified: false }]);
+            fetchFilteredVolunteers(); // Refresh data after decline
         } catch (error) {
             console.error('Error unverifying volunteer:', error);
         }
@@ -145,25 +178,17 @@ function Volunteers() {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to deactivate volunteer: ${errorText}`);
+                throw new Error('Failed to delete volunteer');
             }
 
-            // Update local state to remove the deactivated volunteer
-            setNewRequests((prev) => prev.filter((volunteer) => volunteer.id !== id));
-            setCurrentVolunteers((prev) => prev.filter((volunteer) => volunteer.id !== id));
+            fetchFilteredVolunteers(); // Refresh data after deletion
         } catch (error) {
-            console.error('Error deactivating volunteer:', error);
+            console.error('Error deleting volunteer:', error);
         }
     };
 
-    // Show more logic
     const handleShowMoreRequests = () => {
         setDisplayCountRequests((prev) => (prev >= newRequests.length ? 2 : prev + 2));
-    };
-
-    const handleShowMoreVolunteers = () => {
-        setDisplayCountVolunteers((prev) => (prev >= currentVolunteers.length ? 2 : prev + 2));
     };
 
     if (!user) return <div>Loading...</div>;
@@ -218,12 +243,40 @@ function Volunteers() {
                         />
                     ))}
                 </div>
-                {newRequests.length > 2 && <ShowMoreButton onClick={handleShowMoreRequests} />}
+                {newRequests.length > displayCountRequests && <ShowMoreButton onClick={handleShowMoreRequests}/>}
 
                 {/* Current Volunteers */}
                 <h2 className="text-lg font-semibold mt-8">Current Volunteers</h2>
+                <div className="mb-4 mt-4">
+                    <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow">
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Filter by name"
+                            value={filters.name}
+                            onChange={handleFilterChange}
+                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                        />
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Filter by email"
+                            value={filters.email}
+                            onChange={handleFilterChange}
+                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                        />
+                        <input
+                            type="text"
+                            name="phoneNumber"
+                            placeholder="Filter by phone number"
+                            value={filters.phoneNumber}
+                            onChange={handleFilterChange}
+                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                        />
+                    </div>
+                </div>
                 <div className="flex flex-wrap gap-20 mt-4">
-                    {currentVolunteers.slice(0, displayCountVolunteers).map((volunteer) => (
+                    {filteredVolunteers.map((volunteer) => (
                         <Card
                             key={volunteer.id}
                             imageSrc={volunteer.photo || icons.placeholder}
@@ -263,7 +316,9 @@ function Volunteers() {
                         />
                     ))}
                 </div>
-                {currentVolunteers.length > 2 && <ShowMoreButton onClick={handleShowMoreVolunteers} />}
+                {filteredVolunteers.length === 0 && (
+                    <p className="text-center text-gray-500 mt-4">No volunteers found.</p>
+                )}
             </div>
         </div>
     );

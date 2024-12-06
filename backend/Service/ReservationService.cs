@@ -17,9 +17,9 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges)
+        public async Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges, string? animalName, string? breed)
         {
-            var reservations = await _repository.Reservation.GetAllReservationsAsync(trackChanges);
+            var reservations = await _repository.Reservation.GetAllReservationsAsync(trackChanges, animalName, breed);
             var reservationsDto = _mapper.Map<IEnumerable<ReservationForConfirmationDTO>>(reservations);
             return reservationsDto;
         }
