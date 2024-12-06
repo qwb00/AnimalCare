@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
+import WeekHeader from "./WeekHeader";
+import DayGrid from "./DayGrid";
+import TimeSlotsGrid from "./TimeSlotsGrid";
+import Notification from "./Notification";
+import WarningModal from "./WarningModal";
+import API_BASE_URL from "../config";
 import axios from "axios";
 import {
   format,
-  addDays,
-  addHours,
   startOfWeek,
-  endOfWeek,
-  isToday,
-  isBefore,
-  isTomorrow,
+  addDays,
   isAfter,
-  parse,
+  isToday,
+  isTomorrow,
   differenceInHours,
+  isBefore,
+  parse,
+  addHours,
 } from "date-fns";
-import Button from "./Button";
-import API_BASE_URL from "../config";
-import { Link } from "react-router-dom";
 
 function Calendar({ selectedAnimalId }) {
   const today = new Date();
@@ -25,12 +27,14 @@ function Calendar({ selectedAnimalId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animalData, setAnimalData] = useState(null);
   const [reservedSlots, setReservedSlots] = useState([]);
+  const [userReservedSlots, setUserReservedSlots] = useState([]);
   const [notification, setNotification] = useState({
     message: "",
     isSuccess: null,
   });
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
   const MAX_SLOTS = 10;
 
   useEffect(() => {
@@ -41,6 +45,7 @@ function Calendar({ selectedAnimalId }) {
         );
         if (response.data) {
           setAnimalData(response.data);
+          console.log("Animal data fetched:", response.data);
         } else {
           setAnimalData(null);
         }
@@ -59,6 +64,7 @@ function Calendar({ selectedAnimalId }) {
     const fetchReservations = async () => {
       try {
         const authToken = sessionStorage.getItem("token");
+        const userID = sessionStorage.getItem("userID");
 
         const response = await axios.get(`${API_BASE_URL}/reservations`, {
           headers: {
@@ -82,12 +88,34 @@ function Calendar({ selectedAnimalId }) {
             );
             const formattedStartTime = format(
               parse(reservation.startTime, "HH:mm:ss", new Date()),
-              "hh:mm a"
+              "HH:mm:ss"
             );
-            return `${formattedDate}-${formattedStartTime}`;
+
+            console.log("Processed reservation data:", {
+              id: reservation.id,
+              reservationDate: formattedDate,
+              startTime: formattedStartTime,
+              userId: reservation.userId,
+            });
+
+            return {
+              id: reservation.id,
+              reservationDate: formattedDate,
+              startTime: formattedStartTime,
+              userId: reservation.userId,
+              slotKey: `${formattedDate}-${format(
+                parse(reservation.startTime, "HH:mm:ss", new Date()),
+                "hh:mm a"
+              )}`,
+            };
           });
 
           setReservedSlots(occupiedSlots);
+          setUserReservedSlots(
+            occupiedSlots
+              .filter((slot) => slot.userId === userID)
+              .map((slot) => slot.slotKey)
+          );
         }
       } catch (error) {
         console.error("Error fetching reservations:", error);
@@ -95,7 +123,7 @@ function Calendar({ selectedAnimalId }) {
     };
 
     if (selectedAnimalId) {
-      fetchReservations(); 
+      fetchReservations();
     }
   }, [selectedAnimalId]);
 
@@ -113,20 +141,164 @@ function Calendar({ selectedAnimalId }) {
   };
 
   // Toggle slot selection, limiting to future slots and max slot count
-  const handleSlotClick = (day, slot) => {
-    const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
-    const isFutureDate = isAfter(day, today) || isTomorrow(day);
+  const handleSlotClick = async (day, slot) => {
+    console.log("Clicked slot:", { day, slot });
 
-    if (selectedSlots.includes(slotKey)) {
-      // Deselect slot if already selected
-      setSelectedSlots((prevSelected) =>
-        prevSelected.filter((s) => s !== slotKey)
+    const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
+    console.log("Slot key generated:", slotKey);
+
+    const isFutureDate = isAfter(day, today);
+    console.log("Is future date:", isFutureDate);
+
+    if (!isFutureDate) {
+      setWarningMessage("You cannot select past dates.");
+      setIsWarningModalOpen(true);
+      console.warn("Attempted to select a past date:", day);
+      return;
+    }
+
+    try {
+      const authToken = sessionStorage.getItem("token");
+      const userID = sessionStorage.getItem("userID");
+      console.log("Auth token and user ID retrieved:", { authToken, userID });
+
+      if (!authToken || !userID) {
+        console.error("Missing authentication details");
+        setWarningMessage("Authentication error. Please log in.");
+        setIsWarningModalOpen(true);
+        return;
+      }
+
+      const reservationDate = format(day, "yyyy-MM-dd");
+      console.log("Formatted reservation date:", reservationDate);
+
+      const parsedTime = parse(slot, "hh:mm a", new Date());
+      const startTime = format(parsedTime, "HH:mm:ss");
+      const endTime = format(
+        new Date(parsedTime.getTime() + 60 * 60 * 1000),
+        "HH:mm:ss"
       );
-    } else if (isFutureDate && selectedSlots.length < MAX_SLOTS) {
-      // Add slot to selection if it's a future date and below limit
-      setSelectedSlots((prevSelected) => [...prevSelected, slotKey]);
-    } else {
-      alert("You can select a maximum of 10 future slots or limit exceeded.");
+      console.log("Start and end time formatted:", { startTime, endTime });
+
+      if (userReservedSlots.includes(slotKey)) {
+        console.log(
+          "Slot reserved by current user. Initiating cancellation..."
+        );
+
+        // Найти резервацию в массиве reservedSlots
+        const reservationToCancel = reservedSlots.find((reservation) => {
+          // Проверяем, что reservation содержит все необходимые данные
+          if (!reservation.reservationDate || !reservation.startTime) {
+            console.error("Missing data in reservation:", reservation);
+            return false;
+          }
+
+          const formattedDate = format(
+            new Date(reservation.reservationDate),
+            "yyyy-MM-dd"
+          );
+          const formattedStartTime = format(
+            parse(reservation.startTime, "HH:mm:ss", new Date()),
+            "HH:mm:ss"
+          );
+
+          console.log("Checking reservation:", {
+            reservation,
+            formattedDate,
+            formattedStartTime,
+            targetDate: reservationDate,
+            targetStartTime: startTime,
+          });
+
+          return (
+            reservation.userId === userID &&
+            formattedDate === reservationDate &&
+            formattedStartTime === startTime
+          );
+        });
+
+        if (!reservationToCancel) {
+          console.error("Could not find reservation to cancel.");
+          setWarningMessage("Unable to find reservation to cancel.");
+          setIsWarningModalOpen(true);
+          return;
+        }
+
+        console.log("Reservation to cancel found:", reservationToCancel);
+
+        // Вызов API для отмены резервации
+        const response = await fetch(
+          `${API_BASE_URL}/reservations/${reservationToCancel.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json-patch+json",
+            },
+            body: JSON.stringify([
+              { op: "replace", path: "/status", value: 4 },
+            ]), // 4 = CANCELED
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to cancel reservation: ${await response.text()}`
+          );
+        }
+
+        console.log("Reservation canceled successfully.");
+        setUserReservedSlots((prevSlots) =>
+          prevSlots.filter((slot) => slot !== slotKey)
+        );
+        setReservedSlots((prevSlots) =>
+          prevSlots.filter((slot) => slot.slotKey !== slotKey)
+        );
+      } else {
+        // Если слот не зарезервирован, инициируем создание резервации
+        console.log(
+          "Slot not reserved by current user. Creating reservation..."
+        );
+
+        const reservationData = {
+          userId: userID,
+          animalId: selectedAnimalId,
+          reservationDate,
+          startTime,
+          endTime,
+        };
+
+        const response = await axios.post(
+          `${API_BASE_URL}/reservations`,
+          reservationData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+
+        if (response.status === 201) {
+          console.log("Reservation created successfully:", response.data);
+          setReservedSlots((prevSlots) => [...prevSlots, slotKey]);
+          setUserReservedSlots((prevSlots) => [...prevSlots, slotKey]);
+        } else {
+          console.error(
+            "Failed to create reservation. Response status:",
+            response.status
+          );
+          setWarningMessage("Failed to create reservation. Please try again.");
+          setIsWarningModalOpen(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error occurred during reservation API call:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Unexpected error occurred. Please try again.";
+      setWarningMessage(errorMessage);
+      setIsWarningModalOpen(true);
     }
   };
 
@@ -148,7 +320,7 @@ function Calendar({ selectedAnimalId }) {
   const handleOpenModal = () => {
     const authToken = sessionStorage.getItem("token");
     if (!authToken) {
-      setIsAuthModalOpen(true);
+      setIsWarningModalOpen(true);
     } else {
       setIsModalOpen(true);
     }
@@ -158,8 +330,8 @@ function Calendar({ selectedAnimalId }) {
     setIsModalOpen(false);
   };
 
-  const handleCloseAuthModal = () => {
-    setIsAuthModalOpen(false);
+  const handleCloseWarningModal = () => {
+    setIsWarningModalOpen(false);
   };
 
   const animalImagePath = animalData?.photo;
@@ -255,7 +427,7 @@ function Calendar({ selectedAnimalId }) {
       mergedSlots.push({ date, startTime: currentStart, endTime: currentEnd });
     });
 
-    return mergedSlots; 
+    return mergedSlots;
   };
 
   const handleConfirmReservation = async () => {
@@ -343,283 +515,77 @@ function Calendar({ selectedAnimalId }) {
     }
   };
 
+  const generateColorFromId = (id) => {
+    // Преобразование ID в числовое значение
+    const numericId = Array.from(id.toString()).reduce(
+      (acc, char) => acc + char.charCodeAt(0),
+      0
+    );
+
+    // Генерация уникального HSL
+    const hue = (numericId * 137) % 360; // Используем "золотое" число для распределения
+    const saturation = 90; // Высокая насыщенность
+    const lightness = 50; // Средняя яркость для яркого цвета
+
+    // Преобразуем HSL в HEX
+    return hslToHex(hue, saturation, lightness);
+  };
+
+  // Функция для преобразования HSL в HEX
+  const hslToHex = (h, s, l) => {
+    s /= 100;
+    l /= 100;
+
+    const k = (n) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) =>
+      Math.round(
+        255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))))
+      );
+
+    const r = f(0);
+    const g = f(8);
+    const b = f(4);
+
+    const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b)
+      .toString(16)
+      .slice(1)}`;
+
+    return hex;
+  };
+
   return (
     <div className="w-full py-2">
-      <div className="flex items-center justify-between mb-4">
-        {/* Header with week navigation */}
-        <h2 className="text-xl font-semibold">
-          Check <span className="text-main-blue">available</span> 1-hour slots
-          for the walks with{" "}
-          <span className="font-bold">{animalData?.name}</span>:
-        </h2>
-        <div className="flex items-center bg-main-blue rounded-xl">
-          {/* Hide left button if it's current week */}
-          {isAfter(currentWeek, startOfThisWeek) && (
-            <button onClick={handlePrevWeek} className="text-white px-4 py-2">
-              &lt;
-            </button>
-          )}
-
-          {/* Display current week */}
-          <span
-            className="text-white px-4 py-2"
-            style={{ minWidth: "150px", textAlign: "center" }}
-          >
-            {format(currentWeek, "dd MMM")} -{" "}
-            {format(endOfWeek(currentWeek, { weekStartsOn: 1 }), "dd MMM")}
-          </span>
-
-          <button onClick={handleNextWeek} className="text-white px-4 py-2">
-            &gt;
-          </button>
-        </div>
-      </div>
-
-      {/* Week grid */}
-      <div className="grid grid-cols-7 gap-2 text-center mb-2">
-        {daysOfWeek.map((day) => {
-          const isCurrentDay = isToday(day);
-          return (
-            <div
-              key={day}
-              className={`flex flex-col items-center p-2 border border-gray-300 bg-white rounded-lg ${
-                isCurrentDay ? "text-red-500" : ""
-              } min-h-[90px]`}
-            >
-              <div
-                className={`text-lg font-semibold ${
-                  isCurrentDay ? "text-red-500" : ""
-                }`}
-              >
-                {format(day, "EEE")}
-              </div>
-
-              <div
-                className={`text-2xl font-bold ${
-                  isCurrentDay
-                    ? "bg-main-blue text-white rounded-full w-10 h-10 flex items-center justify-center"
-                    : ""
-                }`}
-              >
-                {format(day, "d")}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Time slots grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {daysOfWeek.map((day) => {
-          const isPastDay = isBefore(day, today) || isToday(day);
-
-          return (
-            <div
-              key={day}
-              className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-xl"
-            >
-              {timeSlots.map((slot) => {
-                const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
-                const isSelected = selectedSlots.includes(slotKey);
-                const isReserved = reservedSlots.includes(slotKey);
-                const isInactive =
-                  inactiveTimes.includes(slot) || isPastDay || isReserved;
-
-                return (
-                  <button
-                    key={slot}
-                    onClick={() => !isInactive && handleSlotClick(day, slot)}
-                    title={
-                      isInactive
-                        ? isPastDay
-                          ? "Past date"
-                          : isReserved
-                          ? "Already reserved"
-                          : "Unavailable"
-                        : ""
-                    }
-                    className={`px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200
-                      ${
-                        isInactive
-                          ? "!bg-gray-300 text-white !border-gray-300 cursor-default"
-                          : ""
-                      }
-                      ${
-                        isSelected
-                          ? "bg-white text-black border border-black"
-                          : "bg-main-blue text-white border border-main-blue"
-                      }
-                      ${
-                        !isInactive
-                          ? "hover:bg-white hover:text-black hover:border-black"
-                          : ""
-                      }
-                    `}
-                  >
-                    {slot}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Reservation Button */}
-      <div className="flex justify-center mt-4">
-        <Button
-          text="Create Reservation"
-          variant="blue"
-          icon="/icons/plus_white.png"
-          iconPosition="left"
-          iconSize="h-4 w-4"
-          onClick={handleOpenModal}
-        />
-      </div>
-
-      {/* Confirmation Modal */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
-              Confirm Your Reservation
-            </h3>
-            <div className="flex items-start">
-              <div className="flex-1">
-                <p className="text-lg mb-4 text-gray-700">
-                  Animal: <strong>{animalData?.name}</strong>
-                </p>
-                <p className="text-lg mb-4 text-gray-700">
-                  Selected Time Slots:
-                </p>
-                <div className="flex flex-col gap-2 mb-6">
-                  {mergeTimeSlots(selectedSlots).map(
-                    ({ date, startTime, endTime }) => (
-                      <div
-                        key={`${date}-${startTime}-${endTime}`}
-                        className="bg-main-blue text-white px-4 py-2 rounded-lg shadow-sm text-sm"
-                      >
-                        {`${date}: ${startTime} - ${endTime}`}
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-              <div className="flex-shrink-0 ml-4">
-                <img
-                  src={animalImagePath}
-                  alt={animalData?.name}
-                  className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg"
-                />
-              </div>
-            </div>
-            <div className="flex justify-center space-x-4 mt-6">
-              <Button
-                text="Cancel"
-                variant="white"
-                icon="/icons/cancel.png"
-                iconPosition="right"
-                className="px-5 py-2"
-                onClick={handleCloseModal}
-              />
-              <Button
-                text="Confirm"
-                variant="blue"
-                icon="/icons/confirm_white.png"
-                iconPosition="right"
-                className="px-5 py-2"
-                onClick={handleConfirmReservation}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Notification Modal */}
+      <WeekHeader
+        currentWeek={currentWeek}
+        onPrevWeek={handlePrevWeek}
+        onNextWeek={handleNextWeek}
+        animalName={animalData?.name}
+      />
+      <DayGrid daysOfWeek={daysOfWeek} today={today} />
+      <TimeSlotsGrid
+        daysOfWeek={daysOfWeek}
+        timeSlots={timeSlots}
+        reservedSlots={reservedSlots}
+        userReservedSlots={userReservedSlots}
+        inactiveTimes={inactiveTimes}
+        onSlotClick={handleSlotClick}
+        animalColor={animalData ? generateColorFromId(animalData.id) : "gray"}
+      />
       {isNotificationOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={() => setIsNotificationOpen(false)}
-        >
-          <div
-            className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
-              notification.isSuccess ? "border-green-600" : "border-red-600"
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3
-              className={`text-2xl font-bold mb-6 text-center ${
-                notification.isSuccess ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {notification.isSuccess ? "Success!" : "Error"}
-            </h3>
-            <p className="text-lg mb-6 text-center text-gray-800">
-              {notification.message}
-            </p>
-            <div className="flex justify-center">
-              <Button
-                text="Close"
-                variant="blue"
-                icon="/icons/cancel_white.png"
-                iconPosition="right"
-                className="px-5 py-2"
-                onClick={() => setIsNotificationOpen(false)}
-              />
-            </div>
-          </div>
-        </div>
+        <Notification
+          message={notification.message}
+          isSuccess={notification.isSuccess}
+          onClose={() => setIsNotificationOpen(false)}
+        />
       )}
-
-      {/* Authentication Modal */}
-      {isAuthModalOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleCloseAuthModal}
-        >
-          <div
-            className="relative bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-red-600"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="absolute top-3 right-3 bg-main-blue rounded-full p-2"
-              aria-label="Close"
-              onClick={handleCloseAuthModal}
-              style={{ transform: "rotate(45deg)" }}
-            >
-              <img
-                src="/icons/plus_white.png"
-                alt="Close"
-                className="w-3 h-3"
-              />
-            </button>
-
-            <h3 className="text-2xl font-bold mb-6 text-center text-red-600">
-              Create an Account
-            </h3>
-            <p className="text-lg mb-6 text-center text-gray-800">
-              You need to create an account to make reservations.
-            </p>
-            <div className="flex justify-center">
-              <Link to="/signup">
-                <Button
-                  text="Register Now"
-                  variant="blue"
-                  icon="/icons/sign_up_button.png"
-                  iconPosition="right"
-                  className="px-5 py-2"
-                />
-              </Link>
-            </div>
-          </div>
-        </div>
+      {isWarningModalOpen && (
+        <WarningModal
+          title="Error"
+          message={warningMessage}
+          buttonText="Close"
+          onClose={handleCloseWarningModal}
+        />
       )}
     </div>
   );
