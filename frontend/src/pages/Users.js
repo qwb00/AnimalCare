@@ -77,7 +77,7 @@ function Users() {
   useEffect(() => {
     const debounceFetch = setTimeout(() => {
       fetchFilteredUsers();
-    }, 300); // Add debounce to limit API requests
+    }, 100);
 
     return () => clearTimeout(debounceFetch);
   }, [filters]);

@@ -25,9 +25,9 @@ namespace AnimalCare.Presentation.Controllers
 
         // GET: api/Reservations
         [HttpGet(Name = "GetReservations")]
-        public async Task<IActionResult> GetReservations()
+        public async Task<IActionResult> GetReservations([FromQuery] string? animalName, [FromQuery] string? breed)
         {
-            var reservations = await _service.ReservationService.GetAllReservationsAsync(trackChanges: false);
+            var reservations = await _service.ReservationService.GetAllReservationsAsync(trackChanges: false, animalName, breed);
             return Ok(reservations);
         }
 

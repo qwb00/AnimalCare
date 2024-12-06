@@ -39,14 +39,14 @@ function UserNav({ role }) {
                     General
                 </Link>
             )}
-            {itemsToShow.includes("Volunteers") && (
-                <Link to={`/${userID}/volunteers`} className={getLinkClass(`/volunteers`)}>
-                    Volunteers
-                </Link>
-            )}
             {itemsToShow.includes("Users") && (
                 <Link to={`/${userID}/users`} className={getLinkClass(`/users`)}>
                     Users
+                </Link>
+            )}
+            {itemsToShow.includes("Volunteers") && (
+                <Link to={`/${userID}/volunteers`} className={getLinkClass(`/volunteers`)}>
+                    Volunteers
                 </Link>
             )}
             {itemsToShow.includes("Reservations") && (
