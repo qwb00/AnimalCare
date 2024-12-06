@@ -230,14 +230,14 @@ function Volunteers() {
                                     variant: 'red',
                                     icon: icons.cancel,
                                     onClick: () => handleDelete(volunteer.id),
-                                    className: 'px-6 py-2.5 text-sm',
+                                    className: 'px-5 py-2 w-full',
                                 },
                                 {
                                     text: 'Approve',
                                     variant: 'blue',
                                     icon: icons.approve,
                                     onClick: () => handleApprove(volunteer.id),
-                                    className: 'px-6 py-2.5 text-sm',
+                                    className: 'px-5 py-2 w-full',
                                 },
                             ]}
                         />
@@ -248,14 +248,14 @@ function Volunteers() {
                 {/* Current Volunteers */}
                 <h2 className="text-lg font-semibold mt-8">Current Volunteers</h2>
                 <div className="mb-4 mt-4">
-                    <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow">
+                    <div className="flex items-start gap-10 bg-gray-100 p-4 rounded-lg shadow">
                         <input
                             type="text"
                             name="name"
                             placeholder="Filter by name"
                             value={filters.name}
                             onChange={handleFilterChange}
-                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                            className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
                         />
                         <input
                             type="email"
@@ -263,7 +263,7 @@ function Volunteers() {
                             placeholder="Filter by email"
                             value={filters.email}
                             onChange={handleFilterChange}
-                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                            className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
                         />
                         <input
                             type="text"
@@ -271,7 +271,7 @@ function Volunteers() {
                             placeholder="Filter by phone number"
                             value={filters.phoneNumber}
                             onChange={handleFilterChange}
-                            className="p-2 border border-gray-300 rounded-md w-1/4"
+                            className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
                         />
                     </div>
                 </div>
@@ -303,14 +303,14 @@ function Volunteers() {
                                     variant: 'red',
                                     icon: icons.cancel,
                                     onClick: () => handleDelete(volunteer.id),
-                                    className: 'px-6 py-2.5 text-sm',
+                                    className: 'px-5 py-2 w-full',
                                 },
                                 {
                                     text: 'Unverify',
                                     variant: 'yellow',
                                     icon: icons.unverify,
                                     onClick: () => handleDecline(volunteer.id),
-                                    className: 'px-6 py-2.5 text-sm',
+                                    className: 'px-5 py-2 w-full',
                                 },
                             ]}
                         />

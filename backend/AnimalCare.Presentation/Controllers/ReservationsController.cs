@@ -58,7 +58,7 @@ namespace AnimalCare.Presentation.Controllers
         }
         
         // GET: api/Reservations/{id}
-        [Authorize(Roles = "Caretaker,Administrator,Volunteer")]
+        [Authorize]
         [HttpGet("{id:guid}", Name = "GetReservationById")]
         public async Task<IActionResult> GetReservationById(Guid id)
         {
@@ -72,7 +72,7 @@ namespace AnimalCare.Presentation.Controllers
         // PATCH: api/Reservations/{id}
         [HttpPatch("{id:guid}", Name = "PartiallyUpdateReservation")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize(Roles = "Caretaker,Administrator")]
+        [Authorize]
         public async Task<IActionResult> PartiallyUpdateReservation(Guid id, [FromBody] JsonPatchDocument<ReservationForUpdateDTO> patchDoc)
         {
             if (patchDoc == null)
