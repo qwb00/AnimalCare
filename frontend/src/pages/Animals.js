@@ -26,6 +26,16 @@ function Animals() {
       ? animalsPerPageForAdmin
       : animalsPerPageForUser;
   const totalPages = Math.ceil(allAnimals.length / animalsPerPage);
+  const [filters, setFilters] = useState({
+    minAge: "",
+    maxAge: "",
+    weight: "",
+    sex: "",
+    type: "",
+    breed: "",
+    searchTerm: "",
+  });
+  
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -179,6 +189,35 @@ function Animals() {
     }
   };
 
+  const applyFilters = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/animals`, {
+        params: {
+          minAge: filters.minAge || undefined,
+          maxAge: filters.maxAge || undefined,
+          weight: filters.weight || undefined,
+          sex: filters.sex || undefined,
+          type: filters.type || undefined,
+          breed: filters.breed || undefined,
+          searchTerm: filters.searchTerm || undefined,
+        },
+        headers: {
+          Accept: "application/json",
+        },
+      });
+  
+      const data = response.data;
+      if (data) {
+        const activeAnimals = data.filter((animal) => animal.isActive);
+        setAllAnimals(activeAnimals);
+        setCurrentPage(1); // Reset to the first page after applying filters
+      }
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    }
+  };
+  
+
 
   return (
     <div className="max-w-screen-lg mx-auto">
@@ -187,6 +226,81 @@ function Animals() {
       <div className="container mx-auto text-center">
         <h1 className="text-4xl font-black mt-8 mb-4">OUR ANIMALS</h1>
       </div>
+
+      <div className="filter-container mb-8 bg-white shadow-md p-6 rounded-xl border border-gray-200">
+  <h2 className="text-3xl font-bold text-gray-800 mb-6">Filter Animals</h2>
+  <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      applyFilters();
+    }}
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+  >
+    <input
+      type="number"
+      placeholder="Min Age"
+      value={filters.minAge}
+      onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+    />
+    <input
+      type="number"
+      placeholder="Max Age"
+      value={filters.maxAge}
+      onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+    />
+    <input
+      type="number"
+      placeholder="Max Weight"
+      value={filters.weight}
+      onChange={(e) => setFilters({ ...filters, weight: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+    />
+    <select
+      value={filters.sex}
+      onChange={(e) => setFilters({ ...filters, sex: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+    >
+      <option value="">Select Sex</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <select
+      value={filters.type}
+      onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+    >
+      <option value="">Select Type</option>
+      <option value="Dog">Dog</option>
+      <option value="Cat">Cat</option>
+    </select>
+    <input
+      type="text"
+      placeholder="Breed"
+      value={filters.breed}
+      onChange={(e) => setFilters({ ...filters, breed: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+    />
+    <input
+      type="text"
+      placeholder="Search"
+      value={filters.searchTerm}
+      onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+    />
+    <div className="flex items-center justify-end col-span-full">
+      <button
+        type="submit"
+        className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
+      >
+        Apply Filters
+      </button>
+    </div>
+  </form>
+</div>
+
+
 
       <div className="container mx-auto p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
