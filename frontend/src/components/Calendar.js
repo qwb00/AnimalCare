@@ -185,14 +185,7 @@ function Calendar({ selectedAnimalId }) {
           "Slot reserved by current user. Initiating cancellation..."
         );
 
-        // Найти резервацию в массиве reservedSlots
         const reservationToCancel = reservedSlots.find((reservation) => {
-          // Проверяем, что reservation содержит все необходимые данные
-          if (!reservation.reservationDate || !reservation.startTime) {
-            console.error("Missing data in reservation:", reservation);
-            return false;
-          }
-
           const formattedDate = format(
             new Date(reservation.reservationDate),
             "yyyy-MM-dd"
@@ -201,14 +194,6 @@ function Calendar({ selectedAnimalId }) {
             parse(reservation.startTime, "HH:mm:ss", new Date()),
             "HH:mm:ss"
           );
-
-          console.log("Checking reservation:", {
-            reservation,
-            formattedDate,
-            formattedStartTime,
-            targetDate: reservationDate,
-            targetStartTime: startTime,
-          });
 
           return (
             reservation.userId === userID &&
@@ -224,9 +209,6 @@ function Calendar({ selectedAnimalId }) {
           return;
         }
 
-        console.log("Reservation to cancel found:", reservationToCancel);
-
-        // Вызов API для отмены резервации
         const response = await fetch(
           `${API_BASE_URL}/reservations/${reservationToCancel.id}`,
           {
@@ -252,10 +234,9 @@ function Calendar({ selectedAnimalId }) {
           prevSlots.filter((slot) => slot !== slotKey)
         );
         setReservedSlots((prevSlots) =>
-          prevSlots.filter((slot) => slot.slotKey !== slotKey)
+          prevSlots.filter((reservation) => reservation.slotKey !== slotKey)
         );
       } else {
-        // Если слот не зарезервирован, инициируем создание резервации
         console.log(
           "Slot not reserved by current user. Creating reservation..."
         );
@@ -280,8 +261,17 @@ function Calendar({ selectedAnimalId }) {
         );
 
         if (response.status === 201) {
-          console.log("Reservation created successfully:", response.data);
-          setReservedSlots((prevSlots) => [...prevSlots, slotKey]);
+          const newReservation = {
+            id: response.data.id,
+            reservationDate,
+            startTime,
+            userId: userID,
+            slotKey,
+          };
+
+          console.log("Reservation created successfully:", newReservation);
+
+          setReservedSlots((prevSlots) => [...prevSlots, newReservation]);
           setUserReservedSlots((prevSlots) => [...prevSlots, slotKey]);
         } else {
           console.error(

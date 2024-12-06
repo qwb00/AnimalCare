@@ -29,9 +29,18 @@ function TimeSlotsGrid({
               const isSelectedByUser = userReservedSlots.includes(slotKey);
               const isReserved = reservedSlots.includes(slotKey);
               const isInactive = inactiveTimes.includes(slot) || isPastDay;
+              const isUserReservedAndInactive =
+                isSelectedByUser && (isInactive || isPastDay);
 
               // Определяем стили для кнопки
-              const buttonStyle = isSelectedByUser
+              const buttonStyle = isUserReservedAndInactive
+                ? {
+                    backgroundColor: "#d1d5db",
+                    border: "1px solid #d1d5db",
+                    color: "white",
+                    cursor: "default",
+                  }
+                : isSelectedByUser
                 ? {
                     backgroundColor: animalColor,
                     border: "1px solid",
@@ -52,7 +61,10 @@ function TimeSlotsGrid({
               let buttonClass =
                 "px-4 py-2 mb-2 w-full rounded-2xl transition-all duration-200";
 
-              if (isSelectedByUser) {
+              if (isUserReservedAndInactive) {
+                buttonClass +=
+                  " bg-gray-300 text-white border border-gray-300 cursor-default";
+              } else if (isSelectedByUser) {
                 buttonClass +=
                   " hover:border-black hover:border hover:bg-white hover:text-black";
               } else if (isInactive) {
@@ -68,7 +80,9 @@ function TimeSlotsGrid({
 
               // Определяем title для кнопки
               let buttonTitle = "";
-              if (isSelectedByUser) {
+              if (isUserReservedAndInactive) {
+                buttonTitle = "Unavailable";
+              } else if (isSelectedByUser) {
                 buttonTitle = "Cancel";
               } else if (!isInactive && !isReserved) {
                 buttonTitle = "Reserve";
@@ -81,17 +95,21 @@ function TimeSlotsGrid({
               return (
                 <button
                   key={slot}
-                  onClick={() => !isInactive && onSlotClick(day, slot)}
+                  onClick={() =>
+                    !isInactive &&
+                    !isUserReservedAndInactive &&
+                    onSlotClick(day, slot)
+                  }
                   title={buttonTitle}
                   className={buttonClass}
                   style={buttonStyle} // Применяем инлайн стили
                   onMouseEnter={(e) => {
-                    if (isSelectedByUser) {
+                    if (isSelectedByUser && !isUserReservedAndInactive) {
                       Object.assign(e.target.style, hoverStyle);
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (isSelectedByUser) {
+                    if (isSelectedByUser && !isUserReservedAndInactive) {
                       Object.assign(e.target.style, buttonStyle);
                     }
                   }}

@@ -30,10 +30,15 @@ function Search({ placeholder, icon, onSearch }) {
         setAnimals(animalData);
 
         const reservations = reservationResponse.data;
+        const userID = sessionStorage.getItem("userID");
+        const userReservations = reservations.filter(
+          (reservation) => reservation.userId === userID
+        );
+
         const reservedAnimalCounts = {};
 
         // Подсчет частоты резервирования для каждого животного
-        reservations.forEach((reservation) => {
+        userReservations.forEach((reservation) => {
           if (!reservedAnimalCounts[reservation.animalId]) {
             reservedAnimalCounts[reservation.animalId] = 0;
           }
@@ -50,9 +55,11 @@ function Search({ placeholder, icon, onSearch }) {
           .sort((a, b) => b.count - a.count); // Сортируем по частоте
 
         const suggested = [];
-        reservedAnimals.slice(0, 3).forEach((animal) => suggested.push(animal)); // Добавляем животных с наибольшим числом резервов
 
-        // Если недостаточно резервированных животных, добавляем случайные
+        // Добавляем животных, которых пользователь резервировал чаще всего
+        reservedAnimals.slice(0, 3).forEach((animal) => suggested.push(animal));
+
+        // Если недостаточно данных, добавляем случайных животных
         if (suggested.length < 3) {
           const randomAnimals = getRandomAnimals(
             animalData.filter(
