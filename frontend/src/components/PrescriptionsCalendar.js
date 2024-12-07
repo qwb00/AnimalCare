@@ -48,7 +48,6 @@ function PrescriptionsCalendar({ prescriptions }) {
           prescription.animalName.toLowerCase().includes(filter.toLowerCase())
   );
 
-  // Получить массив дат, на которых есть животные, соответствующие фильтру
   const highlightedDates = prescriptions
       .filter((prescription) =>
           prescription.animalName.toLowerCase().includes(filter.toLowerCase())

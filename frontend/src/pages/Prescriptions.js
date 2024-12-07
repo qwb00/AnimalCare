@@ -9,6 +9,7 @@ import Button from '../components/Button';
 import PrescriptionCard from '../components/PrescriptionCard';
 import AddPrescriptionForm from '../components/AddPrescriptionForm';
 import API_BASE_URL from '../config';
+import {icons} from "../components/icons";
 
 function Prescriptions() {
     const [user, setUser] = useState(null); // Stores logged-in user data
@@ -77,7 +78,7 @@ function Prescriptions() {
                 {user.role === 'Veterinarian' && (
                     <>
                         <div className="mb-8">
-                            <Button text="+ New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
+                            <Button icon={icons.plus_white} text="New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
                         </div>
                         <div className="mb-4">
                             <h2 className="text-2xl font-bold text-black">Active Prescriptions</h2>
