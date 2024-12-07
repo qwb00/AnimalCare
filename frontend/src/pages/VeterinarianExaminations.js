@@ -9,6 +9,7 @@ import AddRequestForm from "../components/AddRequestForm";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_BASE_URL from "../config";
+import {icons} from "../components/icons";
 
 const ExaminationStatus = {
     InProgress: 0,
@@ -230,7 +231,8 @@ function VeterinarianExaminations() {
                     <>
                         <div className="w-full max-w-[1024px] mx-auto mb-8">
                             <Button
-                                text="+ New Request"
+                                icon={icons.plus_white}
+                                text="New Request"
                                 variant="blue"
                                 onClick={handleAddRequestClick}
                             />
