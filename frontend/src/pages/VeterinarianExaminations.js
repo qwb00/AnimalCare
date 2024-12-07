@@ -42,6 +42,7 @@ function VeterinarianExaminations() {
   const navigate = useNavigate();
 
   const [nameFilterCaretaker, setNameFilterCaretaker] = useState("");
+  const [nameVetFilterCaretaker, setNameVetFilterCaretaker] = useState("");
   const [dateFromCaretaker, setDateFromCaretaker] = useState("");
   const [dateToCaretaker, setDateToCaretaker] = useState("");
   const [typeFilterCaretaker, setTypeFilterCaretaker] = useState("");
@@ -181,16 +182,22 @@ function VeterinarianExaminations() {
   function applyFiltersToRequests(
     requestsArray,
     nameFilter,
+    nameVetFilter,
     dateFrom,
     dateTo,
     typeFilter,
     statusFilter
   ) {
     let result = requestsArray;
-
+    console.log(result);
     if (nameFilter) {
       result = result.filter((request) =>
         request.animalName?.toLowerCase().includes(nameFilter.toLowerCase())
+      );
+    }
+    if (nameVetFilter) {
+      result = result.filter((request) =>
+        request.veterinarianName?.toLowerCase().includes(nameVetFilter.toLowerCase())
       );
     }
     if (dateFrom) {
@@ -249,6 +256,7 @@ function VeterinarianExaminations() {
   const filteredCaretakerActiveRequests = applyFiltersToRequests(
     caretakerActiveRequests,
     nameFilterCaretaker,
+    nameVetFilterCaretaker,
     dateFromCaretaker,
     dateToCaretaker,
     typeFilterCaretaker,
@@ -355,6 +363,15 @@ function VeterinarianExaminations() {
                     placeholder="Filter by Animal Name"
                     value={nameFilterCaretaker}
                     onChange={(e) => setNameFilterCaretaker(e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <input
+                    type="text"
+                    placeholder="Filter by Veterinarian"
+                    value={nameVetFilterCaretaker}
+                    onChange={(e) => setNameVetFilterCaretaker(e.target.value)}
                     className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
                   />
                 </div>
