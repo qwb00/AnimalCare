@@ -239,6 +239,7 @@ function Animals() {
         <div className="mx-auto p-4">
           <Button
             variant="blue" 
+            icon="/icons/filter.png"
             text= {filtersVisible ? "Hide Filters" : "Show Filters"}
             onClick={() => setFiltersVisible(!filtersVisible)}
             className="px-6 py-3 rounded-lg transform transition-transform"
@@ -329,15 +330,6 @@ function Animals() {
           }
           className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
         />
-        <div></div>
-        <div className="flex justify-end col-span-full lg:col-span-1">
-          <Button
-            text="Apply filters" 
-            variant="blue" 
-            className="px-6 py-3 rounded-lg transition-all"
-          >
-          </Button>
-        </div>
       </form>
     </div>
   )}
