@@ -10,12 +10,18 @@ import PrescriptionCard from '../components/PrescriptionCard';
 import AddPrescriptionForm from '../components/AddPrescriptionForm';
 import API_BASE_URL from '../config';
 import {icons} from "../components/icons";
+import { ToastContainer } from "react-toastify";
 
 function Prescriptions() {
-    const [user, setUser] = useState(null); // Stores logged-in user data
+    const [user, setUser] = useState(null);
     const [prescriptions, setPrescriptions] = useState([]);
     const [showAddPrescriptionForm, setShowAddPrescriptionForm] = useState(false);
     const navigate = useNavigate();
+
+    const [animalNameFilter, setAnimalNameFilter] = useState("");
+    const [dateFromFilter, setDateFromFilter] = useState("");
+    const [dateToFilter, setDateToFilter] = useState("");
+    const [medicationNameFilter, setMedicationNameFilter] = useState("");
 
     useEffect(() => {
         const token = sessionStorage.getItem("token");
@@ -68,8 +74,40 @@ function Prescriptions() {
 
     if (!user) return <div>Loading...</div>;
 
+    const filteredPrescriptions = prescriptions.filter((p) => {
+        let matches = true;
+        console.log(prescriptions);
+        if (medicationNameFilter && p.drug &&
+            !p.drug.toLowerCase().includes(medicationNameFilter.toLowerCase())) {
+            matches = false;
+        }
+
+        if (animalNameFilter && p.animalName &&
+            !p.animalName.toLowerCase().includes(animalNameFilter.toLowerCase())) {
+            matches = false;
+        }
+
+        if (dateFromFilter) {
+            const filterDateStart = new Date(dateFromFilter);
+            filterDateStart.setHours(0, 0, 0, 0);
+        
+            const requestDate = new Date(p.start);
+            requestDate.setHours(0, 0, 0, 0); 
+        
+            if (requestDate < filterDateStart) {
+                matches = false;
+            }
+        }
+        if (dateToFilter && new Date(p.end) >= new Date(dateToFilter)) {
+            matches = false;
+        }
+
+        return matches;
+    });
+
     return (
         <div className="container mx-auto">
+            <ToastContainer />
             <Header />
             <UserHeader user={user} />
             <UserNav role={user.role} />
@@ -80,11 +118,56 @@ function Prescriptions() {
                         <div className="mb-8">
                             <Button icon={icons.plus_white} text="New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
                         </div>
-                        <div className="mb-4">
-                            <h2 className="text-2xl font-bold text-black">Active Prescriptions</h2>
+
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-4">
+                                <h2 className="text-2xl font-bold text-black">Prescriptions</h2>
+                            </div>
                         </div>
+
+                        <div className="flex flex-wrap gap-4 mb-4 items-end">
+                            <div className="flex flex-col">
+                                <input
+                                    placeholder="From date"
+                                    onFocus={(e) => (e.target.type = "date")}
+                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
+                                    value={dateFromFilter}
+                                    onChange={(e) => setDateFromFilter(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <input
+                                    placeholder="To date"
+                                    onFocus={(e) => (e.target.type = "date")}
+                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
+                                    value={dateToFilter}
+                                    onChange={(e) => setDateToFilter(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <input
+                                    type="text"
+                                    placeholder="Enter Animal Name"
+                                    value={animalNameFilter}
+                                    onChange={(e) => setAnimalNameFilter(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <input
+                                    type="text"
+                                    placeholder="Enter Medication Name"
+                                    value={medicationNameFilter}
+                                    onChange={(e) => setMedicationNameFilter(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                            </div>
+                        </div>
+
                         <div className="flex flex-wrap gap-10">
-                            {prescriptions.map((prescription) => (
+                            {filteredPrescriptions.map((prescription) => (
                                 <PrescriptionCard
                                     key={prescription.id}
                                     prescription={prescription}
