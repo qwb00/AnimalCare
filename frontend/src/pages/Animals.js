@@ -105,14 +105,13 @@ function Animals() {
         if (data) {
           const activeAnimals = data.filter((animal) => animal.isActive);
           setAllAnimals(activeAnimals);
-          setCurrentPage(1); // Сбрасываем на первую страницу после применения фильтров
+          setCurrentPage(1);
         }
       } catch (error) {
         console.error("Error applying filters:", error);
       }
     };
-  
-    // Применяем фильтры только если они изменились
+
     applyFiltersAsync();
   }, [filters]);
 
