@@ -7,6 +7,8 @@ import API_BASE_URL from "../config";
 import Button from "../components/Button";
 import FileUploader from "../components/FileUploader";
 import ErrorMessages from '../components/ErrorMessages';
+import "react-range-slider-input/dist/style.css";
+import RangeSlider from "react-range-slider-input";
 
 function Animals() {
   const [allAnimals, setAllAnimals] = useState([]);
@@ -38,7 +40,7 @@ function Animals() {
   
 
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [filtersVisible, setFiltersVisible] = useState(false);
   const [name, setName] = useState("");
   const [species, setSpecies] = useState("");
   const [breed, setBreed] = useState("");
@@ -216,93 +218,124 @@ function Animals() {
       console.error("Error applying filters:", error);
     }
   };
-  
-
 
   return (
     <div className="max-w-screen-lg mx-auto">
       <Header />
 
       <div className="container mx-auto text-center">
-        <h1 className="text-4xl font-black mt-8 mb-4">OUR ANIMALS</h1>
+        <h1 className="text-4xl font-black mt-8 mb-2">OUR ANIMALS</h1>
       </div>
 
-      <div className="filter-container mb-8 bg-white shadow-md p-6 rounded-xl border border-gray-200">
-  <h2 className="text-3xl font-bold text-gray-800 mb-6">Filter Animals</h2>
-  <form
-    onSubmit={(e) => {
-      e.preventDefault();
-      applyFilters();
-    }}
-    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-  >
-    <input
-      type="number"
-      placeholder="Min Age"
-      value={filters.minAge}
-      onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <input
-      type="number"
-      placeholder="Max Age"
-      value={filters.maxAge}
-      onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <input
-      type="number"
-      placeholder="Max Weight"
-      value={filters.weight}
-      onChange={(e) => setFilters({ ...filters, weight: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <select
-      value={filters.sex}
-      onChange={(e) => setFilters({ ...filters, sex: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
-    >
-      <option value="">Select Sex</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select>
-    <select
-      value={filters.type}
-      onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
-    >
-      <option value="">Select Type</option>
-      <option value="Dog">Dog</option>
-      <option value="Cat">Cat</option>
-    </select>
-    <input
-      type="text"
-      placeholder="Breed"
-      value={filters.breed}
-      onChange={(e) => setFilters({ ...filters, breed: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <input
-      type="text"
-      placeholder="Search"
-      value={filters.searchTerm}
-      onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-    />
-    <div className="flex items-center justify-end col-span-full">
-      <button
-        type="submit"
-        className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
+      <div className="filter-section mb-4">
+        {/* Toggle Button */}
+        <div className="mx-auto p-4">
+          <button
+            onClick={() => setFiltersVisible(!filtersVisible)}
+            className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow transform transition-transform hover:scale-105"
+          >
+          {filtersVisible ? "Hide Filters" : "Show Filters"}
+          </button>
+        </div>
+
+
+  {/* Filters */}
+  {filtersVisible && (
+    <div className="filter-container mt-4 bg-white shadow-md p-6 rounded-xl border border-gray-200">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          applyFilters();
+        }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-center"
       >
-        Apply Filters
-      </button>
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            Age Range: {filters.minAge} - {filters.maxAge} years
+          </label>
+          <RangeSlider
+            min={0}
+            max={25}
+            value={[filters.minAge, filters.maxAge]}
+            onInput={(values) =>
+              setFilters({ ...filters, minAge: values[0], maxAge: values[1] })
+            }
+            className="range-slider"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            Max Weight: {filters.weight} kg
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="35"
+            value={filters.weight}
+            onChange={(e) =>
+              setFilters({ ...filters, weight: Number(e.target.value) })
+            }
+            className="my-range"
+            style={{
+              background: `linear-gradient(to right, #4BD4FF ${(filters.weight / 35) * 100}%, #e0e0e0 ${(filters.weight / 35) * 100}%)`,
+            }}
+          />
+        </div>
+
+        <select
+          value={filters.sex}
+          onChange={(e) => setFilters({ ...filters, sex: e.target.value })}
+          className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+        >
+          <option value="">Select Sex</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+
+        <select
+          value={filters.type}
+          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+          className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+        >
+          <option value="">Select Type</option>
+          <option value="Dog">Dog</option>
+          <option value="Cat">Cat</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder="Breed"
+          value={filters.breed}
+          onChange={(e) => setFilters({ ...filters, breed: e.target.value })}
+          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+        />
+
+        <input
+          type="text"
+          placeholder="Enter name"
+          value={filters.searchTerm}
+          onChange={(e) =>
+            setFilters({ ...filters, searchTerm: e.target.value })
+          }
+          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+        />
+        <div></div>
+        <div className="flex justify-end col-span-full lg:col-span-1">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </form>
     </div>
-  </form>
+  )}
 </div>
 
 
-
-      <div className="container mx-auto p-8">
+      <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {currentAnimals.map((animal, index) => (
             <AnimalCard
