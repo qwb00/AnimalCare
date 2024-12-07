@@ -224,19 +224,19 @@ function Animals() {
       <Header />
 
       <div className="container mx-auto text-center">
-        <h1 className="text-4xl font-black mt-8 mb-4">OUR ANIMALS</h1>
+        <h1 className="text-4xl font-black mt-8 mb-2">OUR ANIMALS</h1>
       </div>
 
-      <div className="filter-section mb-8">
-  {/* Toggle Button */}
-  <div className="flex justify-center items-center">
-  <button
-    onClick={() => setFiltersVisible(!filtersVisible)}
-    className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
-  >
-    {filtersVisible ? "Hide Filters" : "Show Filters"}
-  </button>
-</div>
+      <div className="filter-section mb-4">
+        {/* Toggle Button */}
+        <div className="mx-auto p-4">
+          <button
+            onClick={() => setFiltersVisible(!filtersVisible)}
+            className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow transform transition-transform hover:scale-105"
+          >
+          {filtersVisible ? "Hide Filters" : "Show Filters"}
+          </button>
+        </div>
 
 
   {/* Filters */}
@@ -276,7 +276,10 @@ function Animals() {
             onChange={(e) =>
               setFilters({ ...filters, weight: Number(e.target.value) })
             }
-            className="w-full"
+            className="my-range"
+            style={{
+              background: `linear-gradient(to right, #4BD4FF ${(filters.weight / 35) * 100}%, #e0e0e0 ${(filters.weight / 35) * 100}%)`,
+            }}
           />
         </div>
 
@@ -332,7 +335,7 @@ function Animals() {
 </div>
 
 
-      <div className="container mx-auto p-8">
+      <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {currentAnimals.map((animal, index) => (
             <AnimalCard

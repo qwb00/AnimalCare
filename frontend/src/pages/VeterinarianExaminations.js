@@ -316,53 +316,36 @@ function VeterinarianExaminations() {
                 {user.role === 'Veterinarian' && (
                     <>
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center space-x-4">
                                 <h2 className="text-2xl font-bold">New Requests</h2>
-                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">From Date</label>
-                                        <input
-                                            type="date"
-                                            value={dateFromNewRequests}
-                                            onChange={(e) => setDateFromNewRequests(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">To Date</label>
-                                        <input
-                                            type="date"
-                                            value={dateToNewRequests}
-                                            onChange={(e) => setDateToNewRequests(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Filter by Animal Name"
-                                            value={nameFilterNewRequests}
-                                            onChange={(e) => setNameFilterNewRequests(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">Request Type</label>
-                                        <select
-                                            value={typeFilterNewRequests}
-                                            onChange={(e) => setTypeFilterNewRequests(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        >
-                                            <option value="">All</option>
-                                            <option value="Emergency">Emergency</option>
-                                            <option value="PlannedTreatment">Planned</option>
-                                            <option value="Surgery">Surgery</option>
-                                            <option value="Vaccination">Vacation</option>
-                                        </select>
-                                    </div>
+                                <div className="flex flex-col">
+                                    <select
+                                    value={typeFilterNewRequests}
+                                    onChange={(e) => setTypeFilterNewRequests(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                    >
+                                    <option value="">All</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="PlannedTreatment">Planned</option>
+                                    <option value="Surgery">Surgery</option>
+                                    <option value="Vaccination">Vaccination</option>
+                                    </select>
+                                </div>
                                 </div>
                             </div>
+
+                            <div className="mb-4">
+                                <input
+                                type="text"
+                                placeholder="Filter by Animal Name"
+                                value={nameFilterNewRequests}
+                                onChange={(e) => setNameFilterNewRequests(e.target.value)}
+                                className="p-2 w-1/2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                            </div>
+
+
                             <div className="flex flex-wrap gap-10">
                                 {filteredNewRequests.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard
@@ -388,37 +371,37 @@ function VeterinarianExaminations() {
 
                         {/* In Progress Requests with filters */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold">In Progress Requests</h2>
-                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">From Date</label>
-                                        <input
-                                            type="date"
-                                            value={dateFromInProgress}
-                                            onChange={(e) => setDateFromInProgress(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">To Date</label>
-                                        <input
-                                            type="date"
-                                            value={dateToInProgress}
-                                            onChange={(e) => setDateToInProgress(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Filter by Animal Name"
-                                            value={nameFilterInProgress}
-                                            onChange={(e) => setNameFilterInProgress(e.target.value)}
-                                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                        />
-                                    </div>
+                            <h2 className="text-2xl font-bold mb-4">In Progress Requests</h2>
+                            
+                            <div className="flex flex-wrap gap-4 mb-4">
+                                <div className="flex flex-col">
+                                <input
+                                    placeholder="From date"
+                                    onFocus={(e) => (e.target.type = "date")}
+                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
+                                    value={dateFromInProgress}
+                                    onChange={(e) => setDateFromInProgress(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <input
+                                    placeholder="To date"
+                                    onFocus={(e) => (e.target.type = "date")}
+                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
+                                    value={dateToInProgress}
+                                    onChange={(e) => setDateToInProgress(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
+                                </div>
+                                <div className="flex flex-col w-full md:w-auto">
+                                <input
+                                    type="text"
+                                    placeholder="Filter by Animal Name"
+                                    value={nameFilterInProgress}
+                                    onChange={(e) => setNameFilterInProgress(e.target.value)}
+                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                                />
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-10">
@@ -440,29 +423,29 @@ function VeterinarianExaminations() {
 
                         {/* Completed Requests with filters */}
                         <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold">Completed Requests</h2>
-                                <div className="flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow">
+                                <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
+                                <div className="flex flex-wrap gap-4 mb-4">
                                     <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">From Date</label>
                                         <input
-                                            type="date"
+                                            placeholder="From date"
+                                            onFocus={(e) => (e.target.type = "date")}
+                                            onBlur={(e) => !e.target.value && (e.target.type = "text")}
                                             value={dateFromCompleted}
                                             onChange={(e) => setDateFromCompleted(e.target.value)}
                                             className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">To Date</label>
                                         <input
-                                            type="date"
+                                            placeholder="To date"
+                                            onFocus={(e) => (e.target.type = "date")}
+                                            onBlur={(e) => !e.target.value && (e.target.type = "text")}
                                             value={dateToCompleted}
                                             onChange={(e) => setDateToCompleted(e.target.value)}
                                             className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-sm font-medium text-gray-700">Animal Name</label>
                                         <input
                                             type="text"
                                             placeholder="Filter by Animal Name"
@@ -472,7 +455,6 @@ function VeterinarianExaminations() {
                                         />
                                     </div>
                                 </div>
-                            </div>
                             <div className="flex flex-wrap gap-10">
                                 {filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
                                     <RequestCard key={request.id} request={request} />
