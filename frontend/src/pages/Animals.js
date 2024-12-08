@@ -45,6 +45,7 @@ function Animals() {
   const [species, setSpecies] = useState("");
   const [breed, setBreed] = useState("");
   const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
   const [sex, setSex] = useState("");
   const [size, setSize] = useState("");
   const [health, setHealth] = useState("");
@@ -81,6 +82,38 @@ function Animals() {
 
     loadAllAnimals();
   }, []);
+
+  useEffect(() => {
+    const applyFiltersAsync = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/animals`, {
+          params: {
+            minAge: filters.minAge || undefined,
+            maxAge: filters.maxAge || undefined,
+            weight: filters.weight || undefined,
+            sex: filters.sex || undefined,
+            type: filters.type || undefined,
+            breed: filters.breed || undefined,
+            searchTerm: filters.searchTerm || undefined,
+          },
+          headers: {
+            Accept: "application/json",
+          },
+        });
+  
+        const data = response.data;
+        if (data) {
+          const activeAnimals = data.filter((animal) => animal.isActive);
+          setAllAnimals(activeAnimals);
+          setCurrentPage(1);
+        }
+      } catch (error) {
+        console.error("Error applying filters:", error);
+      }
+    };
+
+    applyFiltersAsync();
+  }, [filters]);
 
   const startIndex = (currentPage - 1) * animalsPerPage;
   const endIndex = startIndex + animalsPerPage;
@@ -132,6 +165,7 @@ function Animals() {
         name,
         breed,
         age: parseInt(age),
+        weight: weight ? parseInt(weight) : 0,
         photo: photoUrl,
         sex: sex === "Male" ? 0 : 1,
         size: size === "Small" ? 0 : size === "Medium" ? 1 : size === "Large" ? 2 : 3,
@@ -191,52 +225,28 @@ function Animals() {
     }
   };
 
-  const applyFilters = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/animals`, {
-        params: {
-          minAge: filters.minAge || undefined,
-          maxAge: filters.maxAge || undefined,
-          weight: filters.weight || undefined,
-          sex: filters.sex || undefined,
-          type: filters.type || undefined,
-          breed: filters.breed || undefined,
-          searchTerm: filters.searchTerm || undefined,
-        },
-        headers: {
-          Accept: "application/json",
-        },
-      });
-  
-      const data = response.data;
-      if (data) {
-        const activeAnimals = data.filter((animal) => animal.isActive);
-        setAllAnimals(activeAnimals);
-        setCurrentPage(1); // Reset to the first page after applying filters
-      }
-    } catch (error) {
-      console.error("Error applying filters:", error);
-    }
-  };
 
   return (
     <div className="max-w-screen-lg mx-auto">
       <Header />
 
       <div className="container mx-auto text-center">
-        <h1 className="text-4xl font-black mt-8 mb-4">OUR ANIMALS</h1>
+        <h1 className="text-4xl font-black mt-8 mb-2">OUR ANIMALS</h1>
       </div>
 
-      <div className="filter-section mb-8">
-  {/* Toggle Button */}
-  <div className="flex justify-center items-center">
-  <button
-    onClick={() => setFiltersVisible(!filtersVisible)}
-    className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
-  >
-    {filtersVisible ? "Hide Filters" : "Show Filters"}
-  </button>
-</div>
+      <div className="filter-section mb-4">
+        {/* Toggle Button */}
+        <div className="mx-auto p-4">
+          <Button
+            variant="blue" 
+            icon="/icons/filter.png"
+            text= {filtersVisible ? "Hide Filters" : "Show Filters"}
+            onClick={() => setFiltersVisible(!filtersVisible)}
+            className="px-6 py-3 rounded-lg transform transition-transform"
+          >
+
+          </Button>
+        </div>
 
 
   {/* Filters */}
@@ -245,7 +255,7 @@ function Animals() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          applyFilters();
+          
         }}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-center"
       >
@@ -270,13 +280,16 @@ function Animals() {
           </label>
           <input
             type="range"
-            min="0"
+            min="1"
             max="35"
             value={filters.weight}
             onChange={(e) =>
               setFilters({ ...filters, weight: Number(e.target.value) })
             }
-            className="w-full"
+            className="my-range"
+            style={{
+              background: `linear-gradient(to right, #4BD4FF ${(filters.weight / 35) * 100}%, #e0e0e0 ${(filters.weight / 35) * 100}%)`,
+            }}
           />
         </div>
 
@@ -317,22 +330,13 @@ function Animals() {
           }
           className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
         />
-        <div></div>
-        <div className="flex justify-end col-span-full lg:col-span-1">
-          <button
-            type="submit"
-            className="px-6 py-3 bg-main-blue text-white rounded-lg font-medium shadow hover:bg-blue-600 transition-all"
-          >
-            Apply Filters
-          </button>
-        </div>
       </form>
     </div>
   )}
 </div>
 
 
-      <div className="container mx-auto p-8">
+      <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {currentAnimals.map((animal, index) => (
             <AnimalCard
@@ -490,6 +494,22 @@ function Animals() {
                   onChange={(e) => setAge(e.target.value)}
                 />
               </div>
+
+              <div className="flex-1">
+                <label className="block text-gray-700 mb-1 font-medium text-xs">
+                  Weight
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter animal’s weight"
+                  min="0"
+                  max="35"
+                  className="w-full p-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-xs"
+                  onChange={(e) => setWeight(e.target.value)}
+                />
+              </div>
+
+              
 
               <div className="flex-1 relative">
                 <label className="block text-gray-700 mb-1 font-medium text-xs">

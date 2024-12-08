@@ -134,7 +134,7 @@ function Users() {
                 placeholder="Filter by name"
                 value={filters.name}
                 onChange={handleFilterChange}
-                className="p-2 border border-gray-300 rounded-md w-1/4"
+                className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
             />
             <input
                 type="email"
@@ -142,7 +142,7 @@ function Users() {
                 placeholder="Filter by email"
                 value={filters.email}
                 onChange={handleFilterChange}
-                className="p-2 border border-gray-300 rounded-md w-1/4"
+                className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
             />
             <input
                 type="text"
@@ -150,7 +150,7 @@ function Users() {
                 placeholder="Filter by phone number"
                 value={filters.phoneNumber}
                 onChange={handleFilterChange}
-                className="p-2 border border-gray-300 rounded-md w-1/4"
+                className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
             />
             <div className="flex items-center space-x-4">
               <label className="flex items-center">
@@ -159,7 +159,7 @@ function Users() {
                     name="caretaker"
                     checked={filters.caretaker}
                     onChange={handleFilterChange}
-                    className="mr-2"
+                    className="appearance-none mr-2 h-5 w-5 cursor-pointer rounded border border-gray-400 bg-white checked:bg-main-blue checked:border-main-blue relative checked:after:content-['✔'] checked:after:text-white checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center"
                 />
                 Caretaker
               </label>
@@ -169,8 +169,9 @@ function Users() {
                     name="veterinarian"
                     checked={filters.veterinarian}
                     onChange={handleFilterChange}
-                    className="mr-2"
+                    className="appearance-none mr-2 h-5 w-5 cursor-pointer rounded border border-gray-400 bg-white checked:bg-main-blue checked:border-main-blue relative checked:after:content-['✔'] checked:after:text-white checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center"
                 />
+
                 Veterinarian
               </label>
             </div>

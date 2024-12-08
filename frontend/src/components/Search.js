@@ -6,8 +6,8 @@ import API_BASE_URL from "../config";
 function Search({ placeholder, icon, onSearch }) {
   const [searchValue, setSearchValue] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [animals, setAnimals] = useState([]); 
-  const [isInputError, setIsInputError] = useState(false); 
+  const [animals, setAnimals] = useState([]);
+  const [isInputError, setIsInputError] = useState(false);
   const dropdownRef = useRef(null); // Ref for dropdown to detect outside clicks
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function Search({ placeholder, icon, onSearch }) {
           name: animal.name,
           id: animal.id,
         }));
-        setAnimals(animalData); 
+        setAnimals(animalData);
         console.log("Loaded animals from API:", animalData);
       } catch (error) {
         console.error("Error fetching animals:", error);
@@ -31,12 +31,12 @@ function Search({ placeholder, icon, onSearch }) {
   // Search function for finding an animal by name
   const handleSearch = () => {
     if (!searchValue) {
-      setIsInputError(true); 
+      setIsInputError(true);
       return;
     }
 
     const foundAnimal = animals.find(
-      (animal) => animal.name.toLowerCase() === searchValue.toLowerCase()
+        (animal) => animal.name.toLowerCase() === searchValue.toLowerCase()
     );
 
     if (foundAnimal) {
@@ -54,7 +54,7 @@ function Search({ placeholder, icon, onSearch }) {
     setSearchValue(animal.name); // Display selected name in input
     setIsDropdownOpen(false); // Close menu on selection
     setIsInputError(false);
-    onSearch(animal.id); 
+    onSearch(animal.id);
   };
 
   const handleClickOutside = (event) => {
@@ -72,60 +72,60 @@ function Search({ placeholder, icon, onSearch }) {
   }, []);
 
   return (
-    <div
-      className="relative flex items-center w-full max-w-[600px]"
-      ref={dropdownRef}
-    >
-      {/* Input field */}
       <div
-        className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${
-          isInputError ? "border-red-500 bg-red-100" : "border-black bg-white"
-        }`}
+          className="relative flex items-center w-full max-w-[600px]"
+          ref={dropdownRef}
       >
-        <input
-          type="text"
-          placeholder={placeholder}
-          value={searchValue}
-          className={`w-full px-4 py-2 focus:outline-none rounded-xl ${
-            isInputError ? "bg-red-100" : "bg-white"
-          }`}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        />
-        <img src={icon} alt="Input icon" className="h-6 w-6 mr-2" />
-      </div>
-
-      {/* Search button next to input */}
-      <Button
-        text="Search"
-        variant="blue"
-        icon="/icons/search_white.png"
-        iconPosition="Search"
-        onClick={handleSearch}
-      />
-
-      {/* Dropdown menu with animal names */}
-      {isDropdownOpen && (
-        <ul className="absolute top-full left-0 w-[240px] bg-white border-2 border-black rounded-xl mt-1 max-h-48 overflow-auto z-10">
-          {animals.map((animal) => (
-            <li
-              key={animal.id}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-              onClick={() => handleSelectAnimal(animal)}
-            >
-              {animal.name}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* Display error under input if animal not found */}
-      {isInputError && (
-        <div className="mt-2 text-red-600 text-sm absolute top-full left-0">
-          Animal not found.
+        {/* Input field */}
+        <div
+            className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${
+                isInputError ? "border-red-500 bg-red-100" : "border-black bg-white"
+            }`}
+        >
+          <input
+              type="text"
+              placeholder={placeholder}
+              value={searchValue}
+              className={`w-full px-4 py-2 focus:outline-none rounded-xl ${
+                  isInputError ? "bg-red-100" : "bg-white"
+              }`}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          />
+          <img src={icon} alt="Input icon" className="h-6 w-6 mr-2" />
         </div>
-      )}
-    </div>
+
+        {/* Search button next to input */}
+        <Button
+            text="Search"
+            variant="blue"
+            icon="/icons/search_white.png"
+            iconPosition="Search"
+            onClick={handleSearch}
+        />
+
+        {/* Dropdown menu with animal names */}
+        {isDropdownOpen && (
+            <ul className="absolute top-full left-0 w-[240px] bg-white border-2 border-black rounded-xl mt-1 max-h-48 overflow-auto z-10">
+              {animals.map((animal) => (
+                  <li
+                      key={animal.id}
+                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSelectAnimal(animal)}
+                  >
+                    {animal.name}
+                  </li>
+              ))}
+            </ul>
+        )}
+
+        {/* Display error under input if animal not found */}
+        {isInputError && (
+            <div className="mt-2 text-red-600 text-sm absolute top-full left-0">
+              Animal not found.
+            </div>
+        )}
+      </div>
   );
 }
 
