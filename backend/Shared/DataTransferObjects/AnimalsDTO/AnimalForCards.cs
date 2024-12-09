@@ -14,4 +14,7 @@ public record AnimalForCardsDto
     [Url]
     public string? Photo { get; set; }
     public bool isActive { get; set; }
+    
+    public string? Personality { get; set; }
+    public int? Weight { get; set; }
 }
