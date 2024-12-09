@@ -14,6 +14,7 @@ import Volunteers from './pages/Volunteers';
 import Users from './pages/Users';
 import UserReservationsConfirm from "./pages/UserReservationsConfirm";
 import Prescriptions from "./pages/Prescriptions";
+import PlannedWalks from "./pages/PlannedWalks";
 
 function App() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ function App() {
         <Route path="/:userID/volunteers" element={<Volunteers />} />
         <Route path="/:userID/users" element={<Users />} />
         <Route path="/:userID/user-reservations" element={<UserReservationsConfirm />} />
+        <Route path="/:userID/planned-walks" element={<PlannedWalks />} />
       </Routes>
       <BackToTop />
     </>

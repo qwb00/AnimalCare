@@ -9,12 +9,12 @@ import Card from "../components/Card";
 import { icons } from "../components/icons";
 import Button from "../components/Button";
 
-function UserReservationsConfirm() {
+function PlannedWalks() {
     const [user, setUser] = useState(null);
-    const [newRequests, setNewRequests] = useState([]);
+    const [plannedWalks, setPlannedWalks] = useState([]);
     const [filters, setFilters] = useState({
         animalName: "",
-        breed: "",
+        animalBreed: "",
         volunteerName: "",
         volunteerPhoneNumber: "",
         date: "",
@@ -48,11 +48,11 @@ function UserReservationsConfirm() {
     }, [navigate]);
 
     useEffect(() => {
-        const fetchNewRequests = async () => {
+        const fetchPlannedWalks = async () => {
             try {
                 const queryParams = new URLSearchParams();
                 if (filters.animalName) queryParams.append("AnimalName", filters.animalName);
-                if (filters.breed) queryParams.append("Breed", filters.breed);
+                if (filters.animalBreed) queryParams.append("Breed", filters.animalBreed);
                 if (filters.volunteerName) queryParams.append("VolunteerName", filters.volunteerName);
                 if (filters.volunteerPhoneNumber) queryParams.append("VolunteerPhoneNumber", filters.volunteerPhoneNumber);
                 if (filters.date) queryParams.append("Date", filters.date);
@@ -67,15 +67,14 @@ function UserReservationsConfirm() {
                 });
                 if (!response.ok) throw new Error("Failed to fetch reservations");
                 const data = await response.json();
-
-                // Set all reservations with status 0 (new requests)
-                setNewRequests(data.filter((reservation) => reservation.status === 0));
+                const upcomingWalks = data.filter((reservation) => reservation.status === 1); // UPCOMING
+                setPlannedWalks(upcomingWalks);
             } catch (error) {
-                console.error("Error fetching new requests:", error);
+                console.error("Error fetching planned walks:", error);
             }
         };
 
-        fetchNewRequests();
+        fetchPlannedWalks();
     }, [filters]);
 
     const handleFilterChange = (e) => {
@@ -83,7 +82,7 @@ function UserReservationsConfirm() {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleApprove = async (id) => {
+    const handleMarkAsCompleted = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: "PATCH",
@@ -91,16 +90,16 @@ function UserReservationsConfirm() {
                     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
                     "Content-Type": "application/json-patch+json",
                 },
-                body: JSON.stringify([{ op: "replace", path: "/status", value: 1 }]),
+                body: JSON.stringify([{ op: "replace", path: "/status", value: 2 }]), // COMPLETED
             });
-            if (!response.ok) throw new Error("Failed to approve reservation");
-            setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
+            if (!response.ok) throw new Error("Failed to mark reservation as completed");
+            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
-            console.error("Error approving reservation:", error);
+            console.error("Error marking reservation as completed:", error);
         }
     };
 
-    const handleDecline = async (id) => {
+    const handleMarkAsMissed = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
                 method: "PATCH",
@@ -108,12 +107,12 @@ function UserReservationsConfirm() {
                     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
                     "Content-Type": "application/json-patch+json",
                 },
-                body: JSON.stringify([{ op: "replace", path: "/status", value: 4 }]),
+                body: JSON.stringify([{ op: "replace", path: "/status", value: 3 }]), // MISSED
             });
-            if (!response.ok) throw new Error("Failed to decline reservation");
-            setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
+            if (!response.ok) throw new Error("Failed to mark reservation as missed");
+            setPlannedWalks((prev) => prev.filter((reservation) => reservation.id !== id));
         } catch (error) {
-            console.error("Error declining reservation:", error);
+            console.error("Error marking reservation as missed:", error);
         }
     };
 
@@ -126,14 +125,12 @@ function UserReservationsConfirm() {
             <UserNav role={user.role} />
             <div className="w-full max-w-[1024px] mx-auto mb-14">
                 <div className="flex items-center justify-between max-w-[978px]">
-                    <h2 className="text-2xl font-semibold mb-6">New Requests</h2>
-                    <div className="mb-4">
-                        <Button
-                            text={filtersVisible ? "Hide Filters" : "Show Filters"}
-                            variant="blue"
-                            onClick={() => setFiltersVisible(!filtersVisible)}
-                        />
-                    </div>
+                    <h2 className="text-2xl font-semibold mb-6">Planned Walks</h2>
+                    <Button
+                        text={filtersVisible ? "Hide Filters" : "Show Filters"}
+                        variant="blue"
+                        onClick={() => setFiltersVisible(!filtersVisible)}
+                    />
                 </div>
 
                 {filtersVisible && (
@@ -145,13 +142,13 @@ function UserReservationsConfirm() {
                                 placeholder="Animal Name"
                                 value={filters.animalName}
                                 onChange={handleFilterChange}
-                                className="p-2 border border-gray-300 rounded-md w-full focus:outline-none"
+                                className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:border-main-blue"
                             />
                             <input
                                 type="text"
-                                name="breed"
+                                name="animalBreed"
                                 placeholder="Breed"
-                                value={filters.breed}
+                                value={filters.animalBreed}
                                 onChange={handleFilterChange}
                                 className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:border-main-blue"
                             />
@@ -209,7 +206,7 @@ function UserReservationsConfirm() {
                 )}
 
                 <div className="flex flex-wrap gap-20 mt-6">
-                    {newRequests.map((reservation) => (
+                    {plannedWalks.map((reservation) => (
                         <Card
                             key={reservation.id}
                             title={`Walk with ${reservation.animalName}`}
@@ -219,30 +216,33 @@ function UserReservationsConfirm() {
                                 { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
                                 { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
                                 { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
-                                { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0,5)} - ${reservation.endTime.slice(0,5)}` },
+                                { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0, 5)} - ${reservation.endTime.slice(0, 5)}` },
                             ]}
                             buttons={[
                                 {
-                                    text: "Decline",
+                                    text: "Missed",
                                     variant: "red",
                                     icon: icons.decline,
-                                    onClick: () => handleDecline(reservation.id),
+                                    onClick: () => handleMarkAsMissed(reservation.id),
                                     className: "px-5 py-2 w-full",
                                 },
                                 {
-                                    text: "Approve",
+                                    text: "Completed",
                                     variant: "blue",
                                     icon: icons.approve,
-                                    onClick: () => handleApprove(reservation.id),
+                                    onClick: () => handleMarkAsCompleted(reservation.id),
                                     className: "px-5 py-2 w-full",
                                 },
                             ]}
                         />
                     ))}
                 </div>
+                {plannedWalks.length === 0 && (
+                    <p className="text-center text-gray-500 mt-4 mb-6">No planned walks found</p>
+                )}
             </div>
         </div>
     );
 }
 
-export default UserReservationsConfirm;
+export default PlannedWalks;
