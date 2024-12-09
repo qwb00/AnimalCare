@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 function Calendar({ selectedAnimalId }) {
   const { updateSuggestedAnimals } = useContext(AppContext);
 
-  const cancelTimer = 3000; // 3 seconds
+  const cancelTimer = 10000; // 3 seconds
 
   const today = new Date();
   const tomorrow = addDays(new Date(), 1);
@@ -354,6 +354,11 @@ function Calendar({ selectedAnimalId }) {
   const showNotification = (message, isSuccess) => {
     setNotification({ message, isSuccess });
     setIsNotificationOpen(true);
+
+    // Скрываем уведомление через 3 секунды
+    setTimeout(() => {
+      setIsNotificationOpen(false);
+    }, cancelTimer);
   };
 
   const showCancelNotification = ({
@@ -552,20 +557,24 @@ function Calendar({ selectedAnimalId }) {
   };
 
   function generateColor(id) {
+    // Генерируем числовой хеш на основе ID
     let hash = 0;
     for (let i = 0; i < id.length; i++) {
       hash = id.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    let hue = Math.abs(hash % 360);
-    let saturation = 60 + (hash % 20); // Насыщенность 60-80%
-    let lightness = 70 + (hash % 10); // Светлота 70-80%
+    // Извлекаем базовые компоненты (HSL)
+    // Повышаем насыщенность и немного уменьшаем светлоту, чтобы цвет был ярче
+    let hue = Math.abs(hash % 360); // Угол цвета в градусах (0-360)
+    let saturation = 70 + (hash % 20); // Повышаем насыщенность: 70-90%
+    let lightness = 60 + (hash % 10); // Чуть уменьшили светлоту: 60-70%
 
     // Исключаем коричневые и бежевые тона
     while ((hue >= 30 && hue <= 50) || (hue >= 20 && hue <= 60)) {
       hue = (hue + 60) % 360;
     }
 
+    // Возвращаем цвет в формате HSL
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 
@@ -1107,98 +1116,39 @@ function Calendar({ selectedAnimalId }) {
       </div>
 
       {/* Notification Modal */}
-      {isNotificationOpen &&
-        notification.isSuccess &&
-        lastReservationDetails && (
-          <div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            onClick={() => setIsNotificationOpen(false)}
-          >
-            <div
-              className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-green-600"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-center text-green-600">
-                Reservation Successful!
-              </h3>
-              <div className="flex items-start">
-                {/* Textual details */}
-                <div className="flex-1">
-                  <p className="mb-4 text-2xl font-bold">
-                    {lastReservationDetails.animalName}
-                  </p>
-                  <p className="mb-2">
-                    <strong>Breed:</strong> {lastReservationDetails.animalBreed}
-                  </p>
-                  <p className="mb-2">
-                    <strong>Age:</strong> {lastReservationDetails.animalAge}{" "}
-                    years
-                  </p>
-                  <p className="mb-2">
-                    <strong>Weight:</strong>{" "}
-                    {lastReservationDetails.animalWeight} kg
-                  </p>
-                  <p className="mb-2">
-                    <strong>Personality:</strong>{" "}
-                    {lastReservationDetails.animalPersonality}
-                  </p>
-                  <p className="mb-2">
-                    <strong>Vaccinated:</strong>{" "}
-                    {lastReservationDetails.isVaccinated ? "Yes" : "No"}
-                  </p>
-                </div>
-                {/* Animal image */}
-                {lastReservationDetails.animalPhoto && (
-                  <img
-                    src={lastReservationDetails.animalPhoto}
-                    alt={lastReservationDetails.animalName}
-                    className="w-60 h-48 object-cover rounded-lg border-2 border-black ml-6"
-                  />
-                )}
-              </div>
-
-              {/* Display all currently reserved slots */}
-              {/* Display all currently reserved slots */}
-              <div className="mt-6">
-                <h4 className="text-lg font-bold mb-4">Reserved Slots:</h4>
-                <div className="flex flex-col gap-2">
-                  {reservedSlotDetails.map(({ date, startTime, endTime }) => (
-                    <div
-                      key={`${date}-${startTime}-${endTime}`}
-                      className="bg-main-blue text-white px-4 py-2 rounded-lg shadow-sm text-sm"
-                    >
-                      <p>
-                        <strong>Date:</strong> {date}
-                      </p>
-                      <p>
-                        <strong>Start Time:</strong> {startTime}
-                      </p>
-                      <p>
-                        <strong>End Time:</strong> {endTime}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex justify-center mt-6">
-                <Button
-                  text="Close"
-                  variant="blue"
-                  icon="/icons/cancel_white.png"
-                  iconPosition="right"
-                  className="px-5 py-2"
-                  onClick={() => setIsNotificationOpen(false)}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+      {isNotificationOpen && notification.isSuccess && (
+        <div
+          className="fixed z-50 bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72"
+          onClick={() => setIsNotificationOpen(false)}
+        >
+          <h3 className="text-lg font-semibold mb-2 text-green-500">
+            Reservation Confirmed
+          </h3>
+          {lastReservationDetails && (
+            <>
+              <p className="text-sm">
+                <strong>Animal:</strong> {lastReservationDetails.animalName}
+              </p>
+              <p className="text-sm mb-2">
+                <strong>Date & Time:</strong> {lastReservationDetails.date},{" "}
+                {lastReservationDetails.startTime} -{" "}
+                {lastReservationDetails.endTime}
+              </p>
+            </>
+          )}
+          <p className="text-sm">This message will disappear soon.</p>
+        </div>
+      )}
 
       {cancelNotification.isOpen && (
-        <div className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72">
-          <h3 className="text-lg font-semibold mb-2">
-            {cancelNotification.message}
+        <div
+          className="fixed z-50 bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72"
+          onClick={() =>
+            setCancelNotification((prev) => ({ ...prev, isOpen: false }))
+          }
+        >
+          <h3 className="text-lg font-semibold mb-2 text-black">
+            {`Cancelling reservation, ${cancelNotification.animalName}'s gonna miss you!`}
           </h3>
           {cancelNotification.animalName && (
             <p className="mt-2 text-sm">
@@ -1210,15 +1160,36 @@ function Calendar({ selectedAnimalId }) {
               <strong>Date:</strong> {cancelNotification.date}
             </p>
           )}
-          {cancelNotification.time && (
-            <p className="text-sm">
-              <strong>Time:</strong> {cancelNotification.time}
-            </p>
-          )}
+          {cancelNotification.time &&
+            (() => {
+              const timeRange = cancelNotification.time.split(" - ");
+              let formattedTime = cancelNotification.time;
+
+              if (timeRange.length === 2) {
+                // Предполагаем, что timeRange содержит ISO-строки дат (например, "2024-12-16T12:00:00" - "2024-12-16T13:00:00")
+                const start = parseISO(timeRange[0]);
+                const end = parseISO(timeRange[1]);
+
+                if (!isNaN(start) && !isNaN(end)) {
+                  // Форматируем в удобочитаемый формат
+                  // Например: "Mon, Dec 16, 2024 12:00 PM - 01:00 PM"
+                  formattedTime = `${format(
+                    start,
+                    "EEE, MMM dd, yyyy h:mm a"
+                  )} - ${format(end, "h:mm a")}`;
+                }
+              }
+
+              return (
+                <p className="text-sm">
+                  <strong>Date & Time:</strong> {formattedTime}
+                </p>
+              );
+            })()}
 
           <Button
             text="Undo"
-            variant="blue"
+            variant="green"
             icon="/icons/undo.png" // Иконка undo
             iconPosition="left"
             className="mt-4 px-4 py-2 w-full" // Полная ширина для кнопки
@@ -1275,8 +1246,20 @@ function Calendar({ selectedAnimalId }) {
         </div>
       )}
 
+      {/* Reservation Button */}
+      <div className="flex justify-start mt-4">
+        <Button
+          text="Create Reservation"
+          variant="green"
+          icon="/icons/plus_white.png"
+          iconPosition="left"
+          iconSize="h-4 w-4"
+          onClick={handleConfirmReservation}
+        />
+      </div>
+
       {mergeTimeSlots(selectedSlots).length > 0 && (
-        <div className="mt-4 p-4 bg-white border-2 border-black rounded-lg shadow-md max-w-md">
+        <div className="mt-4 p-4 bg-white border-2 border-black rounded-xl shadow-md max-w-lg">
           <h3 className="text-lg font-semibold mb-3">
             Selected Reservation Details
           </h3>
@@ -1310,14 +1293,20 @@ function Calendar({ selectedAnimalId }) {
               </p>
               <div className="flex flex-col gap-2">
                 {mergeTimeSlots(selectedSlots).map(
-                  ({ date, startTime, endTime }) => (
-                    <div
-                      key={`${date}-${startTime}-${endTime}`}
-                      className="bg-main-blue text-white px-3 py-1 rounded shadow-sm text-base"
-                    >
-                      {`${date}: ${startTime} - ${endTime}`}
-                    </div>
-                  )
+                  ({ date, startTime, endTime }) => {
+                    // Парсим дату, чтобы можно было получить день недели
+                    const parsedDate = parse(date, "MMM dd yyyy", new Date());
+                    const dayOfWeek = format(parsedDate, "EEE"); // Например: Mon, Tue, Wed...
+
+                    return (
+                      <div
+                        key={`${date}-${startTime}-${endTime}`}
+                        className="inline-block bg-main-blue text-white px-3 py-1 mr-4 rounded-xl shadow-sm text-base"
+                      >
+                        {`${dayOfWeek}, ${date}: ${startTime} - ${endTime}`}
+                      </div>
+                    );
+                  }
                 )}
               </div>
             </div>
@@ -1325,34 +1314,29 @@ function Calendar({ selectedAnimalId }) {
               <img
                 src={animalImagePath}
                 alt={animalData?.name}
-                className="w-24 h-24 object-cover rounded border border-black shadow-sm"
+                className="w-32 h-32 object-cover rounded-xl border-2 border-black shadow-sm"
               />
             )}
+          </div>
+          <div className="mt-4 flex justify-center">
+            <Button
+              text="Reset selection"
+              variant="white"
+              icon="/icons/cancel.png"
+              iconPosition="left"
+              onClick={() => setSelectedSlots([])}
+              className="px-4 py-2 text-base"
+            />
           </div>
         </div>
       )}
 
-      {/* Reservation Button */}
-      <div className="flex justify-center mt-4">
-        <Button
-          text="Create Reservation"
-          variant="blue"
-          icon="/icons/plus_white.png"
-          iconPosition="left"
-          iconSize="h-4 w-4"
-          onClick={handleConfirmReservation}
-        />
-      </div>
-
       {allUserReservations.length > 0 && (
         <div className="mt-6 space-y-4">
-          <h3 className="text-lg font-semibold mb-4">Upcoming Walks:</h3>{" "}
-          {/* Изменили заголовок секции */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {/* Сетка с тремя колонками для больших экранов */}
-            {Object.entries(
+          <h3 className="text-lg font-semibold mb-4">Upcoming Walks:</h3>
+          {(() => {
+            const grouped = Object.entries(
               allUserReservations.reduce((acc, reservation) => {
-                // Группируем резервации по animalId
                 const animalId = reservation.animalId;
                 if (!acc[animalId]) {
                   acc[animalId] = [];
@@ -1360,92 +1344,105 @@ function Calendar({ selectedAnimalId }) {
                 acc[animalId].push(reservation);
                 return acc;
               }, {})
-            )
-              // Сортируем по количеству резерваций в каждой группе
-              .sort((a, b) => b[1].length - a[1].length) // Сортируем от большего количества к меньшему
-              .map(([animalId, reservations]) => {
-                // Для каждой группы (животное) сортируем резервации по дате
-                const sortedReservations = reservations.sort(
-                  (a, b) => new Date(a.date) - new Date(b.date)
-                );
+            );
 
-                // Ищем фото животного в стейте animals по animalId
-                const animal = animals.find((animal) => animal.id === animalId);
+            const count = grouped.length;
 
-                // Выводим информацию о животном и его резервациях
-                return (
-                  <div
-                    key={animalId}
-                    className="p-4 bg-white border-2 border-black rounded-lg shadow-md hover:shadow-xl transition-all"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      {/* Добавляем фото животного с нужным округлением и черной границей */}
-                      {animal?.photo && (
-                        <img
-                          src={animal.photo}
-                          alt={animal.name}
-                          className="w-16 h-16 object-cover rounded-lg border-2 border-black mr-4" // Увеличиваем размер фото
-                        />
-                      )}
-                      <div className="flex-1 text-left">
-                        {" "}
-                        {/* Выровняем текст по левому краю */}
-                        <p className="text-lg font-semibold">{animal?.name}</p>
-                        <p className="text-sm text-gray-600">{animal?.breed}</p>
-                      </div>
-                    </div>
+            return (
+              <div
+                className={`flex flex-wrap gap-4 ${
+                  count === 3 ? "justify-between" : "justify-center"
+                }`}
+              >
+                {grouped
+                  .sort((a, b) => b[1].length - a[1].length)
+                  .map(([animalId, reservations]) => {
+                    const sortedReservations = reservations.sort(
+                      (a, b) => new Date(a.date) - new Date(b.date)
+                    );
+                    const animal = animals.find(
+                      (animal) => animal.id === animalId
+                    );
 
-                    {sortedReservations.map((reservation) => {
-                      // Преобразуем строки даты и времени в объекты Date
-                      const reservationDate = parseISO(reservation.date);
-                      const startTime = parse(
-                        reservation.startTime,
-                        "HH:mm:ss",
-                        reservationDate
-                      );
-                      const endTime = parse(
-                        reservation.endTime,
-                        "HH:mm:ss",
-                        reservationDate
-                      );
-
-                      return (
-                        <div
-                          key={reservation.id}
-                          className="flex justify-between items-center p-4 bg-white border border-black rounded-lg shadow-md mb-2"
-                        >
-                          <div className="flex-1">
+                    return (
+                      <div
+                        key={animalId}
+                        className="p-4 bg-white border-2 border-black rounded-lg transition-transform duration-200 ease-out hover:scale-[1.02] max-w-sm flex-1"
+                        style={{ minWidth: "250px" }}
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          {animal?.photo && (
+                            <img
+                              src={animal.photo}
+                              alt={animal.name}
+                              className="w-32 h-24 object-cover rounded-lg border-2 border-black mr-4"
+                            />
+                          )}
+                          <div className="flex-1 text-left">
+                            <p className="text-lg font-semibold">
+                              {animal?.name}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {/* Разделяем дату и время на разные строки */}
-                              <span>
-                                {format(reservationDate, "EEE, MMM dd, yyyy")}
-                              </span>{" "}
-                              {/* Добавляем день недели */}
-                              <br />
-                              <span>
-                                {format(startTime, "hh:mm a")} -{" "}
-                                {format(endTime, "hh:mm a")}
-                              </span>
+                              {animal?.breed}
                             </p>
                           </div>
-                          <Button
-                            text="Cancel"
-                            variant="red"
-                            icon="/icons/cancel_white.png"
-                            iconPosition="left"
-                            onClick={() =>
-                              handleCancelReservationFromList(reservation.id)
-                            }
-                            className="px-3 py-2 text-sm w-24" // Уменьшаем padding и добавляем размер шрифта
-                            iconSize="h-4 w-4" // Уменьшаем размер иконки
-                          />
                         </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-          </div>
+
+                        {sortedReservations.map((reservation) => {
+                          const reservationDate = parseISO(reservation.date);
+                          const startTime = parse(
+                            reservation.startTime,
+                            "HH:mm:ss",
+                            reservationDate
+                          );
+                          const endTime = parse(
+                            reservation.endTime,
+                            "HH:mm:ss",
+                            reservationDate
+                          );
+
+                          return (
+                            <div
+                              key={reservation.id}
+                              className="flex justify-between items-center p-4 bg-white border border-black rounded-lg mb-2"
+                            >
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-600">
+                                  <span>
+                                    {format(
+                                      reservationDate,
+                                      "EEE, MMM dd, yyyy"
+                                    )}
+                                  </span>
+                                  <br />
+                                  <span>
+                                    {format(startTime, "hh:mm a")} -{" "}
+                                    {format(endTime, "hh:mm a")}
+                                  </span>
+                                </p>
+                              </div>
+                              <Button
+                                text="Cancel"
+                                variant="red"
+                                icon="/icons/cancel_white.png"
+                                iconPosition="left"
+                                onClick={() =>
+                                  handleCancelReservationFromList(
+                                    reservation.id
+                                  )
+                                }
+                                className="px-3 py-2 text-sm w-24"
+                                iconSize="h-4 w-4"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

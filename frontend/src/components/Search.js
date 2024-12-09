@@ -103,7 +103,7 @@ function Search({ placeholder, icon, onSearch }) {
     };
   }, []);
 
-  function generatePastelColor(id) {
+  function generateColor(id) {
     // Генерируем числовой хеш на основе ID
     let hash = 0;
     for (let i = 0; i < id.length; i++) {
@@ -111,13 +111,14 @@ function Search({ placeholder, icon, onSearch }) {
     }
 
     // Извлекаем базовые компоненты (HSL)
+    // Повышаем насыщенность и немного уменьшаем светлоту, чтобы цвет был ярче
     let hue = Math.abs(hash % 360); // Угол цвета в градусах (0-360)
-    let saturation = 60 + (hash % 20); // Насыщенность 60-80%
-    let lightness = 70 + (hash % 10); // Светлота 70-80% (светлые пастельные тона)
+    let saturation = 70 + (hash % 20); // Повышаем насыщенность: 70-90%
+    let lightness = 60 + (hash % 10); // Чуть уменьшили светлоту: 60-70%
 
     // Исключаем коричневые и бежевые тона
     while ((hue >= 30 && hue <= 50) || (hue >= 20 && hue <= 60)) {
-      hue = (hue + 60) % 360; // Сдвигаем оттенок на 60° для получения другого цвета
+      hue = (hue + 60) % 360;
     }
 
     // Возвращаем цвет в формате HSL
@@ -235,24 +236,19 @@ function Search({ placeholder, icon, onSearch }) {
 
       {/* Suggested Animals */}
       {suggestedAnimals.length > 0 && (
-        <div className="mt-4">
+        <div className="mt-4 text-left">
+          {" "}
+          {/* Выравниваем по левому краю */}
           <h3 className="text-lg font-semibold mb-2">Suggested Animals</h3>
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-row justify-start items-center gap-2">
             {suggestedAnimals.map((animal) => (
               <li
                 key={animal.id}
-                className="flex justify-between items-center px-4 py-2 border rounded-lg cursor-pointer hover:bg-gray-100"
+                className="px-2 py-2 border rounded-xl cursor-pointer text-center text-white font-bold hover:bg-gray-100 whitespace-nowrap overflow-hidden text-ellipsis w-28"
                 onClick={() => handleSelectAnimal(animal)}
-                style={{ backgroundColor: generatePastelColor(animal.id) }}
+                style={{ backgroundColor: generateColor(animal.id) }}
               >
-                <span>{animal.name}</span>
-                {animal.photo && (
-                  <img
-                    src={animal.photo}
-                    alt={animal.name}
-                    className="w-10 h-10 rounded-full border border-black"
-                  />
-                )}
+                {animal.name}
               </li>
             ))}
           </ul>
