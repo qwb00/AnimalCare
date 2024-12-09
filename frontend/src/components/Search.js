@@ -28,7 +28,7 @@ function Search({ placeholder, icon, onSearch }) {
 
   useEffect(() => {
     updateSuggestedAnimals();
-  }, [calendarUpdated, updateSuggestedAnimals]);
+  }, [calendarUpdated, updateSuggestedAnimals]); // updateSuggestedAnimals теперь мемоизирована
 
   useEffect(() => {
     const loadAnimals = async () => {
@@ -109,21 +109,20 @@ function Search({ placeholder, icon, onSearch }) {
     for (let i = 0; i < id.length; i++) {
       hash = id.charCodeAt(i) + ((hash << 5) - hash);
     }
-  
+
     // Извлекаем базовые компоненты (HSL)
     let hue = Math.abs(hash % 360); // Угол цвета в градусах (0-360)
     let saturation = 60 + (hash % 20); // Насыщенность 60-80%
     let lightness = 70 + (hash % 10); // Светлота 70-80% (светлые пастельные тона)
-  
+
     // Исключаем коричневые и бежевые тона
     while ((hue >= 30 && hue <= 50) || (hue >= 20 && hue <= 60)) {
       hue = (hue + 60) % 360; // Сдвигаем оттенок на 60° для получения другого цвета
     }
-  
+
     // Возвращаем цвет в формате HSL
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
-  
 
   return (
     <div className="relative w-full max-w-[600px]" ref={dropdownRef}>

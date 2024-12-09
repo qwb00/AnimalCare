@@ -30,6 +30,7 @@ function Calendar({ selectedAnimalId }) {
   const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [animals, setAnimals] = useState([]);
   const [animalData, setAnimalData] = useState(null);
   const [reservedSlots, setReservedSlots] = useState([]);
   const [reservedSlotDetails, setReservedSlotDetails] = useState([]);
@@ -57,6 +58,33 @@ function Calendar({ selectedAnimalId }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const MAX_SLOTS = 10;
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    const fetchAnimalData = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/animals`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (response.data) {
+          const animalInfo = response.data.map((animal) => ({
+            id: animal.id,
+            name: animal.name,
+            breed: animal.breed,
+            photo: animal.photo, // Добавляем фото животного
+          }));
+
+          setAnimals(animalInfo);
+        }
+      } catch (error) {
+        console.error("Error fetching animals:", error);
+      }
+    };
+
+    fetchAnimalData();
+  }, []);
 
   useEffect(() => {
     const fetchAnimalData = async () => {
@@ -589,6 +617,8 @@ function Calendar({ selectedAnimalId }) {
 
       setReservedSlotDetails(mergedSlots);
 
+      let allSuccess = true;
+
       for (const { date, startTime, endTime } of mergedSlots) {
         const reservationData = {
           userId: userID,
@@ -679,7 +709,14 @@ function Calendar({ selectedAnimalId }) {
             error.response?.data?.message ||
             "Unexpected error occurred. Please try again.";
           console.error("Error sending reservation request:", errorMessage);
-          showNotification(errorMessage, false);
+          if (allSuccess) {
+            showNotification("All reservations created successfully!", true);
+          } else {
+            showNotification(
+              "Some reservations failed. Please try again.",
+              false
+            );
+          }
         }
       }
 
@@ -1159,37 +1196,37 @@ function Calendar({ selectedAnimalId }) {
         )}
 
       {cancelNotification.isOpen && (
-        <div
-          className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border border-gray-300 text-black transition-all duration-300"
-          style={{ minWidth: "300px" }}
-        >
-          <h3 className="text-lg font-semibold">
+        <div className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72">
+          <h3 className="text-lg font-semibold mb-2">
             {cancelNotification.message}
           </h3>
           {cancelNotification.animalName && (
-            <p className="mt-2">
+            <p className="mt-2 text-sm">
               <strong>Animal:</strong> {cancelNotification.animalName}
             </p>
           )}
           {cancelNotification.date && (
-            <p>
+            <p className="text-sm">
               <strong>Date:</strong> {cancelNotification.date}
             </p>
           )}
           {cancelNotification.time && (
-            <p>
+            <p className="text-sm">
               <strong>Time:</strong> {cancelNotification.time}
             </p>
           )}
-          <button
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
+
+          <Button
+            text="Undo"
+            variant="blue"
+            icon="/icons/undo.png" // Иконка undo
+            iconPosition="left"
+            className="mt-4 px-4 py-2 w-full" // Полная ширина для кнопки
             onClick={() => {
               cancelProcessRef.current = true; // Устанавливаем флаг отмены
               setCancelNotification((prev) => ({ ...prev, isOpen: false }));
             }}
-          >
-            Undo
-          </button>
+          />
         </div>
       )}
 
@@ -1239,22 +1276,44 @@ function Calendar({ selectedAnimalId }) {
       )}
 
       {mergeTimeSlots(selectedSlots).length > 0 && (
-        <div className="mt-6 p-4 border rounded-xl shadow-md bg-white">
-          <h3 className="text-2xl font-bold mb-4 text-center text-gray-800">
+        <div className="mt-4 p-4 bg-white border-2 border-black rounded-lg shadow-md max-w-md">
+          <h3 className="text-lg font-semibold mb-3">
             Selected Reservation Details
           </h3>
-          <div className="flex items-start">
+          <div className="flex flex-row items-start gap-4">
             <div className="flex-1">
-              <p className="text-lg mb-4 text-gray-700">
-                Animal: <strong>{animalData?.name}</strong>
+              <p className="text-base mb-1">
+                <strong>Animal:</strong> {animalData?.name}
               </p>
-              <p className="text-lg mb-4 text-gray-700">Selected Time Slots:</p>
+              {animalData?.breed && (
+                <p className="text-base mb-1">
+                  <strong>Breed:</strong> {animalData.breed}
+                </p>
+              )}
+              {animalData?.age && (
+                <p className="text-base mb-1">
+                  <strong>Age:</strong> {animalData.age} years
+                </p>
+              )}
+              {animalData?.weight && (
+                <p className="text-base mb-1">
+                  <strong>Weight:</strong> {animalData.weight} kg
+                </p>
+              )}
+              {animalData?.personality && (
+                <p className="text-base mb-1">
+                  <strong>Personality:</strong> {animalData.personality}
+                </p>
+              )}
+              <p className="text-base mb-2 font-semibold">
+                Selected Time Slots:
+              </p>
               <div className="flex flex-col gap-2">
                 {mergeTimeSlots(selectedSlots).map(
                   ({ date, startTime, endTime }) => (
                     <div
                       key={`${date}-${startTime}-${endTime}`}
-                      className="bg-main-blue text-white px-4 py-2 rounded-lg shadow-sm text-sm"
+                      className="bg-main-blue text-white px-3 py-1 rounded shadow-sm text-base"
                     >
                       {`${date}: ${startTime} - ${endTime}`}
                     </div>
@@ -1262,15 +1321,13 @@ function Calendar({ selectedAnimalId }) {
                 )}
               </div>
             </div>
-            <div className="flex-shrink-0 ml-4">
-              {animalImagePath && (
-                <img
-                  src={animalImagePath}
-                  alt={animalData?.name}
-                  className="w-36 h-36 object-cover rounded-xl border-2 border-black shadow-lg"
-                />
-              )}
-            </div>
+            {animalImagePath && (
+              <img
+                src={animalImagePath}
+                alt={animalData?.name}
+                className="w-24 h-24 object-cover rounded border border-black shadow-sm"
+              />
+            )}
           </div>
         </div>
       )}
@@ -1289,7 +1346,8 @@ function Calendar({ selectedAnimalId }) {
 
       {allUserReservations.length > 0 && (
         <div className="mt-6 space-y-4">
-          <h3 className="text-lg font-semibold mb-4">Upcoming Reservations:</h3>
+          <h3 className="text-lg font-semibold mb-4">Upcoming Walks:</h3>{" "}
+          {/* Изменили заголовок секции */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {/* Сетка с тремя колонками для больших экранов */}
             {Object.entries(
@@ -1311,6 +1369,9 @@ function Calendar({ selectedAnimalId }) {
                   (a, b) => new Date(a.date) - new Date(b.date)
                 );
 
+                // Ищем фото животного в стейте animals по animalId
+                const animal = animals.find((animal) => animal.id === animalId);
+
                 // Выводим информацию о животном и его резервациях
                 return (
                   <div
@@ -1318,37 +1379,69 @@ function Calendar({ selectedAnimalId }) {
                     className="p-4 bg-white border-2 border-black rounded-lg shadow-md hover:shadow-xl transition-all"
                   >
                     <div className="flex justify-between items-center mb-2">
-                      <p className="text-lg font-semibold">
-                        {sortedReservations[0].animalName}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {sortedReservations[0].animalBreed}
-                      </p>
+                      {/* Добавляем фото животного с нужным округлением и черной границей */}
+                      {animal?.photo && (
+                        <img
+                          src={animal.photo}
+                          alt={animal.name}
+                          className="w-16 h-16 object-cover rounded-lg border-2 border-black mr-4" // Увеличиваем размер фото
+                        />
+                      )}
+                      <div className="flex-1 text-left">
+                        {" "}
+                        {/* Выровняем текст по левому краю */}
+                        <p className="text-lg font-semibold">{animal?.name}</p>
+                        <p className="text-sm text-gray-600">{animal?.breed}</p>
+                      </div>
                     </div>
 
-                    {sortedReservations.map((reservation) => (
-                      <div
-                        key={reservation.id}
-                        className="flex justify-between items-center p-4 bg-white border border-black rounded-lg shadow-md mb-2"
-                      >
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-600">
-                            {formatReservationDetails(reservation)}
-                          </p>
+                    {sortedReservations.map((reservation) => {
+                      // Преобразуем строки даты и времени в объекты Date
+                      const reservationDate = parseISO(reservation.date);
+                      const startTime = parse(
+                        reservation.startTime,
+                        "HH:mm:ss",
+                        reservationDate
+                      );
+                      const endTime = parse(
+                        reservation.endTime,
+                        "HH:mm:ss",
+                        reservationDate
+                      );
+
+                      return (
+                        <div
+                          key={reservation.id}
+                          className="flex justify-between items-center p-4 bg-white border border-black rounded-lg shadow-md mb-2"
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-600">
+                              {/* Разделяем дату и время на разные строки */}
+                              <span>
+                                {format(reservationDate, "EEE, MMM dd, yyyy")}
+                              </span>{" "}
+                              {/* Добавляем день недели */}
+                              <br />
+                              <span>
+                                {format(startTime, "hh:mm a")} -{" "}
+                                {format(endTime, "hh:mm a")}
+                              </span>
+                            </p>
+                          </div>
+                          <Button
+                            text="Cancel"
+                            variant="red"
+                            icon="/icons/cancel_white.png"
+                            iconPosition="left"
+                            onClick={() =>
+                              handleCancelReservationFromList(reservation.id)
+                            }
+                            className="px-3 py-2 text-sm w-24" // Уменьшаем padding и добавляем размер шрифта
+                            iconSize="h-4 w-4" // Уменьшаем размер иконки
+                          />
                         </div>
-                        <Button
-                          text="Cancel"
-                          variant="red"
-                          icon="/icons/cancel_white.png"
-                          iconPosition="left"
-                          onClick={() =>
-                            handleCancelReservationFromList(reservation.id)
-                          }
-                          className="px-3 py-2 text-sm w-24" // Уменьшаем padding и добавляем размер шрифта
-                          iconSize="h-4 w-4" // Уменьшаем размер иконки
-                        />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 );
               })}
