@@ -2,12 +2,13 @@
 
 using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.ReservationsDTO;
+using Shared.RequestFeatures;
 
 namespace Service.Contracts
 {
     public interface IReservationService
     {
-        Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges, string? animalName = null, string? breed = null);
+        Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges, ReservationParameters reservationParameters);
         Task<ReservationForConfirmationDTO> GetReservationByIdAsync(Guid reservationId, bool trackChanges);
         Task<ReservationForConfirmationDTO> CreateReservationAsync(ReservationForCreationDTO reservationRequest);
         Task UpdateReservationAsync(Guid reservationId, ReservationForUpdateDTO reservationForUpdate, bool trackChanges);

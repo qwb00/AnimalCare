@@ -3,6 +3,7 @@ using Contracts;
 using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.ReservationsDTO;
+using Shared.RequestFeatures;
 
 namespace Service
 {
@@ -17,9 +18,9 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges, string? animalName, string? breed)
+        public async Task<IEnumerable<ReservationForConfirmationDTO>> GetAllReservationsAsync(bool trackChanges, ReservationParameters reservationParameters)
         {
-            var reservations = await _repository.Reservation.GetAllReservationsAsync(trackChanges, animalName, breed);
+            var reservations = await _repository.Reservation.GetAllReservationsAsync(trackChanges, reservationParameters);
             var reservationsDto = _mapper.Map<IEnumerable<ReservationForConfirmationDTO>>(reservations);
             return reservationsDto;
         }

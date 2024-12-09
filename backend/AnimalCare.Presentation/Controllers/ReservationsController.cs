@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.ReservationsDTO;
+using Shared.RequestFeatures;
 
 namespace AnimalCare.Presentation.Controllers
 {
@@ -25,9 +26,9 @@ namespace AnimalCare.Presentation.Controllers
 
         // GET: api/Reservations
         [HttpGet(Name = "GetReservations")]
-        public async Task<IActionResult> GetReservations([FromQuery] string? animalName, [FromQuery] string? breed)
+        public async Task<IActionResult> GetReservations([FromQuery] ReservationParameters reservationParameters)
         {
-            var reservations = await _service.ReservationService.GetAllReservationsAsync(trackChanges: false, animalName, breed);
+            var reservations = await _service.ReservationService.GetAllReservationsAsync(trackChanges: false, reservationParameters);
             return Ok(reservations);
         }
 
