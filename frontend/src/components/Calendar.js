@@ -20,8 +20,9 @@ import API_BASE_URL from "../config";
 import { Link } from "react-router-dom";
 
 function Calendar({ selectedAnimalId }) {
-
   const { updateSuggestedAnimals } = useContext(AppContext);
+
+  const cancelTimer = 3000; // 3 seconds
 
   const today = new Date();
   const tomorrow = addDays(new Date(), 1);
@@ -61,7 +62,7 @@ function Calendar({ selectedAnimalId }) {
     const fetchAnimalData = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/animals/${selectedAnimalId[0]}`
+          `${API_BASE_URL}/animals/${selectedAnimalId}`
         );
         if (response.data) {
           setAnimalData(response.data);
@@ -74,7 +75,7 @@ function Calendar({ selectedAnimalId }) {
       }
     };
 
-    if (selectedAnimalId[0]) {
+    if (selectedAnimalId) {
       fetchAnimalData();
     }
   }, [selectedAnimalId]);
@@ -95,7 +96,7 @@ function Calendar({ selectedAnimalId }) {
         if (response.data) {
           const filteredReservations = response.data.filter(
             (reservation) =>
-              reservation.animalId === selectedAnimalId[0] &&
+              reservation.animalId === selectedAnimalId &&
               reservation.status !== 4
           );
 
@@ -156,7 +157,7 @@ function Calendar({ selectedAnimalId }) {
       }
     };
 
-    if (selectedAnimalId[0]) {
+    if (selectedAnimalId) {
       fetchReservations();
     }
   }, [selectedAnimalId, refreshKey]);
@@ -177,7 +178,7 @@ function Calendar({ selectedAnimalId }) {
         "Fetching reservations for userId:",
         userId,
         "and animalId:",
-        selectedAnimalId[0]
+        selectedAnimalId
       );
 
       const response = await axios.get(
@@ -193,7 +194,7 @@ function Calendar({ selectedAnimalId }) {
         // Фильтруем резервации по животному и статусу
         const filteredReservations = response.data.filter(
           (reservation) =>
-            reservation.animalId === selectedAnimalId[0] &&
+            reservation.animalId === selectedAnimalId &&
             reservation.status !== 4 // Исключаем отменённые резервации
         );
 
@@ -260,7 +261,7 @@ function Calendar({ selectedAnimalId }) {
   };
 
   useEffect(() => {
-    if (selectedAnimalId[0]) {
+    if (selectedAnimalId) {
       fetchUserReservations();
     } else {
       setUserReservedSlots([]);
@@ -482,8 +483,47 @@ function Calendar({ selectedAnimalId }) {
     return mergedSlots;
   };
 
-  function generateColor(id) {
+  // Обновленная функция для безопасного форматирования даты и времени
+  const formatReservationDetails = (reservation) => {
+    // Проверяем, существует ли reservation.date
+    if (!reservation.date) {
+      console.error(
+        "No reservation date found for this reservation:",
+        reservation
+      );
+      return "Invalid date"; // Возвращаем строку, если нет даты
+    }
 
+    // Попробуем парсить дату и добавить диагностику
+    let reservationDate;
+    try {
+      reservationDate = parseISO(reservation.date); // Используем правильное поле 'date'
+    } catch (error) {
+      console.error("Error parsing date:", reservation.date, error);
+      return "Invalid date"; // Возвращаем строку, если ошибка при парсинге
+    }
+
+    // Проверка, является ли дата валидной
+    if (isNaN(reservationDate)) {
+      console.error("Invalid date after parsing:", reservation.date);
+      return "Invalid date"; // Возвращаем строку, если дата некорректна
+    }
+
+    const startDateTime = parse(
+      reservation.startTime,
+      "HH:mm:ss",
+      reservationDate
+    );
+    const endDateTime = parse(reservation.endTime, "HH:mm:ss", reservationDate);
+
+    const formattedDate = format(reservationDate, "MMM dd, yyyy"); // Выводим дату в формате "Dec 15, 2024"
+    const formattedStartTime = format(startDateTime, "hh:mm a"); // Выводим время в формате "01:00 PM"
+    const formattedEndTime = format(endDateTime, "hh:mm a"); // Выводим время в формате "03:00 PM"
+
+    return `${formattedDate} (${formattedStartTime} - ${formattedEndTime})`;
+  };
+
+  function generateColor(id) {
     let hash = 0;
     for (let i = 0; i < id.length; i++) {
       hash = id.charCodeAt(i) + ((hash << 5) - hash);
@@ -552,7 +592,7 @@ function Calendar({ selectedAnimalId }) {
       for (const { date, startTime, endTime } of mergedSlots) {
         const reservationData = {
           userId: userID,
-          animalId: selectedAnimalId[0],
+          animalId: selectedAnimalId,
           reservationDate: format(
             parse(date, "MMM dd yyyy", new Date()),
             "yyyy-MM-dd"
@@ -602,7 +642,7 @@ function Calendar({ selectedAnimalId }) {
             }
 
             // Сохраняем данные о резервации
-            const animalDetails = await fetchAnimalDetails(selectedAnimalId[0]);
+            const animalDetails = await fetchAnimalDetails(selectedAnimalId);
 
             console.log("animalDetails:", animalDetails);
 
@@ -755,7 +795,7 @@ function Calendar({ selectedAnimalId }) {
           // Скрываем уведомление
           setCancelNotification((prev) => ({ ...prev, isOpen: false }));
         }
-      }, 3000); // Таймаут для выполнения запроса и скрытия уведомления
+      }, cancelTimer); // Таймаут для выполнения запроса и скрытия уведомления
 
       await updateSuggestedAnimals();
     } catch (error) {
@@ -880,7 +920,7 @@ function Calendar({ selectedAnimalId }) {
           message: "Failed to cancel reservation. Please try again.",
         }));
       }
-    }, 3000); // Таймаут перед отправкой запроса
+    }, cancelTimer); // Таймаут перед отправкой запроса
   };
 
   return (
@@ -892,7 +932,7 @@ function Calendar({ selectedAnimalId }) {
           for the walks with{" "}
           <span
             className="font-bold text-2xl"
-            style={{ color: generateColor(selectedAnimalId[0]) }}
+            style={{ color: generateColor(selectedAnimalId) }}
           >
             {animalData?.name}
           </span>
@@ -1012,8 +1052,8 @@ function Calendar({ selectedAnimalId }) {
                         ? {
                             backgroundColor:
                               hoveredSlot === slotKey
-                                ? "#dc2626" // Светло-красный (примерно соответствует Tailwind red-300)
-                                : generateColor(selectedAnimalId[0]), // Цвет животного
+                                ? "#ef4444" // Светло-красный (примерно соответствует Tailwind red-300)
+                                : generateColor(selectedAnimalId), // Цвет животного
                             color: "white", // Белый текст
                             border: "1px solid", // Красноватая граница
                           }
@@ -1248,27 +1288,71 @@ function Calendar({ selectedAnimalId }) {
       </div>
 
       {allUserReservations.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-lg font-bold mb-4">Your Reservations:</h3>
-          {allUserReservations.map((reservation) => (
-            <div
-              key={reservation.id}
-              className="flex justify-between items-center mb-2"
-            >
-              <div>
-                <p>
-                  <strong>{reservation.animalName}</strong> - {reservation.date}{" "}
-                  ({reservation.startTime} - {reservation.endTime})
-                </p>
-              </div>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={() => handleCancelReservationFromList(reservation.id)}
-              >
-                Cancel
-              </button>
-            </div>
-          ))}
+        <div className="mt-6 space-y-4">
+          <h3 className="text-lg font-semibold mb-4">Upcoming Reservations:</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Сетка с тремя колонками для больших экранов */}
+            {Object.entries(
+              allUserReservations.reduce((acc, reservation) => {
+                // Группируем резервации по animalId
+                const animalId = reservation.animalId;
+                if (!acc[animalId]) {
+                  acc[animalId] = [];
+                }
+                acc[animalId].push(reservation);
+                return acc;
+              }, {})
+            )
+              // Сортируем по количеству резерваций в каждой группе
+              .sort((a, b) => b[1].length - a[1].length) // Сортируем от большего количества к меньшему
+              .map(([animalId, reservations]) => {
+                // Для каждой группы (животное) сортируем резервации по дате
+                const sortedReservations = reservations.sort(
+                  (a, b) => new Date(a.date) - new Date(b.date)
+                );
+
+                // Выводим информацию о животном и его резервациях
+                return (
+                  <div
+                    key={animalId}
+                    className="p-4 bg-white border-2 border-black rounded-lg shadow-md hover:shadow-xl transition-all"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-lg font-semibold">
+                        {sortedReservations[0].animalName}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {sortedReservations[0].animalBreed}
+                      </p>
+                    </div>
+
+                    {sortedReservations.map((reservation) => (
+                      <div
+                        key={reservation.id}
+                        className="flex justify-between items-center p-4 bg-white border border-black rounded-lg shadow-md mb-2"
+                      >
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-600">
+                            {formatReservationDetails(reservation)}
+                          </p>
+                        </div>
+                        <Button
+                          text="Cancel"
+                          variant="red"
+                          icon="/icons/cancel_white.png"
+                          iconPosition="left"
+                          onClick={() =>
+                            handleCancelReservationFromList(reservation.id)
+                          }
+                          className="px-3 py-2 text-sm w-24" // Уменьшаем padding и добавляем размер шрифта
+                          iconSize="h-4 w-4" // Уменьшаем размер иконки
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+          </div>
         </div>
       )}
     </div>
