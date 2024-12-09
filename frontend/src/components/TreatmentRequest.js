@@ -195,9 +195,6 @@ const RequestCard = ({
   }
 
   const infoItems = [
-    ...(showActions === 'Caretaker'
-      ? [{ label: 'Veterinarian', value: request.veterinarianName }]
-      : []),
     {
       label: 'Date',
       value: new Date(request.examinationDate).toLocaleDateString(),
