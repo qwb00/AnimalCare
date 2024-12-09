@@ -20,6 +20,7 @@ import API_BASE_URL from "../config";
 import { Link } from "react-router-dom";
 
 function Calendar({ selectedAnimalId }) {
+
   const { updateSuggestedAnimals } = useContext(AppContext);
 
   const today = new Date();
@@ -60,7 +61,7 @@ function Calendar({ selectedAnimalId }) {
     const fetchAnimalData = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/animals/${selectedAnimalId}`
+          `${API_BASE_URL}/animals/${selectedAnimalId[0]}`
         );
         if (response.data) {
           setAnimalData(response.data);
@@ -73,7 +74,7 @@ function Calendar({ selectedAnimalId }) {
       }
     };
 
-    if (selectedAnimalId) {
+    if (selectedAnimalId[0]) {
       fetchAnimalData();
     }
   }, [selectedAnimalId]);
@@ -94,7 +95,7 @@ function Calendar({ selectedAnimalId }) {
         if (response.data) {
           const filteredReservations = response.data.filter(
             (reservation) =>
-              reservation.animalId === selectedAnimalId &&
+              reservation.animalId === selectedAnimalId[0] &&
               reservation.status !== 4
           );
 
@@ -155,7 +156,7 @@ function Calendar({ selectedAnimalId }) {
       }
     };
 
-    if (selectedAnimalId) {
+    if (selectedAnimalId[0]) {
       fetchReservations();
     }
   }, [selectedAnimalId, refreshKey]);
@@ -176,7 +177,7 @@ function Calendar({ selectedAnimalId }) {
         "Fetching reservations for userId:",
         userId,
         "and animalId:",
-        selectedAnimalId
+        selectedAnimalId[0]
       );
 
       const response = await axios.get(
@@ -192,7 +193,7 @@ function Calendar({ selectedAnimalId }) {
         // Фильтруем резервации по животному и статусу
         const filteredReservations = response.data.filter(
           (reservation) =>
-            reservation.animalId === selectedAnimalId &&
+            reservation.animalId === selectedAnimalId[0] &&
             reservation.status !== 4 // Исключаем отменённые резервации
         );
 
@@ -259,7 +260,7 @@ function Calendar({ selectedAnimalId }) {
   };
 
   useEffect(() => {
-    if (selectedAnimalId) {
+    if (selectedAnimalId[0]) {
       fetchUserReservations();
     } else {
       setUserReservedSlots([]);
@@ -482,6 +483,7 @@ function Calendar({ selectedAnimalId }) {
   };
 
   function generateColor(id) {
+
     let hash = 0;
     for (let i = 0; i < id.length; i++) {
       hash = id.charCodeAt(i) + ((hash << 5) - hash);
@@ -550,7 +552,7 @@ function Calendar({ selectedAnimalId }) {
       for (const { date, startTime, endTime } of mergedSlots) {
         const reservationData = {
           userId: userID,
-          animalId: selectedAnimalId,
+          animalId: selectedAnimalId[0],
           reservationDate: format(
             parse(date, "MMM dd yyyy", new Date()),
             "yyyy-MM-dd"
@@ -600,7 +602,7 @@ function Calendar({ selectedAnimalId }) {
             }
 
             // Сохраняем данные о резервации
-            const animalDetails = await fetchAnimalDetails(selectedAnimalId);
+            const animalDetails = await fetchAnimalDetails(selectedAnimalId[0]);
 
             console.log("animalDetails:", animalDetails);
 
@@ -890,7 +892,7 @@ function Calendar({ selectedAnimalId }) {
           for the walks with{" "}
           <span
             className="font-bold text-2xl"
-            style={{ color: generateColor(selectedAnimalId) }}
+            style={{ color: generateColor(selectedAnimalId[0]) }}
           >
             {animalData?.name}
           </span>
@@ -1011,7 +1013,7 @@ function Calendar({ selectedAnimalId }) {
                             backgroundColor:
                               hoveredSlot === slotKey
                                 ? "#dc2626" // Светло-красный (примерно соответствует Tailwind red-300)
-                                : generateColor(selectedAnimalId), // Цвет животного
+                                : generateColor(selectedAnimalId[0]), // Цвет животного
                             color: "white", // Белый текст
                             border: "1px solid", // Красноватая граница
                           }

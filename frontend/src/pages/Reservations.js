@@ -7,8 +7,8 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 
 function Reservations() {
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null); 
-  const [availableAnimals, setAvailableAnimals] = useState([]); 
+  const [selectedAnimalId, setSelectedAnimalId] = useState([]);
+  const [availableAnimals, setAvailableAnimals] = useState([]);
 
   useEffect(() => {
     const loadAnimals = async () => {
@@ -18,8 +18,8 @@ function Reservations() {
           name: animal.name,
           id: animal.id,
         }));
-        console.log("Available animals from API:", animalData); 
-        setAvailableAnimals(animalData); 
+        console.log("Available animals from API:", animalData);
+        setAvailableAnimals(animalData);
       } catch (error) {
         console.error("Error fetching animals:", error);
       }
@@ -29,17 +29,17 @@ function Reservations() {
   }, []);
 
   const handleSearchResult = (animalId) => {
-    console.log("Search result:", animalId); 
+    console.log("Search result:", animalId);
     const foundAnimal = availableAnimals.find(
       (animal) => animal.id === animalId
     );
 
     if (foundAnimal) {
       console.log("Animal found:", foundAnimal);
-      setSelectedAnimalId(animalId); 
+      setSelectedAnimalId((prevSelectedIds) => [...prevSelectedIds, animalId]);
     } else {
       console.log("Animal not found in available animals list.");
-      setSelectedAnimalId(null);
+      setSelectedAnimalId([]);
     }
   };
 
@@ -69,10 +69,9 @@ function Reservations() {
           />
         </div>
 
-        {selectedAnimalId ? (
+        {selectedAnimalId.length > 0 ? (
           <div className="mt-2 w-full">
-            <Calendar selectedAnimalId={selectedAnimalId} />{" "}
-            {/* Pass the selected animal's ID */}
+            <Calendar selectedAnimalId={selectedAnimalId} />
           </div>
         ) : (
           <p className="text-xl text-gray-600 mt-4">
