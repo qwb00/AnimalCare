@@ -31,13 +31,11 @@ function Header() {
     navigate("/");
   };
 
-  // Проверяем текущий путь и меняем стили кнопок
   const currentPath = location.pathname;
   const isOnAnimalsPage = currentPath.startsWith("/animals");
   const isOnReservationsPage = currentPath.startsWith("/reservations");
   const isOnUserPage = userID && currentPath.startsWith(`/${userID}`);
 
-  // В зависимости от варианта кнопки, используем разные иконки
   const animalsIcon = isOnAnimalsPage
     ? "/icons/animals_white.png"
     : "/icons/animals_black.png";
