@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { AppContext } from "../context/AppContext"; // Импортируйте AppContext
 import Button from "./Button";
 import axios from "axios";
 import API_BASE_URL from "../config";
@@ -23,7 +24,11 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [animals, setAnimals] = useState([]);
   const [isInputError, setIsInputError] = useState(false);
-  const dropdownRef = useRef(null); // Ref for dropdown to detect outside clicks
+  const [hoveredAnimal, setHoveredAnimal] = useState(null); // State for hovered animal
+
+  useEffect(() => {
+    updateSuggestedAnimals();
+  }, [calendarUpdated, updateSuggestedAnimals]); // updateSuggestedAnimals теперь мемоизирована
 
   useEffect(() => {
     const loadAnimals = async () => {
@@ -61,7 +66,14 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     loadAnimals();
   }, [initialAnimalName]);
 
-  // Search function for finding an animal by name
+  const handleMouseEnter = (animal) => {
+    setHoveredAnimal(animal); // Show hovered animal details
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredAnimal(null); // Hide details on mouse leave
+  };
+
   const handleSearch = () => {
     if (!searchValue) {
       setIsInputError(true);
@@ -69,7 +81,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     }
 
     const foundAnimal = animals.find(
-        (animal) => animal.name.toLowerCase() === searchValue.toLowerCase()
+      (animal) => animal.name.toLowerCase() === searchValue.toLowerCase()
     );
 
     if (foundAnimal) {
@@ -82,17 +94,17 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     setIsDropdownOpen(false);
   };
 
-  // Select an animal from the dropdown menu
   const handleSelectAnimal = (animal) => {
-    setSearchValue(animal.name); // Display selected name in input
-    setIsDropdownOpen(false); // Close menu on selection
+    setSearchValue(animal.name);
+    setIsDropdownOpen(false);
     setIsInputError(false);
+    setHoveredAnimal(null); // Скрыть карточку животного при выборе
     onSearch(animal.id);
   };
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false); // Close menu on outside click
+      setIsDropdownOpen(false);
     }
   };
 
