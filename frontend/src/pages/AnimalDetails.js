@@ -120,9 +120,11 @@ function AnimalDetails() {
   const fetchOtherAnimals = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals`);
-      
+
       // Filter out the current animal from the list to avoid duplicate animal suggestions
-      const allAnimals = response.data.filter((animal) => animal.id !== animalID);
+      const allAnimals = response.data.filter(
+        (animal) => animal.id !== animalID
+      );
 
       // Shuffle and select the first 3 animals (get 3 random animals from API)
       const randomAnimals = allAnimals
@@ -146,20 +148,20 @@ function AnimalDetails() {
 
     try {
       const response = await axios.patch(
-          `${API_BASE_URL}/animals/${animalID}`,
-          [
-            {
-              op: "replace",
-              path: `/${path}`,
-              value: value,
-            },
-          ],
+        `${API_BASE_URL}/animals/${animalID}`,
+        [
           {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json-patch+json",
-            },
-          }
+            op: "replace",
+            path: `/${path}`,
+            value: value,
+          },
+        ],
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json-patch+json",
+          },
+        }
       );
       setErrorMessages([]);
       return response;
@@ -174,7 +176,6 @@ function AnimalDetails() {
       throw error;
     }
   }
-
 
   // Functions to handle editing and saving changes
   const handleEditGeneralToggle = () => {
@@ -219,7 +220,6 @@ function AnimalDetails() {
       console.error("Error of saving: ", error);
     }
   };
-
 
   // Close editor mode and reset data to initial data
   const handleCancelGeneralChanges = () => {
@@ -426,7 +426,9 @@ function AnimalDetails() {
       </div>
 
       <div className="container mx-auto p-8">
-        {errorMessages.length > 0 && <ErrorMessages errorData={errorMessages} />}
+        {errorMessages.length > 0 && (
+          <ErrorMessages errorData={errorMessages} />
+        )}
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="relative">
             <img
@@ -675,7 +677,11 @@ function AnimalDetails() {
             )}
 
             <div className="mt-4">
-              <Link to="/reservations">
+              <Link
+                to={`/reservations?animalName=${encodeURIComponent(
+                  animalData.name
+                )}`}
+              >
                 <Button
                   text={`WALK WITH ${animalData.name.toUpperCase()}`}
                   variant="blue"
@@ -778,12 +784,13 @@ function AnimalDetails() {
               <ul className="list-disc list-inside">
                 <li>
                   <strong>Last medical examination:</strong>{" "}
-                  {toDateInputFormat(animalData.lastExamination) || "Not specified"}
+                  {toDateInputFormat(animalData.lastExamination) ||
+                    "Not specified"}
                 </li>
                 <li>
                   <strong>Vaccinations:</strong>
                   <select
-                      value={editedMedicalData.isVaccinated}
+                    value={editedMedicalData.isVaccinated}
                     onChange={(e) =>
                       setEditedMedicalData({
                         ...editedMedicalData,
