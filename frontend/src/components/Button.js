@@ -20,8 +20,6 @@ function Button({
         return "bg-red-500 text-white hover:bg-red-600";
       case "yellow":
         return "bg-yellow-500 text-white hover:bg-yellow-600";
-      case "green":
-        return "bg-green-500 text-white hover:bg-green-600";
       default:
         return "bg-white text-black border border-black hover:bg-gray-100 hover:text-gray-800";
     }

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/Button";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
   const [userID, setUserID] = useState(null);
-  const location = useLocation();
 
   // Check for username in sessionStorage when the component mounts
   useEffect(() => {
@@ -31,24 +30,6 @@ function Header() {
     navigate("/");
   };
 
-  const currentPath = location.pathname;
-  const isOnAnimalsPage = currentPath.startsWith("/animals");
-  const isOnReservationsPage = currentPath.startsWith("/reservations");
-  const isOnUserPage = userID && currentPath.startsWith(`/${userID}`);
-
-  const animalsIcon = isOnAnimalsPage
-    ? "/icons/animals_white.png"
-    : "/icons/animals_black.png";
-  const reservationsIcon = isOnReservationsPage
-    ? "/icons/reservations_white.png"
-    : "/icons/reservations_black.png";
-  const accountIcon = isOnUserPage
-    ? "/icons/account_white.png"
-    : "/icons/account_black.png";
-  const loginIcon = username
-    ? "/icons/login_button_black.svg"
-    : "/icons/login_button_white.svg";
-
   return (
     <header className="p-4">
       <div className="w-full max-w-[1024px] mx-auto flex justify-between items-center">
@@ -67,16 +48,16 @@ function Header() {
           <Link to="/animals">
             <Button
               text="Animals"
-              variant={isOnAnimalsPage ? "blue" : "white"}
-              icon={animalsIcon}
+              variant="white"
+              icon="/icons/animals_button.svg"
               iconPosition="left"
             />
           </Link>
           <Link to="/reservations">
             <Button
               text="Reservations"
-              variant={isOnReservationsPage ? "blue" : "white"}
-              icon={reservationsIcon}
+              variant="white"
+              icon="/icons/reservations_button.svg"
               iconPosition="left"
             />
           </Link>
@@ -85,8 +66,8 @@ function Header() {
               <Link to={`/${userID}/general`}>
                 <Button
                   text={`Hey, ${username}!`}
-                  variant={isOnUserPage ? "blue" : "white"}
-                  icon={accountIcon}
+                  variant="blue"
+                  icon="/icons/account_white.png"
                   iconPosition="right"
                 />
               </Link>
@@ -103,7 +84,7 @@ function Header() {
               <Button
                 text="Login"
                 variant="blue"
-                icon={loginIcon}
+                icon="/icons/login_button_white.svg"
                 iconPosition="right"
               />
             </Link>
