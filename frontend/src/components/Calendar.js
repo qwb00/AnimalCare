@@ -408,7 +408,7 @@ function Calendar({ selectedAnimalId }) {
     if (!authToken) {
       setIsAuthModalOpen(true);
     } else {
-      setIsModalOpen(true);
+      handleConfirmReservation();
     }
   };
 
@@ -977,8 +977,7 @@ function Calendar({ selectedAnimalId }) {
           Check <span className="text-main-blue">available</span> 1-hour slots
           for the walks with{" "}
           <span
-            className="font-bold text-2xl"
-            style={{ color: generateColor(selectedAnimalId) }}
+            className="font-bold text-2xl text-main-blue"
           >
             {animalData?.name}
           </span>
@@ -1099,7 +1098,7 @@ function Calendar({ selectedAnimalId }) {
                             backgroundColor:
                               hoveredSlot === slotKey
                                 ? "#ef4444" // Светло-красный (примерно соответствует Tailwind red-300)
-                                : generateColor(selectedAnimalId), // Цвет животного
+                                : "#22c55e", // Цвет животного
                             color: "white", // Белый текст
                             border: "1px solid", // Красноватая граница
                           }
@@ -1208,7 +1207,7 @@ function Calendar({ selectedAnimalId }) {
           onClick={handleCloseAuthModal}
         >
           <div
-            className="relative bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-red-600"
+            className="relative bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-yellow-500"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -1225,7 +1224,7 @@ function Calendar({ selectedAnimalId }) {
               />
             </button>
 
-            <h3 className="text-2xl font-bold mb-6 text-center text-red-600">
+            <h3 className="text-2xl font-bold mb-6 text-center text-yellow-500">
               Create an Account
             </h3>
             <p className="text-lg mb-6 text-center text-gray-800">
@@ -1254,14 +1253,14 @@ function Calendar({ selectedAnimalId }) {
           icon="/icons/plus_white.png"
           iconPosition="left"
           iconSize="h-4 w-4"
-          onClick={handleConfirmReservation}
+          onClick={handleOpenModal}
         />
       </div>
 
       {mergeTimeSlots(selectedSlots).length > 0 && (
         <div className="mt-4 p-4 bg-white border-2 border-black rounded-xl shadow-md max-w-lg">
           <h3 className="text-lg font-semibold mb-3">
-            Selected Reservation Details
+            Selected Reservation:
           </h3>
           <div className="flex flex-row items-start gap-4">
             <div className="flex-1">
@@ -1367,7 +1366,7 @@ function Calendar({ selectedAnimalId }) {
                     return (
                       <div
                         key={animalId}
-                        className="p-4 bg-white border-2 border-black rounded-lg transition-transform duration-200 ease-out hover:scale-[1.02] max-w-sm flex-1"
+                        className="p-4 bg-white border-2 border-black rounded-xl transition-transform duration-200 max-w-sm flex-1"
                         style={{ minWidth: "250px" }}
                       >
                         <div className="flex justify-between items-center mb-2">
