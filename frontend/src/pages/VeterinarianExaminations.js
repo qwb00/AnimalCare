@@ -10,6 +10,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_BASE_URL from "../config";
 import { icons } from "../components/icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ExaminationStatus = {
   InProgress: 0,
@@ -337,26 +339,33 @@ function VeterinarianExaminations() {
                 </div>
               
               <div className="flex flex-wrap gap-4 mb-4 items-end">
-                <div className="flex flex-col">
-                  <input
-                    placeholder="From date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateFromCaretaker}
-                    onChange={(e) => setDateFromCaretaker(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <input
-                    placeholder="To date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateToCaretaker}
-                    onChange={(e) => setDateToCaretaker(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
+                  <div className="flex flex-col relative">
+                    <DatePicker
+                      selected={dateFromCaretaker}
+                      onChange={(date) => setDateFromCaretaker(date)}
+                      selectsStart
+                      startDate={dateFromCaretaker}
+                      endDate={dateToCaretaker}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="From date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                  </div>
+
+                  <div className="flex flex-col relative">
+                    <DatePicker
+                      selected={dateToCaretaker}
+                      onChange={(date) => setDateToCaretaker(date)}
+                      selectsEnd
+                      startDate={dateFromCaretaker}
+                      endDate={dateToCaretaker}
+                      minDate={dateFromCaretaker}
+                      dateFormat="yyyy-MM-dd"
+                      placeholderText="To date (dd.mm.yyyy)"
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                  </div>
                 <div className="flex flex-col">
                   <input
                     type="text"

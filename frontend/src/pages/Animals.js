@@ -250,8 +250,9 @@ function Animals() {
 
 
   {/* Filters */}
+  <div className="mx-auto p-4">
   {filtersVisible && (
-    <div className="filter-container mt-4 bg-white shadow-md p-6 rounded-xl border border-gray-200">
+    <div className="filter-container max-w-[1024px] bg-white shadow-md p-6 rounded-xl border border-gray-200">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -333,6 +334,7 @@ function Animals() {
       </form>
     </div>
   )}
+</div>
 </div>
 
 
