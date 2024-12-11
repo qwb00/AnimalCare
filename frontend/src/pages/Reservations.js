@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import Search from "../components/Search";
 import Calendar from "../components/Calendar";
 import Footer from "../components/Footer";
+import { AppContext } from "../context/AppContext";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config";
 
 function Reservations() {
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null);
+  const { selectedAnimalId, setSelectedAnimalId } = useContext(AppContext);
   const [availableAnimals, setAvailableAnimals] = useState([]);
   const location = useLocation();
 
@@ -86,7 +87,7 @@ function Reservations() {
 
         {selectedAnimalId ? (
           <div className="mt-2 w-full">
-            <Calendar selectedAnimalId={selectedAnimalId} />
+            <Calendar />
           </div>
         ) : (
           <p className="text-xl text-gray-600 mt-4">

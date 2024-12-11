@@ -5,7 +5,7 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 
 function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
-  const { calendarUpdated, suggestedAnimals, updateSuggestedAnimals } =
+  const { calendarUpdated, suggestedAnimals, updateSuggestedAnimals, setSelectedAnimalId  } =
     useContext(AppContext);
 
   const dropdownRef = useRef(null);
@@ -45,17 +45,19 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
         }));
         setAnimals(animalData);
 
-        // Если у нас есть initialAnimalName, попробуем сразу выбрать это животное
         if (initialAnimalName) {
           const foundAnimal = animalData.find(
             (animal) =>
               animal.name.toLowerCase() === initialAnimalName.toLowerCase()
           );
           if (foundAnimal) {
-            handleSelectAnimal(foundAnimal);
+            handleSelectAnimal(foundAnimal); // Вызывает onSearch(foundAnimal.id)
           } else {
-            // Если животное не найдено, просто установим значение в инпут
+            // Устанавливаем значение в инпут
             setSearchValue(initialAnimalName);
+            // Вызываем handleSearch, чтобы попытаться найти животное по инпуту
+            // Это вызовет onSearch(null), если животное не найдено.
+            handleSearch();
           }
         }
       } catch (error) {
@@ -100,6 +102,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     setIsInputError(false);
     setHoveredAnimal(null); // Скрыть карточку животного при выборе
     onSearch(animal.id);
+    setSelectedAnimalId(animal.id);
   };
 
   const handleClickOutside = (event) => {
