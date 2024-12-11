@@ -11,11 +11,13 @@ import AddPrescriptionForm from '../components/AddPrescriptionForm';
 import API_BASE_URL from '../config';
 import {icons} from "../components/icons";
 import { ToastContainer } from "react-toastify";
+import PrescriptionListItem from '../components/PrescriptionListItem';
 
 function Prescriptions() {
     const [user, setUser] = useState(null);
     const [prescriptions, setPrescriptions] = useState([]);
     const [showAddPrescriptionForm, setShowAddPrescriptionForm] = useState(false);
+    const [viewMode, setViewMode] = useState("card");
     const navigate = useNavigate();
 
     const [animalNameFilter, setAnimalNameFilter] = useState("");
@@ -115,8 +117,19 @@ function Prescriptions() {
             <div className="w-full max-w-[1024px] mx-auto mb-14">
                 {user.role === 'Veterinarian' && (
                     <>
-                        <div className="mb-8">
-                            <Button icon={icons.plus_white} text="New Prescription" variant="blue" onClick={handleAddPrescriptionClick} />
+                        <div className="mb-8 flex items-center justify-between">
+                            <Button
+                                icon={icons.plus_white}
+                                text="New Prescription"
+                                variant="blue"
+                                onClick={handleAddPrescriptionClick}
+                            />
+                            <Button
+                                icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
+                                text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
+                                variant="white"
+                                onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+                            />
                         </div>
 
                         <div className="flex items-center justify-between mb-4">
@@ -165,15 +178,22 @@ function Prescriptions() {
                                 />
                             </div>
                         </div>
-
-                        <div className="flex flex-wrap gap-10">
-                            {filteredPrescriptions.map((prescription) => (
+                        <div className={viewMode === "card" ? "flex flex-wrap gap-10" : "flex flex-col space-y-4"}>
+                        {viewMode === "card"
+                            ? filteredPrescriptions.map((prescription) => (
                                 <PrescriptionCard
+                                    key={prescription.id}
+                                    prescription={prescription}
+                                />
+                            ))
+                            : filteredPrescriptions.map((prescription) => (
+                                <PrescriptionListItem
                                     key={prescription.id}
                                     prescription={prescription}
                                 />
                             ))}
                         </div>
+
                     </>
                 )}
 
