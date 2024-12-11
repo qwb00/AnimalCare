@@ -7,6 +7,7 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [reservationHistory, setReservationHistory] = useState([]);
   const [suggestedAnimals, setSuggestedAnimals] = useState([]);
+  const [selectedAnimalId, setSelectedAnimalId] = useState(null);
 
   const updateSuggestedAnimals = useCallback(async () => {
     try {
@@ -91,6 +92,8 @@ export const AppProvider = ({ children }) => {
         setReservationHistory,
         suggestedAnimals,
         updateSuggestedAnimals, // Мемоизированная функция
+        selectedAnimalId,        // Добавляем в value контекста
+        setSelectedAnimalId,  
       }}
     >
       {children}

@@ -19,8 +19,8 @@ import Button from "./Button";
 import API_BASE_URL from "../config";
 import { Link } from "react-router-dom";
 
-function Calendar({ selectedAnimalId }) {
-  const { updateSuggestedAnimals } = useContext(AppContext);
+function Calendar({}) {
+  const { updateSuggestedAnimals, selectedAnimalId } = useContext(AppContext);
 
   const cancelTimer = 10000; // 3 seconds
 
@@ -28,7 +28,7 @@ function Calendar({ selectedAnimalId }) {
   const tomorrow = addDays(new Date(), 1);
   const [currentWeek, setCurrentWeek] = useState(tomorrow);
   const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
-  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [selectedSlotsByAnimal, setSelectedSlotsByAnimal] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animals, setAnimals] = useState([]);
   const [animalData, setAnimalData] = useState(null);
@@ -108,87 +108,75 @@ function Calendar({ selectedAnimalId }) {
     }
   }, [selectedAnimalId]);
 
-  useEffect(() => {
-    setSelectedSlots([]);
+  const fetchReservations = async () => {
+    try {
+      const authToken = sessionStorage.getItem("token");
 
-    const fetchReservations = async () => {
-      try {
-        const authToken = sessionStorage.getItem("token");
+      const response = await axios.get(`${API_BASE_URL}/reservations`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
-        const response = await axios.get(`${API_BASE_URL}/reservations`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
+      if (response.data) {
+        const filteredReservations = response.data.filter(
+          (reservation) =>
+            reservation.animalId === selectedAnimalId &&
+            reservation.status !== 4
+        );
 
-        if (response.data) {
-          const filteredReservations = response.data.filter(
-            (reservation) =>
-              reservation.animalId === selectedAnimalId &&
-              reservation.status !== 4
+        // Обработка резерваций
+        const occupiedSlots = filteredReservations.flatMap((reservation) => {
+          const reservationDate = parseISO(reservation.reservationDate);
+
+          const startDateTime = parse(
+            reservation.startTime,
+            "HH:mm:ss",
+            reservationDate
           );
 
-          // Обработка резерваций
-          const occupiedSlots = filteredReservations.flatMap((reservation) => {
-            const reservationDate = parseISO(reservation.reservationDate);
+          const endDateTime = parse(
+            reservation.endTime,
+            "HH:mm:ss",
+            reservationDate
+          );
 
-            const startDateTime = parse(
-              reservation.startTime,
-              "HH:mm:ss",
-              reservationDate
+          if (!startDateTime || !endDateTime || endDateTime <= startDateTime) {
+            console.error(
+              "Invalid reservation times:",
+              reservation,
+              "Date:",
+              reservationDate,
+              "Start:",
+              startDateTime,
+              "End:",
+              endDateTime
             );
+            return [];
+          }
 
-            const endDateTime = parse(
-              reservation.endTime,
-              "HH:mm:ss",
-              reservationDate
-            );
+          // Разбиение длительных слотов на 1-часовые интервалы
+          const slots = [];
+          let currentSlot = startDateTime;
 
-            if (
-              !startDateTime ||
-              !endDateTime ||
-              endDateTime <= startDateTime
-            ) {
-              console.error(
-                "Invalid reservation times:",
-                reservation,
-                "Date:",
-                reservationDate,
-                "Start:",
-                startDateTime,
-                "End:",
-                endDateTime
-              );
-              return [];
-            }
+          while (currentSlot < endDateTime) {
+            const formattedDate = format(currentSlot, "yyyy-MM-dd");
+            const formattedTime = format(currentSlot, "hh:mm a");
+            slots.push(`${formattedDate}-${formattedTime}`);
+            currentSlot = addHours(currentSlot, 1);
+          }
 
-            // Разбиение длительных слотов на 1-часовые интервалы
-            const slots = [];
-            let currentSlot = startDateTime;
+          return slots;
+        });
 
-            while (currentSlot < endDateTime) {
-              const formattedDate = format(currentSlot, "yyyy-MM-dd");
-              const formattedTime = format(currentSlot, "hh:mm a");
-              slots.push(`${formattedDate}-${formattedTime}`);
-              currentSlot = addHours(currentSlot, 1);
-            }
-
-            return slots;
-          });
-
-          setReservedSlots(occupiedSlots);
-        } else {
-          console.warn("No reservations found in server response.");
-        }
-      } catch (error) {
-        console.error("Error fetching reservations:", error);
+        setReservedSlots(occupiedSlots);
+      } else {
+        console.warn("No reservations found in server response.");
       }
-    };
-
-    if (selectedAnimalId) {
-      fetchReservations();
+    } catch (error) {
+      console.error("Error fetching reservations:", error);
     }
-  }, [selectedAnimalId, refreshKey]);
+  };
 
   const fetchUserReservations = async () => {
     try {
@@ -290,6 +278,7 @@ function Calendar({ selectedAnimalId }) {
 
   useEffect(() => {
     if (selectedAnimalId) {
+      fetchReservations();
       fetchUserReservations();
     } else {
       setUserReservedSlots([]);
@@ -447,9 +436,9 @@ function Calendar({ selectedAnimalId }) {
   };
 
   // Merge consecutive selected time slots to create continuous time intervals for each day
-  const mergeTimeSlots = (selectedSlots) => {
+  const mergeTimeSlots = (selectedSlotsByAnimal) => {
     // Convert each selected slot into a structured format (date and start/end times)
-    const slots = selectedSlots.map(formatTimeSlot);
+    const slots = selectedSlotsByAnimal.map(formatTimeSlot);
 
     // Group slots by date to merge intervals only within the same day
     const groupedByDate = slots.reduce((acc, slot) => {
@@ -593,16 +582,49 @@ function Calendar({ selectedAnimalId }) {
       console.log("Slot not reserved by user:", slotKey);
     }
 
-    if (selectedSlots.includes(slotKey)) {
-      // Если слот уже выбран, снимаем выбор
-      console.log("Deselecting slot:", slotKey);
-      setSelectedSlots((prevSelected) =>
-        prevSelected.filter((s) => s !== slotKey)
-      );
-    } else if (isFutureDate && selectedSlots.length < MAX_SLOTS) {
-      // Если слот в будущем и лимит не превышен, добавляем в выбранные
-      console.log("Selecting slot:", slotKey);
-      setSelectedSlots((prevSelected) => [...prevSelected, slotKey]);
+    const currentSlots = selectedSlotsByAnimal[selectedAnimalId] || [];
+
+    // Подсчёт, сколько животных уже имеют выбранные слоты
+    const numberOfSelectedAnimals = Object.keys(selectedSlotsByAnimal).filter(
+      (id) => selectedSlotsByAnimal[id] && selectedSlotsByAnimal[id].length > 0
+    ).length;
+
+    if (currentSlots.length === 0 && numberOfSelectedAnimals >= 2) {
+      console.warn("Cannot select another animal: limit of 2 reached.");
+      showNotification("You can't select more than 2 animals at once.", false);
+      return;
+    }
+
+    if (currentSlots.includes(slotKey)) {
+      setSelectedSlotsByAnimal((prev) => {
+        const updated = { ...prev };
+        updated[selectedAnimalId] = currentSlots.filter((s) => s !== slotKey);
+        return updated;
+      });
+    } else if (isFutureDate && currentSlots.length < MAX_SLOTS) {
+      setSelectedSlotsByAnimal((prev) => {
+        const updated = { ...prev };
+        updated[selectedAnimalId] = [...currentSlots, slotKey];
+        return updated;
+      });
+
+      // После обновления selectedSlotsByAnimal делаем проверку и запрос деталей животного
+      (async () => {
+        const alreadyHasDetails = animals.some(
+          (a) =>
+            a.id === selectedAnimalId && (a.age || a.weight || a.personality)
+        );
+        if (!alreadyHasDetails) {
+          const details = await fetchAnimalDetails(selectedAnimalId);
+          if (details) {
+            setAnimals((prev) =>
+              prev.map((a) =>
+                a.id === selectedAnimalId ? { ...a, ...details } : a
+              )
+            );
+          }
+        }
+      })();
     } else {
       console.warn(
         "Cannot select slot: Maximum limit reached or slot invalid."
@@ -622,115 +644,140 @@ function Calendar({ selectedAnimalId }) {
       }
 
       let newReservedSlots = [...reservedSlots];
-      const mergedSlots = mergeTimeSlots(selectedSlots);
-
-      setReservedSlotDetails(mergedSlots);
 
       let allSuccess = true;
 
-      for (const { date, startTime, endTime } of mergedSlots) {
-        const reservationData = {
-          userId: userID,
-          animalId: selectedAnimalId,
-          reservationDate: format(
-            parse(date, "MMM dd yyyy", new Date()),
-            "yyyy-MM-dd"
-          ),
-          startTime: format(
-            parse(startTime, "hh:mm a", new Date()),
-            "HH:mm:ss"
-          ),
-          endTime: format(parse(endTime, "hh:mm a", new Date()), "HH:mm:ss"),
-        };
+      let animalDetailsById = {};
 
-        try {
-          const response = await axios.post(
-            `${API_BASE_URL}/reservations`,
-            reservationData,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${authToken}`,
-              },
-            }
-          );
-
-          if (response.status === 201) {
-            fetchUserReservations();
-            setRefreshKey((prevKey) => prevKey + 1);
-
-            let currentSlot = parse(
-              startTime,
-              "hh:mm a",
-              parse(date, "MMM dd yyyy", new Date())
-            );
-            const endSlot = parse(
-              endTime,
-              "hh:mm a",
-              parse(date, "MMM dd yyyy", new Date())
-            );
-
-            while (currentSlot < endSlot) {
-              const formattedDate = format(currentSlot, "yyyy-MM-dd");
-              const formattedTime = format(currentSlot, "hh:mm a");
-              const slotKey = `${formattedDate}-${formattedTime}`;
-              if (!newReservedSlots.includes(slotKey)) {
-                newReservedSlots.push(slotKey);
-              }
-              currentSlot = addHours(currentSlot, 1);
-            }
-
-            // Сохраняем данные о резервации
-            const animalDetails = await fetchAnimalDetails(selectedAnimalId);
-
-            console.log("animalDetails:", animalDetails);
-
-            const formattedDate = format(
+      for (const [animalId, slots] of Object.entries(selectedSlotsByAnimal)) {
+        const mergedSlots = mergeTimeSlots(slots);
+        for (const { date, startTime, endTime } of mergedSlots) {
+          setReservedSlotDetails(mergedSlots);
+          const reservationData = {
+            userId: userID,
+            animalId: animalId,
+            reservationDate: format(
               parse(date, "MMM dd yyyy", new Date()),
-              "EEE, MMM dd yyyy"
+              "yyyy-MM-dd"
+            ),
+            startTime: format(
+              parse(startTime, "hh:mm a", new Date()),
+              "HH:mm:ss"
+            ),
+            endTime: format(parse(endTime, "hh:mm a", new Date()), "HH:mm:ss"),
+          };
+
+          try {
+            const response = await axios.post(
+              `${API_BASE_URL}/reservations`,
+              reservationData,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${authToken}`,
+                },
+              }
             );
 
-            setLastReservationDetails({
-              animalName: animalDetails?.name || "Unknown",
-              animalPhoto: animalDetails?.photo || null,
-              animalBreed: animalDetails?.breed || "N/A",
-              animalAge: animalDetails?.age || "Unknown",
-              animalWeight: animalDetails?.weight || "Unknown",
-              animalPersonality: animalDetails?.personality || "Not specified",
-              isVaccinated: animalDetails?.isVaccinated || false,
-              date: formattedDate, // Добавляем форматированную дату
-              startTime,
-              endTime,
-            });
+            if (response.status === 201) {
+              fetchUserReservations();
+              setRefreshKey((prevKey) => prevKey + 1);
 
-            showNotification("Reservation created successfully!", true);
-          } else {
-            console.error("Failed response:", response.data);
-            showNotification(
-              "Failed to create reservation. Please try again.",
-              false
-            );
-          }
+              let currentSlot = parse(
+                startTime,
+                "hh:mm a",
+                parse(date, "MMM dd yyyy", new Date())
+              );
+              const endSlot = parse(
+                endTime,
+                "hh:mm a",
+                parse(date, "MMM dd yyyy", new Date())
+              );
 
-          await updateSuggestedAnimals();
-        } catch (error) {
-          const errorMessage =
-            error.response?.data?.message ||
-            "Unexpected error occurred. Please try again.";
-          console.error("Error sending reservation request:", errorMessage);
-          if (allSuccess) {
-            showNotification("All reservations created successfully!", true);
-          } else {
-            showNotification(
-              "Some reservations failed. Please try again.",
-              false
-            );
+              while (currentSlot < endSlot) {
+                const formattedDate = format(currentSlot, "yyyy-MM-dd");
+                const formattedTime = format(currentSlot, "hh:mm a");
+                const slotKey = `${formattedDate}-${formattedTime}`;
+                if (!newReservedSlots.includes(slotKey)) {
+                  newReservedSlots.push(slotKey);
+                }
+                currentSlot = addHours(currentSlot, 1);
+              }
+
+              if (!animalDetailsById[animalId]) {
+                const details = await fetchAnimalDetails(animalId);
+                if (details) {
+                  // Ищем индекс животного в состоянии animals
+                  const animalIndex = animals.findIndex(
+                    (a) => a.id === animalId
+                  );
+                  if (animalIndex !== -1) {
+                    // Обновляем состояние animals, добавляя подробности к уже имеющемуся объекту
+                    setAnimals((prev) => {
+                      const updated = [...prev];
+                      updated[animalIndex] = {
+                        ...updated[animalIndex],
+                        age: details.age,
+                        weight: details.weight,
+                        personality: details.personality,
+                      };
+                      return updated;
+                    });
+                  }
+                  animalDetailsById[animalId] = details;
+                } else {
+                  animalDetailsById[animalId] = {};
+                }
+              }
+
+              const formattedDate = format(
+                parse(date, "MMM dd yyyy", new Date()),
+                "EEE, MMM dd yyyy"
+              );
+
+              const currentAnimalDetails = animalDetailsById[animalId] || {};
+              setLastReservationDetails({
+                animalName: currentAnimalDetails?.name || "Unknown",
+                animalPhoto: currentAnimalDetails?.photo || null,
+                animalBreed: currentAnimalDetails?.breed || "N/A",
+                animalAge: currentAnimalDetails?.age || "Unknown",
+                animalWeight: currentAnimalDetails?.weight || "Unknown",
+                animalPersonality:
+                  currentAnimalDetails?.personality || "Not specified",
+                isVaccinated: currentAnimalDetails?.isVaccinated || false,
+                date: formattedDate,
+                startTime,
+                endTime,
+              });
+              showNotification("Reservation created successfully!", true);
+            } else {
+              console.error("Failed response:", response.data);
+              showNotification(
+                "Failed to create reservation. Please try again.",
+                false
+              );
+            }
+
+            await updateSuggestedAnimals();
+          } catch (error) {
+            const errorMessage =
+              error.response?.data?.message ||
+              "Unexpected error occurred. Please try again.";
+            console.error("Error sending reservation request:", errorMessage);
+            if (allSuccess) {
+              showNotification("All reservations created successfully!", true);
+            } else {
+              showNotification(
+                "Some reservations failed. Please try again.",
+                false
+              );
+            }
           }
         }
-      }
 
-      setReservedSlots(newReservedSlots);
-      setSelectedSlots([]);
+        setReservedSlots(newReservedSlots);
+        setSelectedSlotsByAnimal({});
+      }
     } catch (error) {
       console.error("Unexpected error:", error);
       showNotification("Unexpected error. Please try again.", false);
@@ -969,6 +1016,9 @@ function Calendar({ selectedAnimalId }) {
     }, cancelTimer); // Таймаут перед отправкой запроса
   };
 
+  const allSelectedSlots = Object.values(selectedSlotsByAnimal).flat();
+  const mergedAllSelected = mergeTimeSlots(allSelectedSlots);
+
   return (
     <div className="w-full py-2">
       <div className="flex items-center justify-between mb-4">
@@ -1001,7 +1051,6 @@ function Calendar({ selectedAnimalId }) {
           </button>
         </div>
       </div>
-
       {/* Week grid */}
       <div className="grid grid-cols-7 gap-2 text-center mb-2">
         {daysOfWeek.map((day) => {
@@ -1036,7 +1085,6 @@ function Calendar({ selectedAnimalId }) {
           );
         })}
       </div>
-
       {/* Time slots grid */}
       <div className="grid grid-cols-7 gap-2">
         {daysOfWeek.map((day) => {
@@ -1049,7 +1097,9 @@ function Calendar({ selectedAnimalId }) {
             >
               {timeSlots.map((slot) => {
                 const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
-                const isSelected = selectedSlots.includes(slotKey);
+                const currentSlots =
+                  selectedSlotsByAnimal[selectedAnimalId] || [];
+                const isSelected = currentSlots.includes(slotKey);
                 const isReserved = reservedSlots.includes(slotKey);
                 const isUserReserved = userReservedSlots.includes(slotKey);
                 const isInactive =
@@ -1111,32 +1161,40 @@ function Calendar({ selectedAnimalId }) {
           );
         })}
       </div>
-
       {/* Notification Modal */}
-      {isNotificationOpen && notification.isSuccess && (
+      {isNotificationOpen && (
         <div
           className="fixed z-50 bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72"
           onClick={() => setIsNotificationOpen(false)}
         >
-          <h3 className="text-lg font-semibold mb-2 text-green-500">
-            Reservation Confirmed
-          </h3>
-          {lastReservationDetails && (
+          {notification.isSuccess ? (
             <>
-              <p className="text-sm">
-                <strong>Animal:</strong> {lastReservationDetails.animalName}
-              </p>
-              <p className="text-sm mb-2">
-                <strong>Date & Time:</strong> {lastReservationDetails.date},{" "}
-                {lastReservationDetails.startTime} -{" "}
-                {lastReservationDetails.endTime}
-              </p>
+              <h3 className="text-lg font-semibold mb-2 text-green-500">
+                Reservation Confirmed
+              </h3>
+              {lastReservationDetails && (
+                <>
+                  <p className="text-sm">
+                    <strong>Animal:</strong> {lastReservationDetails.animalName}
+                  </p>
+                  <p className="text-sm mb-2">
+                    <strong>Date & Time:</strong> {lastReservationDetails.date},{" "}
+                    {lastReservationDetails.startTime} -{" "}
+                    {lastReservationDetails.endTime}
+                  </p>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <h3 className="text-lg font-semibold mb-2 text-red-500">
+                Warning
+              </h3>
+              <p className="text-sm">{notification.message}</p>
             </>
           )}
-          <p className="text-sm">This message will disappear soon.</p>
         </div>
       )}
-
       {cancelNotification.isOpen && (
         <div
           className="fixed z-50 bottom-4 right-4 p-4 rounded-xl shadow-lg bg-white border-2 border-black text-black transition-all duration-300 w-72"
@@ -1152,29 +1210,58 @@ function Calendar({ selectedAnimalId }) {
               <strong>Animal:</strong> {cancelNotification.animalName}
             </p>
           )}
-          {cancelNotification.date && (
-            <p className="text-sm">
-              <strong>Date:</strong> {cancelNotification.date}
-            </p>
-          )}
+          {cancelNotification.date &&
+            (() => {
+              const dateString = cancelNotification.date;
+              let parsedDate;
+
+              if (dateString.includes("T")) {
+                // Предполагаем формат ISO: 2024-12-16T00:00:00
+                parsedDate = parseISO(dateString);
+              } else {
+                // Предполагаем формат Dec 17 2024
+                parsedDate = parse(dateString, "MMM dd yyyy", new Date());
+              }
+
+              const formattedDate = format(parsedDate, "EEE, MMM dd, yyyy");
+
+              return (
+                <p className="text-sm">
+                  <strong>Date:</strong> {formattedDate}
+                </p>
+              );
+            })()}
+
           {cancelNotification.time &&
             (() => {
-              const timeRange = cancelNotification.time.split(" - ");
-              let formattedTime = cancelNotification.time;
+              const timeString = cancelNotification.time;
+              let formattedTime = timeString;
 
-              if (timeRange.length === 2) {
-                // Предполагаем, что timeRange содержит ISO-строки дат (например, "2024-12-16T12:00:00" - "2024-12-16T13:00:00")
-                const start = parseISO(timeRange[0]);
-                const end = parseISO(timeRange[1]);
+              // Проверяем, есть ли в строке дефис (значит формат "HH:mm:ss - HH:mm:ss")
+              if (timeString.includes("-")) {
+                // Формат "13:00:00 - 14:00:00"
+                const [startRaw, endRaw] = timeString
+                  .split("-")
+                  .map((str) => str.trim());
 
-                if (!isNaN(start) && !isNaN(end)) {
-                  // Форматируем в удобочитаемый формат
-                  // Например: "Mon, Dec 16, 2024 12:00 PM - 01:00 PM"
-                  formattedTime = `${format(
-                    start,
-                    "EEE, MMM dd, yyyy h:mm a"
-                  )} - ${format(end, "h:mm a")}`;
-                }
+                // Парсим время как 24-часовое
+                const startTime = parse(startRaw, "HH:mm:ss", new Date());
+                const endTime = parse(endRaw, "HH:mm:ss", new Date());
+
+                // Форматируем в 12-часовой формат c суффиксом AM/PM
+                formattedTime = `${format(startTime, "hh:mm a")} - ${format(
+                  endTime,
+                  "hh:mm a"
+                )}`;
+              } else {
+                // Формат "03:00 PM"
+                // Добавляем 1 час к полученному времени
+                const startTime = parse(timeString, "hh:mm a", new Date());
+                const endTime = addHours(startTime, 1);
+                formattedTime = `${format(startTime, "hh:mm a")} - ${format(
+                  endTime,
+                  "hh:mm a"
+                )}`;
               }
 
               return (
@@ -1197,7 +1284,6 @@ function Calendar({ selectedAnimalId }) {
           />
         </div>
       )}
-
       {/* Authentication Modal */}
       {isAuthModalOpen && (
         <div
@@ -1242,7 +1328,6 @@ function Calendar({ selectedAnimalId }) {
           </div>
         </div>
       )}
-
       {/* Reservation Button */}
       <div className="flex justify-start mt-4">
         <Button
@@ -1254,78 +1339,127 @@ function Calendar({ selectedAnimalId }) {
           onClick={handleOpenModal}
         />
       </div>
+      {Object.entries(selectedSlotsByAnimal).length > 0 && (
+        <>
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-3">
+              Selected Reservations:
+            </h3>
+          </div>
 
-      {mergeTimeSlots(selectedSlots).length > 0 && (
-        <div className="mt-4 p-4 bg-white border-2 border-black rounded-xl shadow-md max-w-lg">
-          <h3 className="text-lg font-semibold mb-3">Selected Reservation:</h3>
-          <div className="flex flex-row items-start gap-4">
-            <div className="flex-1">
-              <p className="text-base mb-1">
-                <strong>Animal:</strong> {animalData?.name}
-              </p>
-              {animalData?.breed && (
-                <p className="text-base mb-1">
-                  <strong>Breed:</strong> {animalData.breed}
-                </p>
-              )}
-              {animalData?.age && (
-                <p className="text-base mb-1">
-                  <strong>Age:</strong> {animalData.age} years
-                </p>
-              )}
-              {animalData?.weight && (
-                <p className="text-base mb-1">
-                  <strong>Weight:</strong> {animalData.weight} kg
-                </p>
-              )}
-              {animalData?.personality && (
-                <p className="text-base mb-1">
-                  <strong>Personality:</strong> {animalData.personality}
-                </p>
-              )}
-              <p className="text-base mb-2 font-semibold">
-                Selected Time Slots:
-              </p>
-              <div className="flex flex-col gap-2">
-                {mergeTimeSlots(selectedSlots).map(
-                  ({ date, startTime, endTime }) => {
-                    // Парсим дату, чтобы можно было получить день недели
-                    const parsedDate = parse(date, "MMM dd yyyy", new Date());
-                    const dayOfWeek = format(parsedDate, "EEE"); // Например: Mon, Tue, Wed...
+          <div className="flex flex-row gap-4 mt-4 flex-wrap">
+            {Object.entries(selectedSlotsByAnimal).map(([animalId, slots]) => {
+              // Мержим слоты для конкретного животного
+              const mergedSlots = mergeTimeSlots(slots);
 
-                    return (
-                      <div
-                        key={`${date}-${startTime}-${endTime}`}
-                        className="inline-block bg-main-blue text-white px-3 py-1 mr-4 rounded-xl shadow-sm text-base"
-                      >
-                        {`${dayOfWeek}, ${date}: ${startTime} - ${endTime}`}
+              // Сортируем слоты по возрастанию
+              const sortedSlots = mergedSlots.sort((a, b) => {
+                const dateA = parse(
+                  `${a.date} ${a.startTime}`,
+                  "MMM dd yyyy hh:mm a",
+                  new Date()
+                );
+                const dateB = parse(
+                  `${b.date} ${b.startTime}`,
+                  "MMM dd yyyy hh:mm a",
+                  new Date()
+                );
+                return dateA - dateB;
+              });
+
+              // Находим данные о животном
+              const animalDetails =
+                animals.find((item) => item.id === animalId) || {};
+              const animalPhoto = animalDetails.photo;
+              const animalName = animalDetails.name || "Unknown";
+              const animalBreed = animalDetails.breed || "Unknown";
+              const animalAge = animalDetails.age || "Unknown";
+              const animalWeight = animalDetails.weight || "Unknown";
+              const animalPersonality =
+                animalDetails.personality || "Not specified";
+
+              return (
+                <div
+                  key={animalId}
+                  className="flex flex-col justify-between mt-4 p-4 bg-white border-2 border-black rounded-xl shadow-md max-w-lg"
+                >
+                  <div className="flex flex-row items-start gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold mb-3">
+                        {animalName}
+                      </h3>
+                      {animalBreed && (
+                        <p className="text-base mb-1">
+                          <strong>Breed:</strong> {animalBreed}
+                        </p>
+                      )}
+                      {animalAge && (
+                        <p className="text-base mb-1">
+                          <strong>Age:</strong> {animalAge} years
+                        </p>
+                      )}
+                      {animalWeight && (
+                        <p className="text-base mb-1">
+                          <strong>Weight:</strong> {animalWeight} kg
+                        </p>
+                      )}
+                      {animalPersonality && (
+                        <p className="text-base mb-1">
+                          <strong>Personality:</strong> {animalPersonality}
+                        </p>
+                      )}
+                      <p className="text-base mb-2 font-semibold">
+                        Selected Time Slots:
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        {sortedSlots.map(({ date, startTime, endTime }) => {
+                          const parsedDate = parse(
+                            date,
+                            "MMM dd yyyy",
+                            new Date()
+                          );
+                          const dayOfWeek = format(parsedDate, "EEE");
+                          return (
+                            <div
+                              key={`${date}-${startTime}-${endTime}`}
+                              className="inline-block bg-main-blue text-white px-3 py-1 mr-4 rounded-xl shadow-sm text-base"
+                            >
+                              {`${dayOfWeek}, ${date}: ${startTime} - ${endTime}`}
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  }
-                )}
-              </div>
-            </div>
-            {animalImagePath && (
-              <img
-                src={animalImagePath}
-                alt={animalData?.name}
-                className="w-32 h-32 object-cover rounded-xl border-2 border-black shadow-sm"
-              />
-            )}
+                    </div>
+                    {animalPhoto && (
+                      <img
+                        src={animalPhoto}
+                        alt={animalName}
+                        className="w-32 h-32 object-cover rounded-xl border-2 border-black shadow-sm"
+                      />
+                    )}
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <Button
+                      text="Reset selection"
+                      variant="white"
+                      icon="/icons/cancel.png"
+                      iconPosition="left"
+                      onClick={() =>
+                        setSelectedSlotsByAnimal((prev) => {
+                          const updated = { ...prev };
+                          delete updated[animalId];
+                          return updated;
+                        })
+                      }
+                      className="px-4 py-2 text-base"
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div className="mt-4 flex justify-center">
-            <Button
-              text="Reset selection"
-              variant="white"
-              icon="/icons/cancel.png"
-              iconPosition="left"
-              onClick={() => setSelectedSlots([])}
-              className="px-4 py-2 text-base"
-            />
-          </div>
-        </div>
+        </>
       )}
-
       {allUserReservations.length > 0 && (
         <div className="mt-6 space-y-4">
           <h3 className="text-lg font-semibold mb-4">Upcoming Walks:</h3>
