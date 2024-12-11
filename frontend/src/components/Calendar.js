@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 function Calendar({}) {
   const { updateSuggestedAnimals, selectedAnimalId } = useContext(AppContext);
 
-  const cancelTimer = 10000; // 3 seconds
+  const cancelTimer = 5000; // 3 seconds
 
   const today = new Date();
   const tomorrow = addDays(new Date(), 1);
@@ -213,6 +213,8 @@ function Calendar({}) {
             reservation.animalId === selectedAnimalId &&
             reservation.status !== 4 // Исключаем отменённые резервации
         );
+
+        console.log("Filtered user reservations:", filteredReservations);
 
         // Создаем списки для userReservedSlots и userReservations
         const userSlots = [];
@@ -819,7 +821,38 @@ function Calendar({}) {
       // Сбрасываем флаг отмены
       cancelProcessRef.current = false;
 
-      // Показываем уведомление
+      const reservationDate = parseISO(reservation.date);
+      const startDateTime = parse(
+        reservation.startTime,
+        "HH:mm:ss",
+        reservationDate
+      );
+      const endDateTime = parse(
+        reservation.endTime,
+        "HH:mm:ss",
+        reservationDate
+      );
+      const hoursDiff = differenceInHours(endDateTime, startDateTime);
+
+      let hourlySlots = [];
+      if (hoursDiff > 1) {
+        // Разбиваем резервацию на часовые интервалы
+        let current = startDateTime;
+        while (current < endDateTime) {
+          const nextHour = addHours(current, 1);
+          // Создаем "слот" с текущего часа до следующего
+          hourlySlots.push({
+            start: format(current, "HH:mm:ss"),
+            end: format(nextHour, "HH:mm:ss"),
+            date: format(current, "yyyy-MM-dd"),
+          });
+          current = nextHour;
+        }
+
+        console.log("Split long reservation into hourly slots:", hourlySlots);
+      }
+
+      // Показываем уведомление об отмене
       showCancelNotification({
         message: "Reservation cancellation in progress...",
         animalName: animalData?.name || "Unknown Animal",
@@ -836,27 +869,50 @@ function Calendar({}) {
         }
 
         try {
-          const response = await fetch(
-            `${API_BASE_URL}/reservations/${reservationId}`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-                "Content-Type": "application/json-patch+json",
-              },
-              body: JSON.stringify([
-                { op: "replace", path: "/status", value: 4 },
-              ]),
-            }
-          );
+          let response;
 
-          if (!response.ok) {
-            throw new Error(
-              `Failed to cancel reservation: ${await response.text()}`
+          if (hoursDiff > 1) {
+            // Если резервация длится более часа, меняем startTime на час вперед,
+            // например, на "16:00:00". В реальности можно вычислить исходный startTime,
+            // добавить 1 час к нему и использовать это значение.
+            const newStartTime = format(addHours(startDateTime, 1), "HH:mm:ss");
+            response = await fetch(
+              `${API_BASE_URL}/reservations/${reservationId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                  "Content-Type": "application/json-patch+json",
+                },
+                body: JSON.stringify([
+                  { op: "replace", path: "/startTime", value: newStartTime },
+                ]),
+              }
+            );
+          } else {
+            // Если длится 1 час или меньше, просто отменяем резервацию (меняем статус на 4)
+            response = await fetch(
+              `${API_BASE_URL}/reservations/${reservationId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                  "Content-Type": "application/json-patch+json",
+                },
+                body: JSON.stringify([
+                  { op: "replace", path: "/status", value: 4 },
+                ]),
+              }
             );
           }
 
-          console.log("Reservation cancelled successfully.");
+          if (!response.ok) {
+            throw new Error(
+              `Failed to update reservation: ${await response.text()}`
+            );
+          }
+
+          console.log("Reservation updated successfully.");
 
           // Удаляем только выбранный слот из состояний
           setUserReservedSlots((prevSlots) =>
@@ -874,12 +930,9 @@ function Calendar({}) {
           fetchAllUserReservations();
           setRefreshKey((prevKey) => prevKey + 1);
         } catch (error) {
-          console.error(
-            "Error occurred during reservation cancellation:",
-            error
-          );
+          console.error("Error occurred during reservation update:", error);
           showCancelNotification({
-            message: "Failed to cancel reservation. Please try again.",
+            message: "Failed to update reservation. Please try again.",
             animalName: "",
             date: "",
             time: "",
