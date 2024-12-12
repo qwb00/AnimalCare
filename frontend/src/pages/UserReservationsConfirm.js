@@ -8,6 +8,7 @@ import UserNav from "../components/UserNav";
 import Card from "../components/Card";
 import { icons } from "../components/icons";
 import Button from "../components/Button";
+import ListItem from "../components/ListItem";
 
 function UserReservationsConfirm() {
     const [user, setUser] = useState(null);
@@ -20,6 +21,7 @@ function UserReservationsConfirm() {
         date: "",
         timeRange: [9, 17], // Default time range
     });
+    const [viewMode, setViewMode] = useState("card");
     const [filtersVisible, setFiltersVisible] = useState(false);
     const navigate = useNavigate();
 
@@ -135,6 +137,12 @@ function UserReservationsConfirm() {
                         />
                     </div>
                 </div>
+                <Button
+                      icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
+                      text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
+                      variant="white"
+                      onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+                    />
 
                 {filtersVisible && (
                     <div className="p-4 bg-gray-100 rounded-lg shadow max-w-[978px]">
@@ -209,8 +217,39 @@ function UserReservationsConfirm() {
                 )}
 
                 <div className="flex flex-wrap gap-20 mt-6">
-                    {newRequests.map((reservation) => (
+                {viewMode === "card"
+                    ? newRequests.map((reservation) => (
                         <Card
+                            key={reservation.id}
+                            title={`Walk with ${reservation.animalName}`}
+                            imageSrc={reservation.photo || icons.placeholder}
+                            infoItems={[
+                                { icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
+                                { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
+                                { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
+                                { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
+                                { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0,5)} - ${reservation.endTime.slice(0,5)}` },
+                            ]}
+                            buttons={[
+                                {
+                                    text: "Decline",
+                                    variant: "red",
+                                    icon: icons.decline,
+                                    onClick: () => handleDecline(reservation.id),
+                                    className: "px-5 py-2 w-full",
+                                },
+                                {
+                                    text: "Approve",
+                                    variant: "blue",
+                                    icon: icons.approve,
+                                    onClick: () => handleApprove(reservation.id),
+                                    className: "px-5 py-2 w-full",
+                                },
+                            ]}
+                        />
+                    ))
+                    : newRequests.map((reservation) => (
+                        <ListItem
                             key={reservation.id}
                             title={`Walk with ${reservation.animalName}`}
                             imageSrc={reservation.photo || icons.placeholder}

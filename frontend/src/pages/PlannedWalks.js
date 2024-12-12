@@ -8,6 +8,7 @@ import UserNav from "../components/UserNav";
 import Card from "../components/Card";
 import { icons } from "../components/icons";
 import Button from "../components/Button";
+import ListItem from "../components/ListItem";
 
 function PlannedWalks() {
     const [user, setUser] = useState(null);
@@ -21,6 +22,7 @@ function PlannedWalks() {
         timeRange: [9, 17], // Default time range
     });
     const [filtersVisible, setFiltersVisible] = useState(false);
+    const [viewMode, setViewMode] = useState("card");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -132,6 +134,12 @@ function PlannedWalks() {
                         onClick={() => setFiltersVisible(!filtersVisible)}
                     />
                 </div>
+                <Button
+                                icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
+                                text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
+                                variant="white"
+                                onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+                            />
 
                 {filtersVisible && (
                     <div className="p-4 bg-gray-100 rounded-lg shadow max-w-[978px]">
@@ -206,7 +214,8 @@ function PlannedWalks() {
                 )}
 
                 <div className="flex flex-wrap gap-20 mt-6">
-                    {plannedWalks.map((reservation) => (
+                    {viewMode === "card"
+                     ? plannedWalks.map((reservation) => (
                         <Card
                             key={reservation.id}
                             title={`Walk with ${reservation.animalName}`}
@@ -235,7 +244,38 @@ function PlannedWalks() {
                                 },
                             ]}
                         />
-                    ))}
+                    ))
+                : 
+                plannedWalks.map((reservation) => (
+                    <ListItem
+                        key={reservation.id}
+                        title={`Walk with ${reservation.animalName}`}
+                        imageSrc={reservation.photo || icons.placeholder}
+                        infoItems={[
+                            { icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
+                            { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
+                            { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
+                            { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
+                            { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0, 5)} - ${reservation.endTime.slice(0, 5)}` },
+                        ]}
+                        buttons={[
+                            {
+                                text: "Missed",
+                                variant: "red",
+                                icon: icons.decline,
+                                onClick: () => handleMarkAsMissed(reservation.id),
+                                className: "px-5 py-2 w-full",
+                            },
+                            {
+                                text: "Completed",
+                                variant: "blue",
+                                icon: icons.approve,
+                                onClick: () => handleMarkAsCompleted(reservation.id),
+                                className: "px-5 py-2 w-full",
+                            },
+                        ]}
+                    />
+                ))}
                 </div>
                 {plannedWalks.length === 0 && (
                     <p className="text-center text-gray-500 mt-4 mb-6">No planned walks found</p>

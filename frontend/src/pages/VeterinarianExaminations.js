@@ -12,6 +12,7 @@ import API_BASE_URL from "../config";
 import { icons } from "../components/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import TreatmentListItem from '../components/TreatmentListItem'
 
 const ExaminationStatus = {
   InProgress: 0,
@@ -32,6 +33,7 @@ function VeterinarianExaminations() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddRequestForm, setShowAddRequestForm] = useState(false);
+  const [viewMode, setViewMode] = useState("card");
 
   // Caretaker visible requests
   const [visibleCancelledRequests, setVisibleCancelledRequests] = useState(2);
@@ -51,8 +53,6 @@ function VeterinarianExaminations() {
   const [statusFilterCaretaker, setStatusFilterCaretaker] = useState("");
 
   const [nameFilterNewRequests, setNameFilterNewRequests] = useState("");
-  const [dateFromNewRequests, setDateFromNewRequests] = useState("");
-  const [dateToNewRequests, setDateToNewRequests] = useState("");
   const [typeFilterNewRequests, setTypeFilterNewRequests] = useState("");
 
   const [nameFilterInProgress, setNameFilterInProgress] = useState("");
@@ -237,20 +237,20 @@ function VeterinarianExaminations() {
   const filteredNewRequests = applyFiltersToRequests(
     newRequests,
     nameFilterNewRequests,
-    dateFromNewRequests,
-    dateToNewRequests,
     typeFilterNewRequests
   );
 
   const filteredVetInProgress = applyFiltersToRequests(
     vetInProgressRequests,
     nameFilterInProgress,
+    "",
     dateFromInProgress,
     dateToInProgress
   );
   const filteredVetCompleted = applyFiltersToRequests(
     vetCompletedRequests,
     nameFilterCompleted,
+    "",
     dateFromCompleted,
     dateToCompleted
   );
@@ -287,7 +287,7 @@ function VeterinarianExaminations() {
             </div>
 
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-              <h2 className="text-2xl font-bold">Cancelled Requests</h2>
+              <h2 className="text-2xl font-bold mb-4">Cancelled Requests</h2>
               <div className="flex flex-wrap gap-10">
                 {cancelledRequests.slice(0, visibleCancelledRequests).map((request) => (
                   <RequestCard
@@ -335,7 +335,14 @@ function VeterinarianExaminations() {
                         <option value="InProgress">In Progress</option>
                         <option value="Completed">Completed</option>
                     </select>
+                  
                     </div>
+                    <Button
+                      icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
+                      text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
+                      variant="white"
+                      onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+                    />
                 </div>
               
               <div className="flex flex-wrap gap-4 mb-4 items-end">
@@ -361,7 +368,7 @@ function VeterinarianExaminations() {
                       startDate={dateFromCaretaker}
                       endDate={dateToCaretaker}
                       minDate={dateFromCaretaker}
-                      dateFormat="yyyy-MM-dd"
+                      dateFormat="yyyy/MM/dd"
                       placeholderText="To date (dd.mm.yyyy)"
                       className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
                     />
@@ -387,8 +394,17 @@ function VeterinarianExaminations() {
               </div>
 
               <div className="flex flex-wrap gap-10">
-                {filteredCaretakerActiveRequests.slice(0, visibleCaretakerActiveRequests).map((request) => (
+              {viewMode === "card"
+                ? filteredCaretakerActiveRequests.slice(0, visibleCaretakerActiveRequests).map((request) => (
                   <RequestCard
+                    key={request.id}
+                    request={request}
+                    showActions={'Caretaker'}
+                    onDelete={handleDelete}
+                  />
+                ))
+                : filteredCaretakerActiveRequests.slice(0, visibleCaretakerActiveRequests).map((request) => (
+                  <TreatmentListItem
                     key={request.id}
                     request={request}
                     showActions={'Caretaker'}
@@ -471,25 +487,32 @@ function VeterinarianExaminations() {
               
               <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex flex-col">
-                  <input
-                    placeholder="From date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateFromInProgress}
-                    onChange={(e) => setDateFromInProgress(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <input
-                    placeholder="To date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateToInProgress}
-                    onChange={(e) => setDateToInProgress(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
+                    <DatePicker
+                      selected={dateFromInProgress}
+                      onChange={(date) => setDateFromInProgress(date)}
+                      selectsStart
+                      startDate={dateFromInProgress}
+                      endDate={dateToInProgress}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="From date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <DatePicker
+                      selected={dateToInProgress}
+                      onChange={(date) => setDateToInProgress(date)}
+                      selectsEnd
+                      startDate={dateFromInProgress}
+                      endDate={dateToInProgress}
+                      minDate={dateFromInProgress}
+                      dateFormat="yyyy/MM/dd"
+                      placeholderText="To date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                    </div>
                 <div className="flex flex-col w-full md:w-auto">
                   <input
                     type="text"
@@ -519,28 +542,43 @@ function VeterinarianExaminations() {
 
             {/* Completed Requests with filters */}
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-              <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
+              <div className="mb-8 flex items-center justify-between">
+                <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
+                <Button
+                  icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
+                  text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
+                  variant="white"
+                  onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+                />
+              </div>
               <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex flex-col">
-                  <input
-                    placeholder="From date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateFromCompleted}
-                    onChange={(e) => setDateFromCompleted(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <input
-                    placeholder="To date"
-                    onFocus={(e) => (e.target.type = "date")}
-                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                    value={dateToCompleted}
-                    onChange={(e) => setDateToCompleted(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                  />
-                </div>
+                    <DatePicker
+                      selected={dateFromCompleted}
+                      onChange={(date) => setDateFromCompleted(date)}
+                      selectsStart
+                      startDate={dateFromCompleted}
+                      endDate={dateToCompleted}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="From date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <DatePicker
+                      selected={dateToCompleted}
+                      onChange={(date) => setDateToCompleted(date)}
+                      selectsEnd
+                      startDate={dateFromCompleted}
+                      endDate={dateToCompleted}
+                      minDate={dateFromCompleted}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="To date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                    </div>
                 <div className="flex flex-col">
                   <input
                     type="text"
@@ -552,9 +590,13 @@ function VeterinarianExaminations() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-10">
-                {filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
-                  <RequestCard key={request.id} request={request} />
-                ))}
+              {viewMode === "card"
+                  ? filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
+                      <RequestCard key={request.id} request={request} />
+                  ))
+                  : filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
+                      <TreatmentListItem key={request.id} request={request} />
+              ))}
               </div>
               {filteredVetCompleted.length > visibleVeterinarianRequests && (
                 <div className="flex justify-center my-4">
