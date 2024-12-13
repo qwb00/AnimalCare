@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 function Calendar({}) {
   const { updateSuggestedAnimals, selectedAnimalId } = useContext(AppContext);
 
-  const cancelTimer = 10000; // 3 seconds
+  const cancelTimer = 5000; // 3 seconds
 
   const today = new Date();
   const tomorrow = addDays(new Date(), 1);
@@ -190,13 +190,6 @@ function Calendar({}) {
         return;
       }
 
-      console.log(
-        "Fetching reservations for userId:",
-        userId,
-        "and animalId:",
-        selectedAnimalId
-      );
-
       const response = await axios.get(
         `${API_BASE_URL}/reservations/user/${userId}`,
         {
@@ -261,10 +254,6 @@ function Calendar({}) {
         setUserReservedSlots(userSlots); // Обновляем слоты
         setUserReservations(detailedReservations); // Сохраняем полные данные
 
-        console.log(
-          "User reservations fetched successfully:",
-          detailedReservations
-        );
       } else {
         setUserReservedSlots([]);
         setUserReservations([]);
@@ -310,7 +299,6 @@ function Calendar({}) {
           (reservation) => reservation.status !== 4 && reservation.id
         );
 
-        console.log("Filtered valid reservations:", validReservations);
         return validReservations;
       }
 
@@ -573,13 +561,9 @@ function Calendar({}) {
     const isFutureDate = isAfter(day, today) || isTomorrow(day);
 
     if (userReservedSlots.includes(slotKey)) {
-      console.log("Slot reserved by user:", slotKey);
 
       handleCancelReservation(day, slot); // Передаем индекс в функцию отмены
       return;
-    } else {
-      // Обработка для добавления слотов (если требуется)
-      console.log("Slot not reserved by user:", slotKey);
     }
 
     const currentSlots = selectedSlotsByAnimal[selectedAnimalId] || [];
@@ -795,7 +779,10 @@ function Calendar({}) {
       }
 
       const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
-      const reservation = userReservations.find((reservation) => {
+      const chosenSlotDate = format(day, "yyyy-MM-dd");
+      const chosenSlotTime = parse(slot, "hh:mm a", new Date());
+
+      let reservation = userReservations.find((reservation) => {
         const reservationDate = parseISO(reservation.date);
         const startDateTime = parse(
           reservation.startTime,
@@ -808,10 +795,67 @@ function Calendar({}) {
       });
 
       if (!reservation) {
-        console.error("Reservation not found for slotKey:", slotKey);
+        reservation = userReservations.find((reservation) => {
+          const reservationDate = parseISO(reservation.date);
+          const startDateTime = parse(
+            reservation.startTime,
+            "HH:mm:ss",
+            reservationDate
+          );
+          const endDateTime = parse(
+            reservation.endTime,
+            "HH:mm:ss",
+            reservationDate
+          );
+
+          // Проверяем, что слот в рамках этой резервации:
+          if (format(reservationDate, "yyyy-MM-dd") === chosenSlotDate) {
+            const slotDateTime = new Date(
+              `${chosenSlotDate} ${format(chosenSlotTime, "HH:mm:ss")}`
+            );
+            return slotDateTime > startDateTime && slotDateTime < endDateTime;
+          }
+          return false;
+        });
+
+        // Если слот внутри более чем часовой интервал, вызываем handleCancelWithinRange
+        if (reservation) {
+          const reservationId = reservation.reservationId;
+          const formattedDate = format(day, "MMM dd yyyy");
+          const formattedTime = slot;
+
+          // Вычисляем для handleCancelWithinRange нужные данные
+          handleCancelWithinRange({
+            reservation,
+            chosenSlotDate,
+            chosenSlotTime,
+            authToken,
+            reservationId,
+            animalData,
+            formattedDate,
+            formattedTime,
+            cancelProcessRef,
+            API_BASE_URL,
+            showCancelNotification,
+            fetchAllUserReservations,
+            updateSuggestedAnimals,
+            setCancelNotification,
+            setUserReservedSlots,
+            setUserReservations,
+            setRefreshKey,
+          });
+          return;
+        }
+
         return;
       }
 
+      if (!reservation) {
+        console.error("No reservation covers this slot:", slotKey);
+        return;
+      }
+
+      // Если нашли резервацию, которая начинается точно в это время, оставляем остальной код без изменений
       const reservationId = reservation.reservationId;
       const formattedDate = format(day, "MMM dd yyyy");
       const formattedTime = slot;
@@ -819,7 +863,33 @@ function Calendar({}) {
       // Сбрасываем флаг отмены
       cancelProcessRef.current = false;
 
-      // Показываем уведомление
+      const reservationDate = parseISO(reservation.date);
+      const startDateTime = parse(
+        reservation.startTime,
+        "HH:mm:ss",
+        reservationDate
+      );
+      const endDateTime = parse(
+        reservation.endTime,
+        "HH:mm:ss",
+        reservationDate
+      );
+      const hoursDiff = differenceInHours(endDateTime, startDateTime);
+
+      let hourlySlots = [];
+      if (hoursDiff > 1) {
+        let current = startDateTime;
+        while (current < endDateTime) {
+          const nextHour = addHours(current, 1);
+          hourlySlots.push({
+            start: format(current, "HH:mm:ss"),
+            end: format(nextHour, "HH:mm:ss"),
+            date: format(current, "yyyy-MM-dd"),
+          });
+          current = nextHour;
+        }
+      }
+
       showCancelNotification({
         message: "Reservation cancellation in progress...",
         animalName: animalData?.name || "Unknown Animal",
@@ -828,37 +898,52 @@ function Calendar({}) {
         reservationId,
       });
 
-      // Таймер для выполнения запроса и скрытия уведомления
       setTimeout(async () => {
         if (cancelProcessRef.current) {
-          console.log("Cancellation undone by user.");
           return;
         }
 
         try {
-          const response = await fetch(
-            `${API_BASE_URL}/reservations/${reservationId}`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-                "Content-Type": "application/json-patch+json",
-              },
-              body: JSON.stringify([
-                { op: "replace", path: "/status", value: 4 },
-              ]),
-            }
-          );
+          let response;
 
-          if (!response.ok) {
-            throw new Error(
-              `Failed to cancel reservation: ${await response.text()}`
+          if (hoursDiff > 1) {
+            const newStartTime = format(addHours(startDateTime, 1), "HH:mm:ss");
+            response = await fetch(
+              `${API_BASE_URL}/reservations/${reservationId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                  "Content-Type": "application/json-patch+json",
+                },
+                body: JSON.stringify([
+                  { op: "replace", path: "/startTime", value: newStartTime },
+                ]),
+              }
+            );
+          } else {
+            response = await fetch(
+              `${API_BASE_URL}/reservations/${reservationId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                  "Content-Type": "application/json-patch+json",
+                },
+                body: JSON.stringify([
+                  { op: "replace", path: "/status", value: 4 },
+                ]),
+              }
             );
           }
 
-          console.log("Reservation cancelled successfully.");
+          if (!response.ok) {
+            throw new Error(
+              `Failed to update reservation: ${await response.text()}`
+            );
+          }
 
-          // Удаляем только выбранный слот из состояний
+
           setUserReservedSlots((prevSlots) =>
             prevSlots.filter((prevSlot) => prevSlot !== slotKey)
           );
@@ -874,23 +959,18 @@ function Calendar({}) {
           fetchAllUserReservations();
           setRefreshKey((prevKey) => prevKey + 1);
         } catch (error) {
-          console.error(
-            "Error occurred during reservation cancellation:",
-            error
-          );
+          console.error("Error occurred during reservation update:", error);
           showCancelNotification({
-            message: "Failed to cancel reservation. Please try again.",
+            message: "Failed to update reservation. Please try again.",
             animalName: "",
             date: "",
             time: "",
           });
         } finally {
-          // Скрываем уведомление
           setCancelNotification((prev) => ({ ...prev, isOpen: false }));
+          await updateSuggestedAnimals();
         }
-      }, cancelTimer); // Таймаут для выполнения запроса и скрытия уведомления
-
-      await updateSuggestedAnimals();
+      }, cancelTimer);
     } catch (error) {
       console.error("Error occurred during reservation cancellation:", error);
       showCancelNotification({
@@ -901,6 +981,206 @@ function Calendar({}) {
       });
     }
   };
+
+  async function handleCancelWithinRange({
+    reservation,
+    chosenSlotDate,
+    chosenSlotTime,
+    authToken,
+    reservationId,
+    animalData,
+    formattedDate,
+    formattedTime,
+    cancelProcessRef,
+    API_BASE_URL,
+    showCancelNotification,
+    fetchAllUserReservations,
+    updateSuggestedAnimals,
+    setCancelNotification,
+    setUserReservedSlots,
+    setUserReservations,
+    setRefreshKey,
+    cancelTimer,
+  }) {
+
+    // Парсим дату/время резервации
+    const reservationDate = parseISO(reservation.date);
+    const startDateTime = parse(
+      reservation.startTime,
+      "HH:mm:ss",
+      reservationDate
+    );
+    const endDateTime = parse(reservation.endTime, "HH:mm:ss", reservationDate);
+
+    // Парсим выбранный слот
+    const slotDateTime = new Date(
+      `${chosenSlotDate} ${format(chosenSlotTime, "HH:mm:ss")}`
+    );
+
+    // Показываем уведомление об отмене
+    showCancelNotification({
+      message: "Reservation cancellation in progress...",
+      animalName: animalData?.name || "Unknown Animal",
+      date: formattedDate,
+      time: formattedTime,
+      reservationId,
+    });
+
+    // Отменяем исходную резервацию
+    setTimeout(async () => {
+      if (cancelProcessRef.current) {
+        return;
+      }
+
+
+      try {
+        let response = await fetch(
+          `${API_BASE_URL}/reservations/${reservationId}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json-patch+json",
+            },
+            body: JSON.stringify([
+              { op: "replace", path: "/status", value: 4 },
+            ]),
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            "[handleCancelWithinRange] Failed to cancel reservation:",
+            errorText
+          );
+          throw new Error(`Failed to cancel reservation: ${errorText}`);
+        }
+
+        const reservationSlotsToRemove = [];
+        let currentSlot = startDateTime;
+        while (currentSlot < endDateTime) {
+          const fDate = format(currentSlot, "yyyy-MM-dd");
+          const fTime = format(currentSlot, "hh:mm a");
+          reservationSlotsToRemove.push(`${fDate}-${fTime}`);
+          currentSlot = addHours(currentSlot, 1);
+        }
+
+
+        setUserReservedSlots((prevSlots) => {
+          const filtered = prevSlots.filter(
+            (s) => !reservationSlotsToRemove.includes(s)
+          );
+          return filtered;
+        });
+        setUserReservations((prevReservations) => {
+          const filtered = prevReservations.filter(
+            (res) => res.reservationId !== reservationId
+          );
+          return filtered;
+        });
+
+        // Создаем две новые резервации, если выбранный слот находится внутри исходного интервала:
+        // 1) Сокращенная резервация до выбранного слота (если выбранный слот позже начала)
+        // 2) Сокращенная резервация после выбранного слота (если выбранный слот раньше конца)
+
+        // Резервация до выбранного слота
+        if (slotDateTime > startDateTime) {
+          const newEndTime = format(slotDateTime, "HH:mm:ss");
+          const newStartTime = format(startDateTime, "HH:mm:ss");
+          const formattedReservationDate = format(startDateTime, "yyyy-MM-dd");
+          const newReservationData = {
+            userId: reservation.userId,
+            animalId: reservation.animalId,
+            reservationDate: formattedReservationDate,
+            startTime: newStartTime,
+            endTime: newEndTime,
+          };
+
+
+          response = await fetch(`${API_BASE_URL}/reservations`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newReservationData),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(
+              "[handleCancelWithinRange] Failed to create shortened reservation before slot:",
+              errorText
+            );
+            throw new Error(
+              `Failed to create shortened reservation: ${errorText}`
+            );
+          }
+
+        }
+
+        // Резервация после выбранного слота
+        if (slotDateTime < endDateTime) {
+          const newStartTime = format(slotDateTime, "HH:mm:ss");
+          const newEndTime = format(endDateTime, "HH:mm:ss");
+          const formattedReservationDate = format(startDateTime, "yyyy-MM-dd");
+          const newReservationData = {
+            userId: reservation.userId,
+            animalId: reservation.animalId,
+            reservationDate: formattedReservationDate,
+            startTime: newStartTime,
+            endTime: newEndTime,
+          };
+
+
+          const response2 = await fetch(`${API_BASE_URL}/reservations`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newReservationData),
+          });
+
+          if (!response2.ok) {
+            const errorText = await response2.text();
+            console.error(
+              "[handleCancelWithinRange] Failed to create shortened reservation after slot:",
+              errorText
+            );
+            throw new Error(
+              `Failed to create second shortened reservation: ${errorText}`
+            );
+          }
+
+        }
+
+        await fetchAllUserReservations();
+        setRefreshKey((prevKey) => {
+          const newKey = prevKey + 1;
+          return newKey;
+        });
+      } catch (error) {
+        console.error(
+          "[handleCancelWithinRange] Error occurred during reservation update:",
+          error
+        );
+        showCancelNotification({
+          message: "Failed to update reservation. Please try again.",
+          animalName: "",
+          date: "",
+          time: "",
+        });
+      } finally {
+        setCancelNotification((prev) => ({ ...prev, isOpen: false }));
+        await updateSuggestedAnimals();
+        
+        // Добавляем повторный запрос резерваций пользователя, чтобы актуализировать состояние
+        await fetchUserReservations();
+      }
+    }, cancelTimer);
+  }
 
   const handleCancelReservationFromList = (reservationId) => {
     if (!reservationId) {
@@ -938,7 +1218,6 @@ function Calendar({}) {
     // Устанавливаем таймер для отправки запроса
     setTimeout(async () => {
       if (cancelProcessRef.current) {
-        console.log("Cancellation undone by user.");
         return;
       }
 
@@ -964,8 +1243,6 @@ function Calendar({}) {
             `Failed to cancel reservation: ${await response.text()}`
           );
         }
-
-        console.log("Reservation cancelled successfully for:", reservationId);
 
         // Обновляем список всех резерваций пользователя
         setAllUserReservations((prev) =>
