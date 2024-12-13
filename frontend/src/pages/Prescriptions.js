@@ -12,6 +12,8 @@ import API_BASE_URL from '../config';
 import {icons} from "../components/icons";
 import { ToastContainer } from "react-toastify";
 import PrescriptionListItem from '../components/PrescriptionListItem';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Prescriptions() {
     const [user, setUser] = useState(null);
@@ -139,26 +141,33 @@ function Prescriptions() {
                         </div>
 
                         <div className="flex flex-wrap gap-4 mb-4 items-end">
-                            <div className="flex flex-col">
-                                <input
-                                    placeholder="From date"
-                                    onFocus={(e) => (e.target.type = "date")}
-                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                                    value={dateFromFilter}
-                                    onChange={(e) => setDateFromFilter(e.target.value)}
-                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                />
-                            </div>
-                            <div className="flex flex-col">
-                                <input
-                                    placeholder="To date"
-                                    onFocus={(e) => (e.target.type = "date")}
-                                    onBlur={(e) => !e.target.value && (e.target.type = "text")}
-                                    value={dateToFilter}
-                                    onChange={(e) => setDateToFilter(e.target.value)}
-                                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
-                                />
-                            </div>
+                        <div className="flex flex-col">
+                    <DatePicker
+                      selected={dateFromFilter}
+                      onChange={(date) => setDateFromFilter(date)}
+                      selectsStart
+                      startDate={dateFromFilter}
+                      endDate={dateToFilter}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="From date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <DatePicker
+                      selected={dateToFilter}
+                      onChange={(date) => setDateToFilter(date)}
+                      selectsEnd
+                      startDate={dateFromFilter}
+                      endDate={dateToFilter}
+                      minDate={dateFromFilter}
+                      dateFormat="yyyy/MM/dd"
+                      placeholderText="To date (dd.mm.yyyy)"
+                      showYearDropdown
+                      className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue"
+                    />
+                    </div>
                             <div className="flex flex-col">
                                 <input
                                     type="text"
