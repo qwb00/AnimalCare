@@ -7,7 +7,6 @@
     - Aleksei Petrishko [xpetri23]
 */
 
-
 import React, { useState, useEffect, useRef } from "react";
 
 function AchievementsSlider() {
