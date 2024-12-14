@@ -11,24 +11,30 @@
 */
 
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { AppContext } from "../context/AppContext"; 
+import { AppContext } from "../context/AppContext";
 import Button from "./Button";
 import axios from "axios";
 import API_BASE_URL from "../config";
 
 function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
-  const { calendarUpdated, suggestedAnimals, updateSuggestedAnimals, setSelectedAnimalId  } =
-    useContext(AppContext);
+  const {
+    calendarUpdated,
+    suggestedAnimals,
+    updateSuggestedAnimals,
+    setSelectedAnimalId,
+  } = useContext(AppContext);
 
+  // Reference to the dropdown element to handle click outside
   const dropdownRef = useRef(null);
 
   const [isInitialAnimalSet, setIsInitialAnimalSet] = useState(false);
 
+  // Effect to select the first suggested animal on the first render if available
   useEffect(() => {
     // With first render, select the first suggested animal if it exists
     if (suggestedAnimals.length > 0 && !isInitialAnimalSet) {
       handleSelectAnimal(suggestedAnimals[0]); // Picking first animal from the list
-      setIsInitialAnimalSet(true); 
+      setIsInitialAnimalSet(true);
     }
   }, [suggestedAnimals, isInitialAnimalSet]);
 
@@ -38,9 +44,10 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
   const [isInputError, setIsInputError] = useState(false);
   const [hoveredAnimal, setHoveredAnimal] = useState(null);
 
+  // Effect to update suggested animals whenever the calendar is updated
   useEffect(() => {
     updateSuggestedAnimals();
-  }, [calendarUpdated, updateSuggestedAnimals]); 
+  }, [calendarUpdated, updateSuggestedAnimals]);
 
   useEffect(() => {
     const loadAnimals = async () => {
@@ -63,7 +70,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
               animal.name.toLowerCase() === initialAnimalName.toLowerCase()
           );
           if (foundAnimal) {
-            handleSelectAnimal(foundAnimal); 
+            handleSelectAnimal(foundAnimal);
           } else {
             setSearchValue(initialAnimalName);
             handleSearch();
@@ -85,6 +92,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     setHoveredAnimal(null); // Hide details on mouse leave
   };
 
+  // Handles the search functionality when the user initiates a search.
   const handleSearch = () => {
     if (!searchValue) {
       setIsInputError(true);
@@ -120,6 +128,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     }
   };
 
+  // Effect to add event listeners for detecting clicks outside the dropdown
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
 
@@ -134,6 +143,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
       <div className="relative w-full max-w-[600px]" ref={dropdownRef}>
         <div className="relative">
           <div className="flex items-center">
+            {/* Search Input Field */}
             <div
               className={`flex items-center mr-4 border-2 rounded-xl overflow-hidden w-[240px] ${
                 isInputError
@@ -154,6 +164,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
               <img src={icon} alt="Input icon" className="h-6 w-6 mr-2" />
             </div>
 
+            {/* Search Button */}
             <Button
               text="Search"
               variant="blue"
@@ -163,6 +174,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
             />
           </div>
 
+          {/* Dropdown List of Animal Names */}
           {isDropdownOpen && (
             <ul
               className="absolute top-full left-0 w-[240px] bg-white border-2 border-black rounded-xl mt-1 overflow-auto z-10"
@@ -180,6 +192,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
                   onClick={() => handleSelectAnimal(animal)}
                 >
                   <span>{animal.name}</span>
+                  {/* Link to view more details in a new tab */}
                   <a
                     href={`/animals/${animal.id}`}
                     target="_blank"
@@ -194,6 +207,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
             </ul>
           )}
 
+          {/* Hovered Animal Details Popup */}
           {hoveredAnimal && (
             <div
               className="absolute left-[255px] bg-white border-2 border-black rounded-xl shadow-lg p-4 z-20 w-[300px]"

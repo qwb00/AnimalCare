@@ -40,6 +40,7 @@ function Reservations() {
         const params = new URLSearchParams(location.search);
         const animalName = params.get("animalName");
         if (animalName) {
+          // Find animal by name (case-insensitive)
           const foundAnimal = animalData.find(
             (animal) => animal.name.toLowerCase() === animalName.toLowerCase()
           );
@@ -55,6 +56,7 @@ function Reservations() {
     loadAnimals();
   }, [location.search]);
 
+  // Handles the result of a search action by setting the selected animal ID.
   const handleSearchResult = (animalId) => {
     const foundAnimal = availableAnimals.find(
       (animal) => animal.id === animalId
@@ -88,6 +90,7 @@ function Reservations() {
           />
         </div>
 
+        {/* Search Component for selecting animals */}
         <div className="flex items-start justify-start w-full mb-8">
           <Search
             placeholder="Animal's name"
@@ -96,7 +99,8 @@ function Reservations() {
             initialAnimalName={initialAnimalName}
           />
         </div>
-
+        
+        {/* Render Calendar if an animal is selected, else show a prompt */}
         {selectedAnimalId ? (
           <div className="mt-2 w-full">
             <Calendar />
