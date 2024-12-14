@@ -1,3 +1,10 @@
+// Aleksander Postelga xposte00
+// Mikhail Vorobev xvorob01
+
+/*
+* Managing prescriptions page for creating and viewing prescriptions for Veterinarian and Caretaker
+*/
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
