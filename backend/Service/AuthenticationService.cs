@@ -8,6 +8,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Shared.DataTransferObjects.UsersDTO;
+using Shared.Enums;
 
 namespace Service
 {
@@ -28,13 +29,31 @@ namespace Service
 
         public async Task<IdentityResult> RegisterUser(UserForCreateDTO userForRegistration)
         {
-            var isVolunteer = userForRegistration.Roles.Contains("Volunteer");
-
-            var user = isVolunteer ? _mapper.Map<Volunteer>(userForRegistration) : _mapper.Map<User>(userForRegistration);
-            user.isActive = true;
-            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
-            if (result.Succeeded)
-                await _userManager.AddToRolesAsync(user, userForRegistration.Roles);
+            IdentityResult result;
+            
+            if (userForRegistration.Roles.Contains("Volunteer"))
+            {
+                var volunteer = _mapper.Map<Volunteer>(userForRegistration);
+                volunteer.VolunteerStatus = VolunteerStatus.New;
+                volunteer.isActive = true;
+                
+                result = await _userManager.CreateAsync(volunteer, userForRegistration.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRolesAsync(volunteer, userForRegistration.Roles);
+                }
+            }
+            else
+            {
+                var user = _mapper.Map<User>(userForRegistration);
+                user.isActive = true;
+                
+                result = await _userManager.CreateAsync(user, userForRegistration.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRolesAsync(user, userForRegistration.Roles);
+                }
+            }
             return result;
         }
 
