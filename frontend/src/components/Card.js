@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* It is a reusable card component which is used to display information in a card format in the user dashboard
+*/
+
 import React from 'react';
 import Button from './Button';
 import PropTypes from 'prop-types';
@@ -40,7 +46,7 @@ function Card({ title, imageSrc, infoItems, buttons, children }) {
                         <Button
                             key={index}
                             {...buttonProps}
-                            className={`${buttons.length === 1 ? "w-full" : "w-auto"} ${buttonProps.className}`}
+                            className={`${buttons.length === 1 ? "w-full" : "w-auto"} ${buttonProps.className}`} // if only one button, make it full width
                         />
                     ))}
                 </div>

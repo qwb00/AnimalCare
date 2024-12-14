@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* A basic information component about user
+*/
+
 import React, { useState } from 'react';
 import Button from '../components/Button';
 import ErrorMessages from '../components/ErrorMessages';
@@ -24,6 +30,7 @@ function UserBasicInfo({ user, updateUser }) {
         }));
     };
 
+    // Update user information with a PATCH request
     const updateUserInfo = async () => {
         const patchData = [
             { op: "replace", path: "/FirstName", value: formData.name.split(" ")[0] || user.name.split(" ")[0] },
