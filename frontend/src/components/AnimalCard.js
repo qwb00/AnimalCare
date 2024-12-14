@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function AnimalCard({ id, image, name, age, breed, userRole, onDelete }) {
   return (
       <div className="relative group border-2 h-[500px] border-black rounded-2xl overflow-hidden transition-transform duration-300 ease-in-out transform hover:scale-105">
-        {/* Conditional delete button for caretaker/admin */}
+        {/* Delete button for caretaker/admin */}
         {(userRole === "Caretaker" || userRole === "Administrator") && (
             <button
                 className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-2 hover:bg-red-700 focus:outline-none z-10"

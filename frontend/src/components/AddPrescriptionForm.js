@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* Form for adding a new prescription to the system
+*/
+
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
 import Button from './Button';
@@ -22,11 +28,13 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
     });
     const [errorData, setErrorData] = useState(null);
 
+    // Update specific parts of formData without overwriting the entire state
     const handleChange = (event) => {
         const { name, value } = event.target || event;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    // Handle changes for nested dateRange structure
     const handleDateChange = (event) => {
         const { name, value } = event.target || event;
         setFormData((prev) => ({
@@ -35,6 +43,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         }));
     };
 
+    // Update frequency object while ensuring numeric transformation of the value
     const handleFrequencyChange = (event) => {
         const { name, value } = event.target || event;
         setFormData((prev) => ({
@@ -43,6 +52,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         }));
     };
 
+    // Increment or decrement frequency count
     const handleFrequencyCountChange = (change) => {
         setFormData((prev) => ({
             ...prev,
@@ -53,6 +63,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
         }));
     };
 
+    // Submit form data to the API
     const handleSubmit = async (e) => {
         e.preventDefault();
         const veterinarianId = sessionStorage.getItem('userID');
@@ -78,14 +89,14 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
             setErrorData(errorResponse);
             return;
           }
-          onClose(); 
+          onClose(); // Close modal after successful submission
           toast.success('Request created successfully', {
             autoClose: 3000,
             hideProgressBar: true,
           });
         } catch (error) {
           console.error("Error submitting request:", error);
-          toast.error('Error submitting request');
+          toast.error('Error submitting request'); // Notify user of network or unexpected errors
         }
       };
     const [animals, setAnimals] = useState([]);
@@ -93,15 +104,15 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/animals`);
+        const response = await fetch(`${API_BASE_URL}/animals`); // Fetch animal data from API
         const data = await response.json();
-        setAnimals(data);
+        setAnimals(data); // Populate select options with API data
       } catch (error) {
         console.error("Error fetching animals:", error);
       }
     };
 
-    fetchAnimals();
+    fetchAnimals(); // Load animals when the component mounts
   }, []);
 
   // Transform animals and veterinarians data to options for react-select
@@ -114,16 +125,17 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
     return (
         <div
             className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            onClick={onClose}
+            onClick={onClose} // Clicking outside the modal closes it
         >
             <div
                 className="bg-white p-6 rounded-3xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black relative"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()} // Prevent modal from closing on inner clicks
             >
                 <h3 className="text-xl font-bold mb-6 text-center text-gray-800">
                     Add New Prescription
                 </h3>
 
+                {/* Close button for the modal */}
                 <button
                     type="button"
                     className="absolute top-3 right-3 bg-main-blue rounded-full p-2"
@@ -147,15 +159,30 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                         Animal
                         </label>
                         <Select
-                        name="animalId"
-                        value={animalOptions.find(option => option.value === formData.animalId)}
-                        options={animalOptions}
-                        onChange={(selectedOption) =>
-                            handleChange({ name: 'animalId', value: selectedOption.value })
-                        }
-                        placeholder="Select an animal"
-                        className="text-sm"
-                        required
+                            name="animalId"
+                            value={animalOptions.find(option => option.value === formData.animalId)}
+                            options={animalOptions}
+                            onChange={(selectedOption) =>
+                                handleChange({ name: 'animalId', value: selectedOption.value })
+                            }
+                            placeholder="Select an animal"
+                            className="text-sm"
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    borderColor: state.isFocused ? '#4BD4FF' : base.borderColor, // main-blue
+                                    boxShadow: state.isFocused ? '0 0 0 1px #4BD4FF' : base.boxShadow,
+                                    '&:hover': {
+                                        borderColor: '#4BD4FF', // hover color
+                                    },
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? '#CBF2FF' : base.backgroundColor, // animals hover
+                                    color: state.isFocused ? '#000' : base.color,
+                                }),
+                            }}
+                            required
                         />
                     </div>
 
@@ -171,7 +198,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             value={formData.drug}
                             onChange={handleChange}
                             required
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                         />
                     </div>
 
@@ -187,7 +214,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                                 value={formData.dateRange.startDate}
                                 onChange={handleDateChange}
                                 required
-                                className="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                                className="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                             />
                             <input
                                 name="endDate"
@@ -195,7 +222,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                                 value={formData.dateRange.endDate}
                                 onChange={handleDateChange}
                                 required
-                                className="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                                className="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                             />
                         </div>
                     </div>
@@ -229,7 +256,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                                 value={formData.frequency.unit}
                                 onChange={handleFrequencyChange}
                                 required
-                                className="p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                                className="p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                             >
                                 <option value="0">Day</option>
                                 <option value="1">Week</option>
@@ -248,7 +275,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             placeholder="Enter description"
                             value={formData.description}
                             onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                         />
                     </div>
 
@@ -263,7 +290,7 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                             placeholder="Enter diagnosis"
                             value={formData.diagnosis}
                             onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-main-blue text-sm"
                         />
                     </div>
 
@@ -271,20 +298,18 @@ function AddPrescriptionForm({ onSubmit, onClose }) {
                     <div className="flex justify-center space-x-2 mt-4">
                         <Button
                             text="Cancel"
-                            variant="white"
-                            icon="/icons/cancel.png"
+                            variant="red"
+                            icon="/icons/cancel_white.png"
                             iconSize="w-5 h-5"
-                            iconPosition="right"
                             onClick={onClose}
-                            className="px-5 py-2 text-sm"
+                            className="px-5 py-2 text-sm w-full mr-6"
                         />
                         <Button
                             text="Save"
                             variant="blue"
                             icon="/icons/confirm_white.png"
                             iconSize="w-5 h-5"
-                            iconPosition="right"
-                            className="px-5 py-2 text-sm"
+                            className="px-5 py-2 text-sm w-full"
                         />
                     </div>
                 </form>

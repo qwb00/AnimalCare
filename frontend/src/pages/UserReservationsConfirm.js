@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* Page for confirming new requests for animal walks
+*/
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Range } from "react-range";
@@ -32,6 +38,7 @@ function UserReservationsConfirm() {
             return;
         }
 
+        // Fetches user data
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -50,9 +57,11 @@ function UserReservationsConfirm() {
     }, [navigate]);
 
     useEffect(() => {
+        // Fetches new requests based on filters
         const fetchNewRequests = async () => {
             try {
                 const queryParams = new URLSearchParams();
+                // Filters
                 if (filters.animalName) queryParams.append("AnimalName", filters.animalName);
                 if (filters.breed) queryParams.append("Breed", filters.breed);
                 if (filters.volunteerName) queryParams.append("VolunteerName", filters.volunteerName);
@@ -85,6 +94,7 @@ function UserReservationsConfirm() {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
+    // Approve reservation with PATCH request
     const handleApprove = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
@@ -93,7 +103,7 @@ function UserReservationsConfirm() {
                     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
                     "Content-Type": "application/json-patch+json",
                 },
-                body: JSON.stringify([{ op: "replace", path: "/status", value: 1 }]),
+                body: JSON.stringify([{ op: "replace", path: "/status", value: 1 }]), // UPCOMING
             });
             if (!response.ok) throw new Error("Failed to approve reservation");
             setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
@@ -102,6 +112,7 @@ function UserReservationsConfirm() {
         }
     };
 
+    // Declines reservations with PATCH request
     const handleDecline = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
@@ -110,7 +121,7 @@ function UserReservationsConfirm() {
                     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
                     "Content-Type": "application/json-patch+json",
                 },
-                body: JSON.stringify([{ op: "replace", path: "/status", value: 4 }]),
+                body: JSON.stringify([{ op: "replace", path: "/status", value: 4 }]), // DELCINED
             });
             if (!response.ok) throw new Error("Failed to decline reservation");
             setNewRequests((prev) => prev.filter((reservation) => reservation.id !== id));
@@ -119,6 +130,7 @@ function UserReservationsConfirm() {
         }
     };
 
+    // Data not loaded yet
     if (!user) return <div>Loading...</div>;
 
     return (
@@ -130,6 +142,7 @@ function UserReservationsConfirm() {
                 <div className="flex items-center justify-between max-w-[978px]">
                     <h2 className="text-2xl font-semibold mb-6">New Requests</h2>
                     <div className="mb-4">
+                        {/* Shows filters */}
                         <Button
                             text={filtersVisible ? "Hide Filters" : "Show Filters"}
                             variant="blue"
