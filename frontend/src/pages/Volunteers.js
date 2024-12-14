@@ -15,6 +15,7 @@ function Volunteers() {
         email: '',
         phoneNumber: '',
     }); // Filters for volunteers
+    const [statusFilter, setStatusFilter] = useState(0); // Filter by VolunteerStatus
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,7 +48,12 @@ function Volunteers() {
     const fetchVolunteers = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await fetch(`${API_BASE_URL}/volunteers`, {
+            const queryParams = new URLSearchParams();
+            if (filters.name) queryParams.append('Name', filters.name);
+            if (filters.email) queryParams.append('Email', filters.email);
+            if (filters.phoneNumber) queryParams.append('PhoneNumber', filters.phoneNumber);
+
+            const response = await fetch(`${API_BASE_URL}/volunteers?${queryParams.toString()}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -60,26 +66,16 @@ function Volunteers() {
         }
     };
 
-    const filteredVolunteers = volunteers.filter((volunteer) => {
-        const matchesName = filters.name
-            ? volunteer.name.toLowerCase().includes(filters.name.toLowerCase())
-            : true;
-        const matchesEmail = filters.email
-            ? volunteer.email.toLowerCase().includes(filters.email.toLowerCase())
-            : true;
-        const matchesPhoneNumber = filters.phoneNumber
-            ? volunteer.phoneNumber.includes(filters.phoneNumber)
-            : true;
-
-        return matchesName && matchesEmail && matchesPhoneNumber;
-    });
-
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({
             ...prev,
             [name]: value,
         }));
+    };
+
+    const handleStatusFilterChange = (status) => {
+        setStatusFilter(status);
     };
 
     const handleAction = async (id, action, value) => {
@@ -107,6 +103,8 @@ function Volunteers() {
         }
     };
 
+    const filteredVolunteers = volunteers.filter((volunteer) => volunteer.volunteerStatus === statusFilter);
+
     if (!user) return <div>Loading...</div>;
 
     return (
@@ -117,7 +115,7 @@ function Volunteers() {
 
             <div className="w-full max-w-[1024px] mx-auto mb-14">
                 <div>
-                    <div className="flex items-start gap-6 bg-gray-100 p-4 rounded-lg shadow  max-w-[978px]">
+                    <div className="flex items-center gap-6 bg-gray-100 p-4 rounded-lg shadow max-w-[978px]">
                         <input
                             type="text"
                             name="name"
@@ -142,98 +140,107 @@ function Volunteers() {
                             onChange={handleFilterChange}
                             className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
                         />
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => handleStatusFilterChange(Number(e.target.value))}
+                            className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
+                        >
+                            <option value={0}>New</option>
+                            <option value={1}>Processing</option>
+                            <option value={2}>Approved</option>
+                        </select>
                     </div>
                 </div>
 
-                <h3 className="text-2xl font-semibold mt-4">New Volunteers</h3>
                 <div className="flex flex-wrap gap-20 mt-4">
-                    {filteredVolunteers
-                        .filter((volunteer) => !volunteer.isVerified)
-                        .map((volunteer) => (
-                            <Card
-                                key={volunteer.id}
-                                imageSrc={volunteer.photo || icons.placeholder}
-                                infoItems={[
-                                    {
-                                        icon: icons.name,
-                                        label: 'Full Name',
-                                        value: volunteer.name,
-                                    },
-                                    {
-                                        icon: icons.phone,
-                                        label: 'Phone Number',
-                                        value: volunteer.phoneNumber,
-                                    },
-                                    {
-                                        icon: icons.email,
-                                        label: 'E-mail',
-                                        value: volunteer.email,
-                                    },
-                                ]}
-                                buttons={[
-                                    {
-                                        text: 'Delete',
-                                        variant: 'red',
-                                        icon: icons.cancel,
-                                        onClick: () => handleAction(volunteer.id, '/isActive', false),
-                                        className: 'px-5 py-2 w-full',
-                                    },
-                                    {
-                                        text: 'Approve',
-                                        variant: 'blue',
-                                        icon: icons.approve,
-                                        onClick: () => handleAction(volunteer.id, '/isVerified', true),
-                                        className: 'px-5 py-2 w-full',
-                                    },
-                                ]}
-                            />
-                        ))}
+                    {filteredVolunteers.map((volunteer) => (
+                        <Card
+                            key={volunteer.id}
+                            imageSrc={volunteer.photo || icons.placeholder}
+                            infoItems={[
+                                {
+                                    icon: icons.name,
+                                    label: 'Full Name',
+                                    value: volunteer.name,
+                                },
+                                {
+                                    icon: icons.phone,
+                                    label: 'Phone Number',
+                                    value: volunteer.phoneNumber,
+                                },
+                                {
+                                    icon: icons.email,
+                                    label: 'E-mail',
+                                    value: volunteer.email,
+                                },
+                            ]}
+                            buttons={(() => {
+                                switch (volunteer.volunteerStatus) {
+                                    case 0:
+                                        return [
+                                            {
+                                                text: 'Delete',
+                                                variant: 'red',
+                                                className: 'w-full',
+                                                icon: icons.cancel,
+                                                onClick: () => handleAction(volunteer.id, '/isActive', false),
+                                            },
+                                            {
+                                                text: 'Process',
+                                                variant: 'blue',
+                                                icon: icons.process_user,
+                                                className: 'w-full',
+                                                onClick: () => handleAction(volunteer.id, '/volunteerStatus', 1),
+                                            },
+                                        ];
+                                    case 1:
+                                        return [
+                                            {
+                                                text: 'Unprocess',
+                                                variant: 'yellow',
+                                                className: 'w-full',
+                                                icon: icons.cancel,
+                                                onClick: () => handleAction(volunteer.id, '/volunteerStatus', 0),
+                                            },
+                                            {
+                                                text: 'Approve',
+                                                variant: 'blue',
+                                                className: 'w-full',
+                                                icon: icons.approve,
+                                                onClick: async () => {
+                                                    await handleAction(volunteer.id, '/volunteerStatus', 2);
+                                                    await handleAction(volunteer.id, '/isVerified', true);
+                                                },
+                                            },
+                                        ];
+                                    case 2:
+                                        return [
+                                            {
+                                                text: 'Unverify',
+                                                variant: 'yellow',
+                                                className: 'w-full',
+                                                icon: icons.unverify,
+                                                onClick: async () => {
+                                                    await handleAction(volunteer.id, '/volunteerStatus', 1);
+                                                    await handleAction(volunteer.id, '/isVerified', false);
+                                                },
+                                            },
+                                            {
+                                                text: 'Deactivate',
+                                                variant: 'red',
+                                                className: 'w-full',
+                                                icon: icons.cancel,
+                                                onClick: () => handleAction(volunteer.id, '/isActive', false),
+                                            },
+                                        ];
+                                    default:
+                                        return [];
+                                }
+                            })()}
+                        />
+                    ))}
                 </div>
 
-                <h3 className="text-2xl font-semibold mt-8">Current Volunteers</h3>
-                <div className="flex flex-wrap gap-20 mt-4">
-                    {filteredVolunteers
-                        .filter((volunteer) => volunteer.isVerified)
-                        .map((volunteer) => (
-                            <Card
-                                key={volunteer.id}
-                                imageSrc={volunteer.photo || icons.placeholder}
-                                infoItems={[
-                                    {
-                                        icon: icons.name,
-                                        label: 'Full Name',
-                                        value: volunteer.name,
-                                    },
-                                    {
-                                        icon: icons.phone,
-                                        label: 'Phone Number',
-                                        value: volunteer.phoneNumber,
-                                    },
-                                    {
-                                        icon: icons.email,
-                                        label: 'E-mail',
-                                        value: volunteer.email,
-                                    },
-                                ]}
-                                buttons={[
-                                    {
-                                        text: 'Delete',
-                                        variant: 'red',
-                                        icon: icons.cancel,
-                                        onClick: () => handleAction(volunteer.id, '/isActive', false),
-                                        className: 'px-5 py-2 w-full',
-                                    },
-                                    {
-                                        text: 'Unverify',
-                                        variant: 'yellow',
-                                        icon: icons.unverify,
-                                        onClick: () => handleAction(volunteer.id, '/isVerified', false),
-                                        className: 'px-5 py-2 w-full',
-                                    },
-                                ]}
-                            />
-                        ))}
-                </div>
                 {filteredVolunteers.length === 0 && (
                     <p className="text-center text-gray-500 mt-4">No volunteers found.</p>
                 )}
