@@ -8,10 +8,26 @@ import API_BASE_URL from "../config";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { icons } from "../components/icons";
+import ErrorMessages from "../components/ErrorMessages";
 
 function Users() {
   const [user, setUser] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    roles: ["Caretaker"],
+  });
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notification, setNotification] = useState({
+    isSuccess: false,
+    message: "",
+  });
   const [filters, setFilters] = useState({
     name: "",
     email: "",
@@ -117,6 +133,50 @@ function Users() {
     }
   };
 
+  const handleAddUser = async (event) => {
+    event.preventDefault();
+    try {
+      await axios.post(`${API_BASE_URL}/users`, newUser, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      await fetchFilteredUsers();
+      setNotification({
+        isSuccess: true,
+        message: "User created successfully!",
+      });
+      setIsNotificationOpen(true);
+
+      setIsModalOpen(false);
+      setNewUser({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+        roles: ["Caretaker"],
+      });
+    } catch (error) {
+      setNotification({
+        isSuccess: false,
+        message: <ErrorMessages errorData={error.response?.data} /> ,
+      });
+      setIsNotificationOpen(true);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setNewUser((prev) => ({
+      ...prev,
+      [name]: name === "roles" ? [value] : value,
+    }));
+  };
+
   if (!user) return <div>Loading...</div>;
 
   return (
@@ -127,6 +187,14 @@ function Users() {
 
         {/* Filters Section */}
         <div className="w-full max-w-[1024px] mx-auto mb-6">
+          <Button
+              text="Add New User"
+              icon="/icons/plus_white.png"
+              iconSize="w-4 h-4"
+              variant="blue"
+              onClick={() => setIsModalOpen(true)}
+              className="w-50 mb-4"
+          />
           <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow">
             <input
                 type="text"
@@ -237,6 +305,200 @@ function Users() {
                       variant="red"
                       className="px-5 py-2 text-sm"
                       onClick={handleDelete}
+                  />
+                </div>
+              </div>
+            </div>
+        )}
+
+        {/* New User Form Modal */}
+        {isModalOpen && (
+            <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={() => setIsModalOpen(false)}
+            >
+              <div
+                  className="bg-white p-6 rounded-3xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-black relative"
+                  onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-xl font-bold mb-6 text-center text-gray-800">
+                  ADD NEW USER
+                </h3>
+
+                <button
+                    type="button"
+                    className="absolute top-3 right-3 bg-main-blue rounded-full p-2"
+                    aria-label="Close"
+                    style={{ transform: "rotate(45deg)" }}
+                    onClick={() => setIsModalOpen(false)}
+                >
+                  <img
+                      src="/icons/plus_white.png"
+                      alt="Close"
+                      className="w-3 h-3"
+                  />
+                </button>
+
+                <form onSubmit={handleAddUser}>
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      First Name
+                    </label>
+                    <input
+                        name="firstName"
+                        type="text"
+                        placeholder="Enter first name"
+                        value={newUser.firstName}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Last Name
+                    </label>
+                    <input
+                        name="lastName"
+                        type="text"
+                        placeholder="Enter last name"
+                        value={newUser.lastName}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Username
+                    </label>
+                    <input
+                        name="username"
+                        type="text"
+                        placeholder="Enter username"
+                        value={newUser.username}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Email
+                    </label>
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Enter email"
+                        value={newUser.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Password
+                    </label>
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Enter password"
+                        value={newUser.password}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Phone Number
+                    </label>
+                    <input
+                        name="phoneNumber"
+                        type="text"
+                        placeholder="Enter phone number"
+                        value={newUser.phoneNumber}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    />
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-gray-700 mb-1 font-medium text-sm">
+                      Role
+                    </label>
+                    <select
+                        name="roles"
+                        value={newUser.roles[0]}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-main-blue text-sm"
+                    >
+                      <option value="Caretaker">Caretaker</option>
+                      <option value="Veterinarian">Veterinarian</option>
+                    </select>
+                  </div>
+
+                  <div className="flex justify-center space-x-2 mt-4">
+                    <Button
+                        text="Cancel"
+                        variant="white"
+                        iconSize="w-5 h-5"
+                        icon="/icons/cancel.png"
+                        iconPosition="right"
+                        className="px-5 py-2 text-sm"
+                        onClick={() => setIsModalOpen(false)}
+                    />
+                    <Button
+                        text="Confirm"
+                        variant="blue"
+                        iconSize="w-5 h-5"
+                        icon="/icons/confirm_white.png"
+                        iconPosition="right"
+                        className="px-5 py-2 text-sm"
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
+        )}
+
+        {isNotificationOpen && (
+            <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={() => setIsNotificationOpen(false)}
+            >
+              <div
+                  className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
+                      notification.isSuccess ? "border-green-600" : "border-red-600"
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+              >
+                <h3
+                    className={`text-2xl font-bold mb-6 text-center ${
+                        notification.isSuccess ? "text-green-600" : "text-red-600"
+                    }`}
+                >
+                  {notification.isSuccess ? "Success!" : "Error"}
+                </h3>
+                <p className="text-lg mb-6 text-center text-gray-800">
+                  {notification.message}
+                </p>
+                <div className="flex justify-center">
+                  <Button
+                      text="Close"
+                      variant="blue"
+                      icon="/icons/cancel_white.png"
+                      iconPosition="right"
+                      className="px-5 py-2"
+                      onClick={() => setIsNotificationOpen(false)}
                   />
                 </div>
               </div>
