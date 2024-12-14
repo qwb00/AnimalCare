@@ -174,6 +174,28 @@ namespace Service
             return userDTO;
         }
 
+        public async Task UpdateUserRoleAsync(Guid userId, UpdateUserRoleDTO request)
+        {
+            var user = await _repository.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var currentRoles = await _repository.GetRolesAsync(user);
+            var removeResult = await _repository.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded)
+            {
+                throw new Exception("Failed to remove old roles");
+            }
+
+            var addResult = await _repository.AddToRoleAsync(user, request.NewRoleName);
+            if (!addResult.Succeeded)
+            {
+                throw new Exception("Failed to add new role");
+            }
+        }
+
         private async Task<User> GetUserAndCheckIfItExists(Guid id)
         {
             var user = await _repository.FindByIdAsync(id.ToString());

@@ -1,7 +1,9 @@
 ﻿using AnimalCare.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Service.Contracts;
 using Shared.DataTransferObjects.UsersDTO;
 using Shared.RequestFeatures;
@@ -110,7 +112,15 @@ namespace AnimalCare.Presentation.Controllers
 
             return NoContent();
         }
-        
+
+        [HttpPut("{userId}/role")]
+        public async Task<IActionResult> UpdateUserRole(Guid userId, [FromBody] UpdateUserRoleDTO request)
+        {
+            await _service.UserService.UpdateUserRoleAsync(userId, request);
+
+            return Ok("Role updated successfully");
+        }
+
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Administrator,Caretaker")]
         public async Task<IActionResult> DeleteUser(Guid id)
