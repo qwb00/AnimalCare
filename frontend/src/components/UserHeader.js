@@ -1,3 +1,13 @@
+/*
+  File: UserHeader.js
+  Description:
+    - Component for displaying user general info including, colored role and photo with ability to update photo.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FileUploader from './FileUploader';
