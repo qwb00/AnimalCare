@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Page for user authentication
+*/
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';

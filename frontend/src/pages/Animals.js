@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Page for showing animals
+*/
+
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";

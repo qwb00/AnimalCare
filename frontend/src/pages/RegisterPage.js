@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Page for user registration
+*/
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API_BASE_URL from '../config';

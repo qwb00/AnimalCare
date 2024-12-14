@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Component for show treatment in list form, working exactly like TreatmentRequest card
+*/
+
 import React, { useState } from 'react';
 import ListItem from '../components/ListItem';
 import API_BASE_URL from '../config';

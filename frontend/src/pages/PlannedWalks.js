@@ -143,6 +143,7 @@ function PlannedWalks() {
                         onClick={() => setFiltersVisible(!filtersVisible)}
                     />
                 </div>
+                {/* ListItem view Button. Author: Vorobev Mikhail xvorob01 */}
                 <Button
                     icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
                     text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
@@ -261,42 +262,41 @@ function PlannedWalks() {
                                     onClick: () => handleMarkAsCompleted(reservation.id),
                                     className: "px-5 py-2 w-full",
                                 },
-                                ]}
-                            />
-                        ))
-                        :
-                        plannedWalks.map((reservation) => (
-                            // Mikhail Vorobev xvorob01
-                            <ListItem
-                                key={reservation.id}
-                                title={`Walk with ${reservation.animalName}`}
-                                imageSrc={reservation.photo || icons.placeholder}
-                                infoItems={[
-                                    { icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
-                                    { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
-                                    { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
-                                    { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
-                                    { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0, 5)} - ${reservation.endTime.slice(0, 5)}` },
-                                ]}
-                                buttons={[
-                                    {
-                                        text: "Missed",
-                                        variant: "red",
-                                        icon: icons.decline,
-                                        onClick: () => handleMarkAsMissed(reservation.id),
-                                        className: "px-5 py-2 w-full",
-                                    },
-                                    {
-                                        text: "Completed",
-                                        variant: "blue",
-                                        icon: icons.approve,
-                                        onClick: () => handleMarkAsCompleted(reservation.id),
-                                        className: "px-5 py-2 w-full",
-                                    },
-                                ]}
-                            />
-                        ))
-                    }
+                            ]}
+                        />
+                    ))
+                : 
+                //ListItem view. Author: Vorobev Mikhail xvorob01
+                plannedWalks.map((reservation) => (
+                    <ListItem
+                        key={reservation.id}
+                        title={`Walk with ${reservation.animalName}`}
+                        imageSrc={reservation.photo || icons.placeholder}
+                        infoItems={[
+                            { icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
+                            { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
+                            { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
+                            { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
+                            { icon: icons.time, label: "Time", value: `${reservation.startTime.slice(0, 5)} - ${reservation.endTime.slice(0, 5)}` },
+                        ]}
+                        buttons={[
+                            {
+                                text: "Missed",
+                                variant: "red",
+                                icon: icons.decline,
+                                onClick: () => handleMarkAsMissed(reservation.id),
+                                className: "px-5 py-2 w-full",
+                            },
+                            {
+                                text: "Completed",
+                                variant: "blue",
+                                icon: icons.approve,
+                                onClick: () => handleMarkAsCompleted(reservation.id),
+                                className: "px-5 py-2 w-full",
+                            },
+                        ]}
+                    />
+                ))}
                 </div>
                 {/* If no walks was found */}
                 {plannedWalks.length === 0 && (

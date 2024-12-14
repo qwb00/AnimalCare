@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Page for medical treatments where caretaker and veterinarian can manage treatments
+*/
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -403,7 +408,7 @@ function VeterinarianExaminations() {
                     onDelete={handleDelete}
                   />
                 ))
-                : filteredCaretakerActiveRequests.slice(0, visibleCaretakerActiveRequests).map((request) => (
+                : filteredCaretakerActiveRequests.map((request) => (
                   <TreatmentListItem
                     key={request.id}
                     request={request}
@@ -412,7 +417,7 @@ function VeterinarianExaminations() {
                   />
                 ))}
               </div>
-              {filteredCaretakerActiveRequests.length > visibleCaretakerActiveRequests && (
+              {filteredCaretakerActiveRequests.length > visibleCaretakerActiveRequests && viewMode === "card" &&(
                 <div className="flex justify-center my-4">
                   <button
                     onClick={() => setVisibleCaretakerActiveRequests((prev) => prev + 2)}
@@ -428,6 +433,7 @@ function VeterinarianExaminations() {
 
         {user.role === 'Veterinarian' && (
           <>
+           {/* New Requests with filters */}
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
@@ -594,11 +600,11 @@ function VeterinarianExaminations() {
                   ? filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
                       <RequestCard key={request.id} request={request} />
                   ))
-                  : filteredVetCompleted.slice(0, visibleVeterinarianRequests).map((request) => (
+                  : filteredVetCompleted.map((request) => (
                       <TreatmentListItem key={request.id} request={request} />
               ))}
               </div>
-              {filteredVetCompleted.length > visibleVeterinarianRequests && (
+              {filteredVetCompleted.length > visibleVeterinarianRequests && viewMode === "card" &&(
                 <div className="flex justify-center my-4">
                   <button
                     onClick={() => setVisibleVeterinarianRequests((prev) => prev + 2)}

@@ -150,6 +150,7 @@ function UserReservationsConfirm() {
                         />
                     </div>
                 </div>
+                {/* ListItem view Button. Author: Vorobev Mikhail xvorob01 */}
                 <Button
                       icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
                       text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
@@ -271,6 +272,7 @@ function UserReservationsConfirm() {
                             ]}
                         />
                     ))
+                    //ListItem view Button. Author: Vorobev Mikhail xvorob01
                     : newRequests.map((reservation) => (
                         <ListItem
                             key={reservation.id}

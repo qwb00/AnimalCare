@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Component for show prescription in card form
+*/
+
 import React from 'react';
 import { format } from 'date-fns';
 import Card from '../components/Card';
