@@ -1,3 +1,10 @@
+// Aleksander Postelga xposte00
+// Aleksei Petrishko xpetri23
+
+/*
+* File to show a detailed information about an animal
+*/
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -392,7 +399,7 @@ function AnimalDetails() {
     return sex === 0 ? "Male" : "Female";
   };
 
-  // Aleksander Postelga: a function to delete an animal from system
+  // Function to delete an animal from system
   const handleDeleteAnimal = async () => {
     try {
       await axios.patch(
@@ -721,7 +728,7 @@ function AnimalDetails() {
               </Link>
               {isEditable && (
                   <div>
-                    {/* Aleksander Postelga: button to delete animals */}
+                    {/* Button to delete animals */}
                     <Button
                         text="DELETE ANIMAL"
                         variant="red"

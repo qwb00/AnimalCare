@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* A file containing the icons used in the application
+*/
+
 export const icons = {
     volunteer: '/icons/name.png',
     animal: '/icons/breed.png',

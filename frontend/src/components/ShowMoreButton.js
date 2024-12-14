@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* A button that used in application to show more information
+*/
+
 import React from 'react';
 
 function ShowMoreButton({ onClick }) {
