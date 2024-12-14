@@ -11,10 +11,10 @@ namespace Service
 {
     public class UserService : IUserService
     {
-        private readonly UserManager<User> _repository;
+        private readonly _repository<User> _repository;
         private readonly IMapper _mapper;
 
-        public UserService(UserManager<User> repository, IMapper mapper)
+        public UserService(_repository<User> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -172,6 +172,28 @@ namespace Service
 
             var userDTO = await user.MapUserToDTOAsync(_repository, _mapper);
             return userDTO;
+        }
+
+        public async Task UpdateUserRoleAsync(Guid userId, UpdateUserRoleDTO request)
+        {
+            var user = await _repository.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var currentRoles = await _repository.GetRolesAsync(user);
+            var removeResult = await _repository.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded)
+            {
+                throw new Exception("Failed to remove old roles");
+            }
+
+            var addResult = await _repository.AddToRoleAsync(user, request.NewRoleName);
+            if (!addResult.Succeeded)
+            {
+                throw new Exception("Failed to add new role");
+            }
         }
 
         private async Task<User> GetUserAndCheckIfItExists(Guid id)
