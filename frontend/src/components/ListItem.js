@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Component for show in list-like form
+*/
+
 import React from 'react';
 import Button from './Button';
 import PropTypes from 'prop-types';

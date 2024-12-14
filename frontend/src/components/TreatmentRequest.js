@@ -1,8 +1,14 @@
+/*
+* Mikhail Vorobev xvorob01
+* Component for show medical treatment card
+*/
+
 import React, { useState } from 'react';
 import Card from '../components/Card';
 import API_BASE_URL from '../config';
 import ErrorMessages from '../components/ErrorMessages';
 
+// Define the different examination statuses with numeric codes for clarity and consistency.
 const ExaminationStatus = {
   InProgress: 0,
   Completed: 1,
@@ -19,12 +25,15 @@ const RequestCard = ({
                        onConfirm,
                      }) => {
   const token = sessionStorage.getItem('token');
+
+  // Maintain the state of the final diagnosis (for when the examination is in progress)
   const [finalDiagnosis, setFinalDiagnosis] = useState(
       request.finalDiagnosis || ''
   );
 
   const [errorData, setErrorData] = useState(null);
 
+   // Handle approving a request: sets the examination status to InProgress
   const handleApprove = async () => {
     try {
       const response = await fetch(
@@ -50,6 +59,7 @@ const RequestCard = ({
     }
   };
 
+  // Handle declining a request: sets the examination status to Cancelled
   const handleDecline = async () => {
     try {
       const response = await fetch(
@@ -75,6 +85,7 @@ const RequestCard = ({
     }
   };
 
+  // Handle deleting a request (available only to the caretaker if the request is cancelled)
   const handleDelete = async () => {
     try {
       const response = await fetch(
@@ -96,6 +107,7 @@ const RequestCard = ({
     }
   };
 
+   // Handle confirming the final diagnosis: sets the status to Completed and updates the finalDiagnosis
   const handleConfirm = async () => {
     if (!finalDiagnosis.trim()) {
       alert('Final diagnosis cannot be empty.');
@@ -129,6 +141,7 @@ const RequestCard = ({
     }
   };
 
+  // Determine the status text based on the status code
   const statusText =
       request.status === ExaminationStatus.InProgress
           ? 'In Progress'
@@ -152,7 +165,9 @@ const RequestCard = ({
                       : 'text-gray-500';
 
   let buttons = [];
+  // Determine which action buttons should appear on the card based on the user's role and the request status
   if (showActions === 'Veterinarian' && request.status === ExaminationStatus.NotDecided) {
+    // For veterinarians: Approve or Decline when status is NotDecided
     buttons = [
       {
         text: 'Decline',
@@ -173,6 +188,7 @@ const RequestCard = ({
       showActions === 'InProgress' &&
       request.status === ExaminationStatus.InProgress
   ) {
+    // For veterinarians: Confirm the final diagnosis when status is InProgress
     buttons = [
       {
         text: 'Confirm',
@@ -234,7 +250,7 @@ const RequestCard = ({
                     Final Diagnosis:
                   </label>
                   <textarea
-                      className="w-3/4 h-10 max-h-32 p-2 border-2 border-light-blue rounded-md resize-none focus:border-main-blue outline-none"
+                      className="w-3/4 p-2 border-2 border-light-blue rounded-md resize-y focus:border-main-blue outline-none"
                       placeholder="Enter final diagnosis"
                       value={finalDiagnosis}
                       onChange={(e) => setFinalDiagnosis(e.target.value)}

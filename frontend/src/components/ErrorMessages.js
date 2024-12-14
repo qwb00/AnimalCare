@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Component for showing messages
+*/
+
 import React from 'react';
 
 const extractErrorMessages = (errorData) => {

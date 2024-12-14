@@ -78,6 +78,7 @@ function Prescriptions() {
 
     if (!user) return <div>Loading...</div>;
 
+    // Filtering author: Mikhail Vorobev xvorob01
     const filteredPrescriptions = prescriptions.filter((p) => {
         let matches = true;
         console.log(prescriptions);
@@ -195,6 +196,7 @@ function Prescriptions() {
                                     prescription={prescription}
                                 />
                             ))
+                            // ListItem view. Author: Vorobev Mikhail xvorob01
                             : filteredPrescriptions.map((prescription) => (
                                 <PrescriptionListItem
                                     key={prescription.id}

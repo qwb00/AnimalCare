@@ -134,6 +134,7 @@ function PlannedWalks() {
                         onClick={() => setFiltersVisible(!filtersVisible)}
                     />
                 </div>
+                {/* ListItem view Button. Author: Vorobev Mikhail xvorob01 */}
                 <Button
                                 icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
                                 text={`Switch to ${viewMode === "card" ? "List" : "Card"} View`}
@@ -256,6 +257,7 @@ function PlannedWalks() {
                         />
                     ))
                 : 
+                //ListItem view. Author: Vorobev Mikhail xvorob01
                 plannedWalks.map((reservation) => (
                     <ListItem
                         key={reservation.id}

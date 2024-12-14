@@ -1,17 +1,16 @@
 import React from "react";
-import Button from "./Button"; // Импорт компонента Button
+import Button from "./Button"; 
 
 function WarningModal({ title, message, onClose, buttonText = "Close" }) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={onClose} // Закрытие при клике на фон
+      onClick={onClose} 
     >
       <div
         className="relative bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 border-red-600"
-        onClick={(e) => e.stopPropagation()} // Остановка всплытия
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Кнопка закрытия */}
         <button
           type="button"
           className="absolute top-3 right-3 bg-main-blue rounded-full p-2"

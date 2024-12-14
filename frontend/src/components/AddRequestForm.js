@@ -1,3 +1,8 @@
+/*
+* Mikhail Vorobev xvorob01
+* Form Component for adding medical treatment
+*/
+
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
 import Button from "../components/Button";
