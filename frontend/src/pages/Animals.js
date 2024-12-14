@@ -1,5 +1,5 @@
 /*
-* Mikhail Vorobev xvorob01
+* Author: Mikhail Vorobev xvorob01
 * Page for showing animals
 */
 
@@ -26,13 +26,18 @@ function Animals() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [userRole, setUserRole] = useState("");
 
+  // Pagination settings differ based on user role
   const animalsPerPageForAdmin = 5;
   const animalsPerPageForUser = 6;
   const animalsPerPage =
     userRole === "Caretaker" || userRole === "Administrator"
       ? animalsPerPageForAdmin
       : animalsPerPageForUser;
+
+   // Calculate total pages based on current filters and user role
   const totalPages = Math.ceil(allAnimals.length / animalsPerPage);
+
+  // Filters applied to the animals list
   const [filters, setFilters] = useState({
     minAge: "",
     maxAge: "",
@@ -43,7 +48,7 @@ function Animals() {
     searchTerm: "",
   });
   
-
+  // State variables for new animal form fields
   const [currentPage, setCurrentPage] = useState(1);
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [name, setName] = useState("");
@@ -57,7 +62,6 @@ function Animals() {
   const [foundDate, setFoundDate] = useState("");
   const [personality, setPersonality] = useState("");
   const [history, setHistory] = useState("");
-  const [errorData, setErrorData] = useState(null);
 
   const loadAllAnimals = async () => {
     try {
@@ -88,6 +92,7 @@ function Animals() {
     loadAllAnimals();
   }, []);
 
+  // Whenever filters change, re-apply them to fetch and display filtered animals
   useEffect(() => {
     const applyFiltersAsync = async () => {
       try {
@@ -120,11 +125,12 @@ function Animals() {
     applyFiltersAsync();
   }, [filters]);
 
+  // Calculate the animals to be displayed on the current page
   const startIndex = (currentPage - 1) * animalsPerPage;
   const endIndex = startIndex + animalsPerPage;
-
   const currentAnimals = allAnimals.slice(startIndex, endIndex);
 
+  // Determine page numbers for pagination, including "..." for truncation
   const getPageNumbers = () => {
     const pages = [];
     const maxPageNumbers = 5;
@@ -199,7 +205,6 @@ function Animals() {
       }
     } catch (error) {
       console.error("Error adding animal:", error);
-      setErrorData(error);
       setNotification({ isSuccess: false, message: <ErrorMessages errorData={error.response?.data} />  });
       setIsNotificationOpen(true);
       return;
@@ -241,7 +246,7 @@ function Animals() {
       </div>
 
       <div className="filter-section mb-4">
-        {/* Toggle Button */}
+        {/* Filters Toggle Button */}
         <div className="mx-auto p-4">
           <Button
             variant="blue" 
@@ -343,7 +348,7 @@ function Animals() {
 </div>
 </div>
 
-
+      {/* Animal cards list */}
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {currentAnimals.map((animal, index) => (
@@ -359,6 +364,7 @@ function Animals() {
             />
           ))}
 
+          {/* If user is an Admin or Caretaker, show a "New Animal" card to add more animals */}
           {userRole &&
             (userRole === "Caretaker" || userRole === "Administrator") && (
               <div
@@ -652,6 +658,7 @@ function Animals() {
         </div>
       )}
       
+      {/* Notification (success/error message) */}
       {isNotificationOpen && (
           <div
               className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
