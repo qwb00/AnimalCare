@@ -1,3 +1,14 @@
+/*
+  File: AppContext.js
+  Description:
+    - Provides global state management for the application, including reservation history, suggested animals, and the selected animal ID.
+    - It includes a memoized function `updateSuggestedAnimals` that fetches and updates suggested animals based on user reservations or selects random animals for unauthenticated users.
+    - The context facilitates sharing state and functions across various components without prop drilling.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { createContext, useState, useCallback } from "react";
 import API_BASE_URL from "../config";
 import axios from "axios";
@@ -23,7 +34,7 @@ export const AppProvider = ({ children }) => {
         const response = await axios.get(`${API_BASE_URL}/animals`);
         const animals = response.data;
 
-        // Генерация случайных животных
+        // Randomly select 3 animals
         const randomIndexes = new Set();
         while (randomIndexes.size < 3 && randomIndexes.size < animals.length) {
           const randomIndex = Math.floor(Math.random() * animals.length);
@@ -74,7 +85,6 @@ export const AppProvider = ({ children }) => {
         newSuggestedAnimals = sortedAnimals.slice(0, 3);
       }
 
-      // Обновляем состояние только при изменении
       if (
         JSON.stringify(newSuggestedAnimals) !== JSON.stringify(suggestedAnimals)
       ) {
@@ -83,7 +93,7 @@ export const AppProvider = ({ children }) => {
     } catch (error) {
       console.error("Error updating suggested animals:", error);
     }
-  }, []); // suggestedAnimals — зависимость
+  }, []);
 
   return (
     <AppContext.Provider

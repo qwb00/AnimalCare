@@ -1,3 +1,12 @@
+/*
+  File: BackToTop.js
+  Description:
+    - BackToTop component that displays a button allowing users to smoothly scroll back to the top of the page. The button becomes visible when the user scrolls down beyond 300 pixels.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect } from "react";
 
 function BackToTop() {

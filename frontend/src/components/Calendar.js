@@ -1,3 +1,12 @@
+/*
+  File: Calendar.js
+  Description:
+    - Calendar component responsible for displaying available and reserved slots for animal walks.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
@@ -5,8 +14,6 @@ import {
   format,
   addDays,
   addHours,
-  startOfWeek,
-  endOfWeek,
   isToday,
   isBefore,
   isTomorrow,
@@ -20,28 +27,29 @@ import API_BASE_URL from "../config";
 import { Link } from "react-router-dom";
 
 function Calendar({}) {
+  // Context for synchronizing selected animal ID and suggested animals
   const { updateSuggestedAnimals, selectedAnimalId } = useContext(AppContext);
 
-  const cancelTimer = 5000; // 3 seconds
+  // Timer for showing toast notifications
+  const cancelTimer = 5000; // 5 seconds
 
   const today = new Date();
   const tomorrow = addDays(new Date(), 1);
   const [currentWeek, setCurrentWeek] = useState(tomorrow);
-  const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
   const [selectedSlotsByAnimal, setSelectedSlotsByAnimal] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [animals, setAnimals] = useState([]);
   const [animalData, setAnimalData] = useState(null);
   const [reservedSlots, setReservedSlots] = useState([]);
-  const [reservedSlotDetails, setReservedSlotDetails] = useState([]);
   const [userReservations, setUserReservations] = useState([]);
   const [userReservedSlots, setUserReservedSlots] = useState([]);
   const [allUserReservations, setAllUserReservations] = useState([]);
   const [hoveredSlot, setHoveredSlot] = useState(null);
+
   const [notification, setNotification] = useState({
     message: "",
     isSuccess: null,
   });
+
   const [cancelNotification, setCancelNotification] = useState({
     message: "",
     animalName: "",
@@ -49,16 +57,23 @@ function Calendar({}) {
     time: "",
     isUndo: false,
     isOpen: false,
-    reservationId: null, // Для идентификации резервации
+    reservationId: null,
   });
+
+  // Ref to handle the cancellation process outside of React's state
   const cancelProcessRef = useRef(false);
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [lastReservationDetails, setLastReservationDetails] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Maximum number of slots a user can select
   const MAX_SLOTS = 10;
+
+  // Key to trigger data refresh in useEffect hooks
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // Fetch and set animal data on component mount
   useEffect(() => {
     const fetchAnimalData = async () => {
       try {
@@ -73,7 +88,7 @@ function Calendar({}) {
             id: animal.id,
             name: animal.name,
             breed: animal.breed,
-            photo: animal.photo, // Добавляем фото животного
+            photo: animal.photo, // Add animal photo
           }));
 
           setAnimals(animalInfo);
@@ -86,6 +101,7 @@ function Calendar({}) {
     fetchAnimalData();
   }, []);
 
+  // Fetch and set detailed data for the selected animal when selectedAnimalId changes
   useEffect(() => {
     const fetchAnimalData = async () => {
       try {
@@ -95,11 +111,11 @@ function Calendar({}) {
         if (response.data) {
           setAnimalData(response.data);
         } else {
-          setAnimalData(null);
+          setAnimalData(null); // Reset animal data if no data is returned
         }
       } catch (error) {
         console.error("Error fetching animal data:", error);
-        setAnimalData(null);
+        setAnimalData(null); // Reset animal data on error
       }
     };
 
@@ -108,6 +124,7 @@ function Calendar({}) {
     }
   }, [selectedAnimalId]);
 
+  // Fetch and set reserved slots for the selected animal
   const fetchReservations = async () => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -119,13 +136,14 @@ function Calendar({}) {
       });
 
       if (response.data) {
+        // Filter reservations for the selected animal and exclude those with status 4 (canceled)
         const filteredReservations = response.data.filter(
           (reservation) =>
             reservation.animalId === selectedAnimalId &&
             reservation.status !== 4
         );
 
-        // Обработка резерваций
+        // Process reservations to determine occupied time slots
         const occupiedSlots = filteredReservations.flatMap((reservation) => {
           const reservationDate = parseISO(reservation.reservationDate);
 
@@ -155,7 +173,7 @@ function Calendar({}) {
             return [];
           }
 
-          // Разбиение длительных слотов на 1-часовые интервалы
+          // Split long reservations into 1-hour intervals
           const slots = [];
           let currentSlot = startDateTime;
 
@@ -178,6 +196,7 @@ function Calendar({}) {
     }
   };
 
+  // Fetch and set the user's reservations for the selected animal
   const fetchUserReservations = async () => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -185,8 +204,8 @@ function Calendar({}) {
 
       if (!authToken || !userId) {
         console.warn("User not authenticated. Cannot fetch user reservations.");
-        setUserReservedSlots([]); // Очистка состояния
-        setUserReservations([]); // Очистка полного списка резерваций
+        setUserReservedSlots([]); // Clear reserved slots state
+        setUserReservations([]); // Clear user reservations state
         return;
       }
 
@@ -200,14 +219,12 @@ function Calendar({}) {
       );
 
       if (response.data) {
-        // Фильтруем резервации по животному и статусу
         const filteredReservations = response.data.filter(
           (reservation) =>
             reservation.animalId === selectedAnimalId &&
-            reservation.status !== 4 // Исключаем отменённые резервации
+            reservation.status !== 4 // Exclude canceled reservations
         );
 
-        // Создаем списки для userReservedSlots и userReservations
         const userSlots = [];
         const detailedReservations = [];
 
@@ -235,12 +252,11 @@ function Calendar({}) {
 
             userSlots.push(slotKey);
 
-            // Сохраняем полную информацию о каждой резервации
             detailedReservations.push({
               slotKey,
               reservationId: reservation.id,
               animalId: reservation.animalId,
-              userId: sessionStorage.getItem("userID"),
+              userId: userId,
               startTime: reservation.startTime,
               endTime: reservation.endTime,
               date: reservation.date,
@@ -251,10 +267,10 @@ function Calendar({}) {
           }
         });
 
-        setUserReservedSlots(userSlots); // Обновляем слоты
-        setUserReservations(detailedReservations); // Сохраняем полные данные
-
+        setUserReservedSlots(userSlots);
+        setUserReservations(detailedReservations);
       } else {
+        // No reservations found -> clear states
         setUserReservedSlots([]);
         setUserReservations([]);
       }
@@ -265,6 +281,7 @@ function Calendar({}) {
     }
   };
 
+  // Re-fetch reservations and user reservations when selectedAnimalId or refreshKey changes
   useEffect(() => {
     if (selectedAnimalId) {
       fetchReservations();
@@ -274,6 +291,7 @@ function Calendar({}) {
     }
   }, [selectedAnimalId, refreshKey]);
 
+  // Fetch all current user reservations with valid IDs
   const fetchAllUserReservations = async () => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -294,7 +312,6 @@ function Calendar({}) {
       );
 
       if (response.data) {
-        // Фильтруем только те резервации, которые активны (не отменены) и имеют `id`
         const validReservations = response.data.filter(
           (reservation) => reservation.status !== 4 && reservation.id
         );
@@ -309,6 +326,7 @@ function Calendar({}) {
     }
   };
 
+  // Load all user reservations when refreshKey changes
   useEffect(() => {
     const loadAllReservations = async () => {
       const reservations = await fetchAllUserReservations();
@@ -318,6 +336,7 @@ function Calendar({}) {
     loadAllReservations();
   }, [refreshKey]);
 
+  // Fetch and return detailed information for a specific animal by its ID
   const fetchAnimalDetails = async (animalId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/animals/${animalId}`);
@@ -328,16 +347,18 @@ function Calendar({}) {
     }
   };
 
+  // Display a notification message with success or error status
   const showNotification = (message, isSuccess) => {
     setNotification({ message, isSuccess });
     setIsNotificationOpen(true);
 
-    // Скрываем уведомление через 3 секунды
+    // Hide the notification after the specified cancelTimer duration
     setTimeout(() => {
       setIsNotificationOpen(false);
     }, cancelTimer);
   };
 
+  // Display a cancellation-specific notification with reservation details
   const showCancelNotification = ({
     message,
     animalName,
@@ -356,30 +377,35 @@ function Calendar({}) {
     });
   };
 
+  // Navigate to the next week by adding 7 days to the current week
   const handleNextWeek = () => {
     setCurrentWeek((prevWeek) => addDays(prevWeek, 7));
   };
 
+  // Navigate to the previous week by subtracting 7 days from the current week
   const handlePrevWeek = () => {
     setCurrentWeek((prevWeek) => addDays(prevWeek, -7));
   };
 
+  // Generate an array of Date objects representing each day of the current week
   const daysOfWeek = [];
   for (let i = 0; i < 7; i++) {
     const day = addDays(currentWeek, i);
     daysOfWeek.push(day);
   }
 
-  // Available time slots for each day (from 9:00 to 17:00)
+  // Available time slots for each day (from 9:00 AM to 5:00 PM)
   const timeSlots = Array.from({ length: 9 }, (_, i) => {
     const hour = 9 + i;
     const formattedTime = format(new Date(2022, 0, 1, hour), "hh:mm a");
     return formattedTime;
   });
 
+  // Times that are currently inactive or unavailable for reservations
   const inactiveTimes = [];
-  //const inactiveTimes = ["11:00 AM", "03:00 PM"];
+  // Example of inactive times: ["11:00 AM", "03:00 PM"]
 
+  // Open the authentication modal if the user is not authenticated, otherwise confirm the reservation
   const handleOpenModal = () => {
     const authToken = sessionStorage.getItem("token");
     if (!authToken) {
@@ -389,15 +415,9 @@ function Calendar({}) {
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handleCloseAuthModal = () => {
     setIsAuthModalOpen(false);
   };
-
-  const animalImagePath = animalData?.photo;
 
   // Format a time slot with start and end time for display
   const formatTimeSlot = (slot) => {
@@ -493,86 +513,25 @@ function Calendar({}) {
     return mergedSlots;
   };
 
-  // Обновленная функция для безопасного форматирования даты и времени
-  const formatReservationDetails = (reservation) => {
-    // Проверяем, существует ли reservation.date
-    if (!reservation.date) {
-      console.error(
-        "No reservation date found for this reservation:",
-        reservation
-      );
-      return "Invalid date"; // Возвращаем строку, если нет даты
-    }
-
-    // Попробуем парсить дату и добавить диагностику
-    let reservationDate;
-    try {
-      reservationDate = parseISO(reservation.date); // Используем правильное поле 'date'
-    } catch (error) {
-      console.error("Error parsing date:", reservation.date, error);
-      return "Invalid date"; // Возвращаем строку, если ошибка при парсинге
-    }
-
-    // Проверка, является ли дата валидной
-    if (isNaN(reservationDate)) {
-      console.error("Invalid date after parsing:", reservation.date);
-      return "Invalid date"; // Возвращаем строку, если дата некорректна
-    }
-
-    const startDateTime = parse(
-      reservation.startTime,
-      "HH:mm:ss",
-      reservationDate
-    );
-    const endDateTime = parse(reservation.endTime, "HH:mm:ss", reservationDate);
-
-    const formattedDate = format(reservationDate, "MMM dd, yyyy"); // Выводим дату в формате "Dec 15, 2024"
-    const formattedStartTime = format(startDateTime, "hh:mm a"); // Выводим время в формате "01:00 PM"
-    const formattedEndTime = format(endDateTime, "hh:mm a"); // Выводим время в формате "03:00 PM"
-
-    return `${formattedDate} (${formattedStartTime} - ${formattedEndTime})`;
-  };
-
-  function generateColor(id) {
-    // Генерируем числовой хеш на основе ID
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-      hash = id.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    // Извлекаем базовые компоненты (HSL)
-    // Повышаем насыщенность и немного уменьшаем светлоту, чтобы цвет был ярче
-    let hue = Math.abs(hash % 360); // Угол цвета в градусах (0-360)
-    let saturation = 70 + (hash % 20); // Повышаем насыщенность: 70-90%
-    let lightness = 60 + (hash % 10); // Чуть уменьшили светлоту: 60-70%
-
-    // Исключаем коричневые и бежевые тона
-    while ((hue >= 30 && hue <= 50) || (hue >= 20 && hue <= 60)) {
-      hue = (hue + 60) % 360;
-    }
-
-    // Возвращаем цвет в формате HSL
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-  }
-
-  // Toggle slot selection, limiting to future slots and max slot count
+  // Toggle slot selection, limiting to future slots and maximum slot count
   const handleSlotClick = (day, slot) => {
     const slotKey = `${format(day, "yyyy-MM-dd")}-${slot}`;
     const isFutureDate = isAfter(day, today) || isTomorrow(day);
 
+    // If the slot is already reserved by the user, initiate cancellation
     if (userReservedSlots.includes(slotKey)) {
-
-      handleCancelReservation(day, slot); // Передаем индекс в функцию отмены
+      handleCancelReservation(day, slot);
       return;
     }
 
     const currentSlots = selectedSlotsByAnimal[selectedAnimalId] || [];
 
-    // Подсчёт, сколько животных уже имеют выбранные слоты
+    // Count how many animals already have selected slots
     const numberOfSelectedAnimals = Object.keys(selectedSlotsByAnimal).filter(
       (id) => selectedSlotsByAnimal[id] && selectedSlotsByAnimal[id].length > 0
     ).length;
 
+    // Restrict the user to selecting slots for a maximum of 2 animals
     if (currentSlots.length === 0 && numberOfSelectedAnimals >= 2) {
       console.warn("Cannot select another animal: limit of 2 reached.");
       showNotification("You can't select more than 2 animals at once.", false);
@@ -580,19 +539,21 @@ function Calendar({}) {
     }
 
     if (currentSlots.includes(slotKey)) {
+      // Deselect the slot if it's already selected
       setSelectedSlotsByAnimal((prev) => {
         const updated = { ...prev };
         updated[selectedAnimalId] = currentSlots.filter((s) => s !== slotKey);
         return updated;
       });
     } else if (isFutureDate && currentSlots.length < MAX_SLOTS) {
+      // Select the slot if it's a future date and under the maximum slot limit
       setSelectedSlotsByAnimal((prev) => {
         const updated = { ...prev };
         updated[selectedAnimalId] = [...currentSlots, slotKey];
         return updated;
       });
 
-      // После обновления selectedSlotsByAnimal делаем проверку и запрос деталей животного
+      // After updating selectedSlotsByAnimal, check if animal details are needed and fetch them
       (async () => {
         const alreadyHasDetails = animals.some(
           (a) =>
@@ -616,6 +577,7 @@ function Calendar({}) {
     }
   };
 
+  // Handle the confirmation of selected reservations
   const handleConfirmReservation = async () => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -627,16 +589,19 @@ function Calendar({}) {
         return;
       }
 
+      // Create a copy of the current reserved slots
       let newReservedSlots = [...reservedSlots];
 
       let allSuccess = true;
 
+      // Object to store fetched animal details by their ID
       let animalDetailsById = {};
 
+      // Iterate over each animal and their selected slots
       for (const [animalId, slots] of Object.entries(selectedSlotsByAnimal)) {
-        const mergedSlots = mergeTimeSlots(slots);
+        const mergedSlots = mergeTimeSlots(slots); // Merge consecutive slots
+
         for (const { date, startTime, endTime } of mergedSlots) {
-          setReservedSlotDetails(mergedSlots);
           const reservationData = {
             userId: userID,
             animalId: animalId,
@@ -664,9 +629,10 @@ function Calendar({}) {
             );
 
             if (response.status === 201) {
-              fetchUserReservations();
-              setRefreshKey((prevKey) => prevKey + 1);
+              fetchUserReservations(); // Refresh user reservations
+              setRefreshKey((prevKey) => prevKey + 1); // Trigger data refresh
 
+              // Add the newly reserved slots to the reservedSlots state
               let currentSlot = parse(
                 startTime,
                 "hh:mm a",
@@ -688,15 +654,15 @@ function Calendar({}) {
                 currentSlot = addHours(currentSlot, 1);
               }
 
+              // Fetch and store animal details if not already fetched
               if (!animalDetailsById[animalId]) {
                 const details = await fetchAnimalDetails(animalId);
                 if (details) {
-                  // Ищем индекс животного в состоянии animals
                   const animalIndex = animals.findIndex(
                     (a) => a.id === animalId
                   );
                   if (animalIndex !== -1) {
-                    // Обновляем состояние animals, добавляя подробности к уже имеющемуся объекту
+                    // Update the animals state with the fetched details
                     setAnimals((prev) => {
                       const updated = [...prev];
                       updated[animalIndex] = {
@@ -742,7 +708,7 @@ function Calendar({}) {
               );
             }
 
-            await updateSuggestedAnimals();
+            await updateSuggestedAnimals(); // Update suggested animals in context
           } catch (error) {
             const errorMessage =
               error.response?.data?.message ||
@@ -768,6 +734,7 @@ function Calendar({}) {
     }
   };
 
+  // Handle the cancellation of a reservation for a specific day and slot
   const handleCancelReservation = async (day, slot) => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -782,6 +749,7 @@ function Calendar({}) {
       const chosenSlotDate = format(day, "yyyy-MM-dd");
       const chosenSlotTime = parse(slot, "hh:mm a", new Date());
 
+      // Attempt to find the reservation that exactly matches the slotKey
       let reservation = userReservations.find((reservation) => {
         const reservationDate = parseISO(reservation.date);
         const startDateTime = parse(
@@ -794,6 +762,7 @@ function Calendar({}) {
         return `${formattedDate}-${formattedTime}` === slotKey;
       });
 
+      // If no exact match is found, check if the slot falls within any reservation interval
       if (!reservation) {
         reservation = userReservations.find((reservation) => {
           const reservationDate = parseISO(reservation.date);
@@ -808,7 +777,7 @@ function Calendar({}) {
             reservationDate
           );
 
-          // Проверяем, что слот в рамках этой резервации:
+          // Check if the slot is within the reservation date and time range
           if (format(reservationDate, "yyyy-MM-dd") === chosenSlotDate) {
             const slotDateTime = new Date(
               `${chosenSlotDate} ${format(chosenSlotTime, "HH:mm:ss")}`
@@ -818,13 +787,12 @@ function Calendar({}) {
           return false;
         });
 
-        // Если слот внутри более чем часовой интервал, вызываем handleCancelWithinRange
+        // If the slot is within a reservation longer than one hour, handle partial cancellation
         if (reservation) {
           const reservationId = reservation.reservationId;
           const formattedDate = format(day, "MMM dd yyyy");
           const formattedTime = slot;
 
-          // Вычисляем для handleCancelWithinRange нужные данные
           handleCancelWithinRange({
             reservation,
             chosenSlotDate,
@@ -855,12 +823,10 @@ function Calendar({}) {
         return;
       }
 
-      // Если нашли резервацию, которая начинается точно в это время, оставляем остальной код без изменений
       const reservationId = reservation.reservationId;
       const formattedDate = format(day, "MMM dd yyyy");
       const formattedTime = slot;
 
-      // Сбрасываем флаг отмены
       cancelProcessRef.current = false;
 
       const reservationDate = parseISO(reservation.date);
@@ -878,6 +844,7 @@ function Calendar({}) {
 
       let hourlySlots = [];
       if (hoursDiff > 1) {
+        // Split the reservation into hourly intervals if it's longer than one hour
         let current = startDateTime;
         while (current < endDateTime) {
           const nextHour = addHours(current, 1);
@@ -898,6 +865,7 @@ function Calendar({}) {
         reservationId,
       });
 
+      // Delay the cancellation to allow for potential user undo
       setTimeout(async () => {
         if (cancelProcessRef.current) {
           return;
@@ -907,6 +875,7 @@ function Calendar({}) {
           let response;
 
           if (hoursDiff > 1) {
+            // If the reservation spans multiple hours, update the start time to exclude the canceled slot
             const newStartTime = format(addHours(startDateTime, 1), "HH:mm:ss");
             response = await fetch(
               `${API_BASE_URL}/reservations/${reservationId}`,
@@ -922,6 +891,7 @@ function Calendar({}) {
               }
             );
           } else {
+            // If the reservation is for a single hour, set its status to canceled (status 4)
             response = await fetch(
               `${API_BASE_URL}/reservations/${reservationId}`,
               {
@@ -943,10 +913,10 @@ function Calendar({}) {
             );
           }
 
-
           setUserReservedSlots((prevSlots) =>
             prevSlots.filter((prevSlot) => prevSlot !== slotKey)
           );
+
           setUserReservations((prevReservations) =>
             prevReservations.filter(
               (res) =>
@@ -956,6 +926,7 @@ function Calendar({}) {
             )
           );
 
+          // Refresh all user reservations and trigger a state update
           fetchAllUserReservations();
           setRefreshKey((prevKey) => prevKey + 1);
         } catch (error) {
@@ -982,6 +953,7 @@ function Calendar({}) {
     }
   };
 
+  // Handle partial cancellation of a reservation within a specific time range
   async function handleCancelWithinRange({
     reservation,
     chosenSlotDate,
@@ -1002,8 +974,6 @@ function Calendar({}) {
     setRefreshKey,
     cancelTimer,
   }) {
-
-    // Парсим дату/время резервации
     const reservationDate = parseISO(reservation.date);
     const startDateTime = parse(
       reservation.startTime,
@@ -1012,12 +982,10 @@ function Calendar({}) {
     );
     const endDateTime = parse(reservation.endTime, "HH:mm:ss", reservationDate);
 
-    // Парсим выбранный слот
     const slotDateTime = new Date(
       `${chosenSlotDate} ${format(chosenSlotTime, "HH:mm:ss")}`
     );
 
-    // Показываем уведомление об отмене
     showCancelNotification({
       message: "Reservation cancellation in progress...",
       animalName: animalData?.name || "Unknown Animal",
@@ -1026,12 +994,11 @@ function Calendar({}) {
       reservationId,
     });
 
-    // Отменяем исходную резервацию
+    // Cancel initial reservation
     setTimeout(async () => {
       if (cancelProcessRef.current) {
         return;
       }
-
 
       try {
         let response = await fetch(
@@ -1066,7 +1033,6 @@ function Calendar({}) {
           currentSlot = addHours(currentSlot, 1);
         }
 
-
         setUserReservedSlots((prevSlots) => {
           const filtered = prevSlots.filter(
             (s) => !reservationSlotsToRemove.includes(s)
@@ -1080,11 +1046,11 @@ function Calendar({}) {
           return filtered;
         });
 
-        // Создаем две новые резервации, если выбранный слот находится внутри исходного интервала:
-        // 1) Сокращенная резервация до выбранного слота (если выбранный слот позже начала)
-        // 2) Сокращенная резервация после выбранного слота (если выбранный слот раньше конца)
+        // Create two new reservations if the canceled slot is within a longer reservation:
+        // 1) Shortened reservation before the canceled slot
+        // 2) Shortened reservation after the canceled slot
 
-        // Резервация до выбранного слота
+        // Reservation before the canceled slot
         if (slotDateTime > startDateTime) {
           const newEndTime = format(slotDateTime, "HH:mm:ss");
           const newStartTime = format(startDateTime, "HH:mm:ss");
@@ -1096,7 +1062,6 @@ function Calendar({}) {
             startTime: newStartTime,
             endTime: newEndTime,
           };
-
 
           response = await fetch(`${API_BASE_URL}/reservations`, {
             method: "POST",
@@ -1117,10 +1082,9 @@ function Calendar({}) {
               `Failed to create shortened reservation: ${errorText}`
             );
           }
-
         }
 
-        // Резервация после выбранного слота
+        // Reservation after the canceled slot
         if (slotDateTime < endDateTime) {
           const newStartTime = format(slotDateTime, "HH:mm:ss");
           const newEndTime = format(endDateTime, "HH:mm:ss");
@@ -1132,7 +1096,6 @@ function Calendar({}) {
             startTime: newStartTime,
             endTime: newEndTime,
           };
-
 
           const response2 = await fetch(`${API_BASE_URL}/reservations`, {
             method: "POST",
@@ -1153,7 +1116,6 @@ function Calendar({}) {
               `Failed to create second shortened reservation: ${errorText}`
             );
           }
-
         }
 
         await fetchAllUserReservations();
@@ -1175,20 +1137,20 @@ function Calendar({}) {
       } finally {
         setCancelNotification((prev) => ({ ...prev, isOpen: false }));
         await updateSuggestedAnimals();
-        
-        // Добавляем повторный запрос резерваций пользователя, чтобы актуализировать состояние
+
         await fetchUserReservations();
       }
     }, cancelTimer);
   }
 
+  // Handle the cancellation of a reservation from the reservations list
   const handleCancelReservationFromList = (reservationId) => {
     if (!reservationId) {
       console.error("Reservation ID is undefined. Cannot cancel reservation.");
       return;
     }
 
-    // Ищем резервацию по ID
+    // Find the reservation object based on the provided reservation ID
     const cancelledReservation = allUserReservations.find(
       (reservation) => reservation.id === reservationId
     );
@@ -1201,10 +1163,8 @@ function Calendar({}) {
       return;
     }
 
-    // Устанавливаем флаг для отмены
     cancelProcessRef.current = false;
 
-    // Показываем предупреждающее уведомление
     setCancelNotification({
       message: "Reservation cancellation in progress...",
       animalName: cancelledReservation.animalName || "Unknown Animal",
@@ -1215,7 +1175,6 @@ function Calendar({}) {
       isOpen: true,
     });
 
-    // Устанавливаем таймер для отправки запроса
     setTimeout(async () => {
       if (cancelProcessRef.current) {
         return;
@@ -1244,7 +1203,6 @@ function Calendar({}) {
           );
         }
 
-        // Обновляем список всех резерваций пользователя
         setAllUserReservations((prev) =>
           prev.filter((reservation) => reservation.id !== reservationId)
         );
@@ -1261,7 +1219,6 @@ function Calendar({}) {
           reservationDate
         );
 
-        // Генерируем ключи слотов, которые нужно удалить
         const slotsToFree = [];
         let currentSlot = startDateTime;
         while (currentSlot < endDateTime) {
@@ -1271,17 +1228,17 @@ function Calendar({}) {
           currentSlot = addHours(currentSlot, 1);
         }
 
-        // Удаляем слоты из состояний reservedSlots и userReservedSlots
         setReservedSlots((prev) =>
           prev.filter((slot) => !slotsToFree.includes(slot))
         );
+
         setUserReservedSlots((prev) =>
           prev.filter((slot) => !slotsToFree.includes(slot))
         );
 
-        // Скрываем уведомление
         setCancelNotification((prev) => ({ ...prev, isOpen: false }));
 
+        // Update the suggested animals in the global context
         await updateSuggestedAnimals();
       } catch (error) {
         console.error("Error occurred during reservation cancellation:", error);
@@ -1290,11 +1247,10 @@ function Calendar({}) {
           message: "Failed to cancel reservation. Please try again.",
         }));
       }
-    }, cancelTimer); // Таймаут перед отправкой запроса
+    }, cancelTimer);
   };
 
   const allSelectedSlots = Object.values(selectedSlotsByAnimal).flat();
-  const mergedAllSelected = mergeTimeSlots(allSelectedSlots);
 
   return (
     <div className="w-full py-2">
@@ -1339,7 +1295,7 @@ function Calendar({}) {
               key={day}
               className="flex flex-col items-center p-2 border border-gray-300 bg-white rounded-lg min-h-[90px]"
             >
-              {/* Название дня недели */}
+              {/* Day of the week */}
               <div
                 className={`text-lg font-semibold ${
                   isWeekend ? "text-red-500" : ""
@@ -1348,7 +1304,6 @@ function Calendar({}) {
                 {format(day, "EEE")}
               </div>
 
-              {/* Число дня */}
               <div
                 className={`text-2xl font-bold ${
                   isWeekend
@@ -1384,25 +1339,25 @@ function Calendar({}) {
                   isPastDay ||
                   (isReserved && !isUserReserved);
 
-                // Генерация текста кнопки
+                // Text button content
                 const buttonText =
                   hoveredSlot === slotKey && isUserReserved ? "Cancel" : slot;
 
-                // Генерация класса для кнопки
+                // Style classes for button
                 const generateButtonClass = (slotKey) => {
                   if (hoveredSlot === slotKey && isUserReserved) {
-                    return "cursor-pointer"; // Убираем цветовые стили, чтобы их регулировать через инлайн стили
+                    return "cursor-pointer"; 
                   }
                   if (isUserReserved) {
-                    return "text-white cursor-pointer"; // Белый текст для зарезервированных слотов
+                    return "text-white cursor-pointer"; 
                   }
                   if (isInactive) {
-                    return "bg-gray-300 text-white border border-gray-300 cursor-default"; // Недоступные слоты
+                    return "bg-gray-300 text-white border border-gray-300 cursor-default"; 
                   }
                   if (isSelected) {
-                    return "bg-white text-black border border-black"; // Выбранные слоты
+                    return "bg-white text-black border border-black"; 
                   }
-                  return "bg-main-blue text-white border border-main-blue hover:bg-white hover:text-black hover:border-black"; // Доступные слоты
+                  return "bg-main-blue text-white border border-main-blue hover:bg-white hover:text-black hover:border-black"; 
                 };
 
                 return (
@@ -1422,10 +1377,10 @@ function Calendar({}) {
                         ? {
                             backgroundColor:
                               hoveredSlot === slotKey
-                                ? "#ef4444" // Светло-красный (примерно соответствует Tailwind red-300)
-                                : "#22c55e", // Цвет животного
-                            color: "white", // Белый текст
-                            border: "1px solid", // Красноватая граница
+                                ? "#ef4444" // Bright-red (something close to red-300 in Tailwind)
+                                : "#22c55e", // Greed
+                            color: "white", // White text
+                            border: "1px solid", 
                           }
                         : {}
                     }
@@ -1455,8 +1410,10 @@ function Calendar({}) {
                     <strong>Animal:</strong> {lastReservationDetails.animalName}
                   </p>
                   <p className="text-sm mb-2">
-                    <strong>Date & Time:</strong> {lastReservationDetails.date},{" "}
-                    {lastReservationDetails.startTime} -{" "}
+                    <strong>Date:</strong> {lastReservationDetails.date}
+                  </p>
+                  <p className="text-sm mb-2">
+                    <strong>Time:</strong> {lastReservationDetails.startTime} -{" "}
                     {lastReservationDetails.endTime}
                   </p>
                 </>
@@ -1493,10 +1450,8 @@ function Calendar({}) {
               let parsedDate;
 
               if (dateString.includes("T")) {
-                // Предполагаем формат ISO: 2024-12-16T00:00:00
                 parsedDate = parseISO(dateString);
               } else {
-                // Предполагаем формат Dec 17 2024
                 parsedDate = parse(dateString, "MMM dd yyyy", new Date());
               }
 
@@ -1514,25 +1469,19 @@ function Calendar({}) {
               const timeString = cancelNotification.time;
               let formattedTime = timeString;
 
-              // Проверяем, есть ли в строке дефис (значит формат "HH:mm:ss - HH:mm:ss")
               if (timeString.includes("-")) {
-                // Формат "13:00:00 - 14:00:00"
                 const [startRaw, endRaw] = timeString
                   .split("-")
                   .map((str) => str.trim());
 
-                // Парсим время как 24-часовое
                 const startTime = parse(startRaw, "HH:mm:ss", new Date());
                 const endTime = parse(endRaw, "HH:mm:ss", new Date());
 
-                // Форматируем в 12-часовой формат c суффиксом AM/PM
                 formattedTime = `${format(startTime, "hh:mm a")} - ${format(
                   endTime,
                   "hh:mm a"
                 )}`;
               } else {
-                // Формат "03:00 PM"
-                // Добавляем 1 час к полученному времени
                 const startTime = parse(timeString, "hh:mm a", new Date());
                 const endTime = addHours(startTime, 1);
                 formattedTime = `${format(startTime, "hh:mm a")} - ${format(
@@ -1551,11 +1500,11 @@ function Calendar({}) {
           <Button
             text="Undo"
             variant="green"
-            icon="/icons/undo.png" // Иконка undo
+            icon="/icons/undo.png"
             iconPosition="left"
-            className="mt-4 px-4 py-2 w-full" // Полная ширина для кнопки
+            className="mt-4 px-4 py-2 w-full" 
             onClick={() => {
-              cancelProcessRef.current = true; // Устанавливаем флаг отмены
+              cancelProcessRef.current = true; 
               setCancelNotification((prev) => ({ ...prev, isOpen: false }));
             }}
           />
@@ -1626,10 +1575,8 @@ function Calendar({}) {
 
           <div className="flex flex-row gap-4 mt-4 flex-wrap">
             {Object.entries(selectedSlotsByAnimal).map(([animalId, slots]) => {
-              // Мержим слоты для конкретного животного
               const mergedSlots = mergeTimeSlots(slots);
 
-              // Сортируем слоты по возрастанию
               const sortedSlots = mergedSlots.sort((a, b) => {
                 const dateA = parse(
                   `${a.date} ${a.startTime}`,
@@ -1644,7 +1591,6 @@ function Calendar({}) {
                 return dateA - dateB;
               });
 
-              // Находим данные о животном
               const animalDetails =
                 animals.find((item) => item.id === animalId) || {};
               const animalPhoto = animalDetails.photo;

@@ -1,3 +1,12 @@
+/*
+  File: Button.js
+  Description:
+    - Button component responsible for rendering customizable buttons with optional icons and different styling variants.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React from "react";
 
 function Button({

@@ -1,3 +1,13 @@
+/*
+  File: Home.js
+  Description:
+    - Home component responsible for rendering the homepage, including header, sliders, animal showcases, about section, help options, donation modal, and footer.
+      It fetches a random selection of animals, manages loading states, and handles user interactions such as opening the donation modal.
+      
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import HomeSlider from "../components/HomeSlider";
