@@ -1,3 +1,8 @@
+/*
+* Author: Mikhail Vorobev xvorob01
+* Component for showing animal cards
+*/
+
 import React from "react";
 import { Link } from "react-router-dom";
 

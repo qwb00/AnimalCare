@@ -1,3 +1,8 @@
+/*
+* Author: Mikhail Vorobev xvorob01
+* Component for navigation in user dashboard
+*/
+
 import React, {useEffect, useState} from 'react';
 import { Link, useLocation  } from 'react-router-dom';
 

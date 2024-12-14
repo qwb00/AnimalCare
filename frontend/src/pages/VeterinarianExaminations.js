@@ -1,5 +1,5 @@
 /*
-* Mikhail Vorobev xvorob01
+* Author: Mikhail Vorobev xvorob01
 * Page for medical treatments where caretaker and veterinarian can manage treatments
 */
 
@@ -19,6 +19,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TreatmentListItem from '../components/TreatmentListItem'
 
+// Define the possible examination statuses with numeric codes for easy reference
 const ExaminationStatus = {
   InProgress: 0,
   Completed: 1,
@@ -26,6 +27,7 @@ const ExaminationStatus = {
   Cancelled: 3,
 };
 
+// Define the possible examination types for filtering and display purposes
 const ExaminationType = {
   PlannedTreatment: 0,
   Emergency: 1,
@@ -50,6 +52,7 @@ function VeterinarianExaminations() {
 
   const navigate = useNavigate();
 
+  // State variables for filters applied in the caretaker's view
   const [nameFilterCaretaker, setNameFilterCaretaker] = useState("");
   const [nameVetFilterCaretaker, setNameVetFilterCaretaker] = useState("");
   const [dateFromCaretaker, setDateFromCaretaker] = useState("");
@@ -57,6 +60,7 @@ function VeterinarianExaminations() {
   const [typeFilterCaretaker, setTypeFilterCaretaker] = useState("");
   const [statusFilterCaretaker, setStatusFilterCaretaker] = useState("");
 
+  // Filters for veterinarian's "New Requests"
   const [nameFilterNewRequests, setNameFilterNewRequests] = useState("");
   const [typeFilterNewRequests, setTypeFilterNewRequests] = useState("");
 
@@ -147,6 +151,7 @@ function VeterinarianExaminations() {
   };
 
   const handleFormSubmit = (formData) => {
+    // Once form is submitted, hide the form
     setShowAddRequestForm(false);
   };
 
@@ -186,6 +191,7 @@ function VeterinarianExaminations() {
     );
   };
 
+  // A generic filtering function to apply multiple filters to an array of requests
   function applyFiltersToRequests(
     requestsArray,
     nameFilter,
@@ -239,6 +245,7 @@ function VeterinarianExaminations() {
     return result;
   }
 
+  // Apply filters to different request subsets based on the currently active filters
   const filteredNewRequests = applyFiltersToRequests(
     newRequests,
     nameFilterNewRequests,
@@ -280,6 +287,7 @@ function VeterinarianExaminations() {
         <UserHeader user={user} />
         <UserNav role={user.role} />
 
+        {/* Caretaker view: Allows creation of new requests, shows cancelled and active requests */}
         {user.role === 'Caretaker' && (
           <>
             <div className="w-full max-w-[1024px] mx-auto mb-8">
@@ -291,6 +299,7 @@ function VeterinarianExaminations() {
               />
             </div>
 
+             {/* Cancelled requests for caretaker */}
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
               <h2 className="text-2xl font-bold mb-4">Cancelled Requests</h2>
               <div className="flex flex-wrap gap-10">
@@ -314,7 +323,8 @@ function VeterinarianExaminations() {
                 </div>
               )}
             </div>
-
+              
+              {/* Active requests for caretaker with filters and view mode toggle */}
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
@@ -349,7 +359,7 @@ function VeterinarianExaminations() {
                       onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
                     />
                 </div>
-              
+              {/* Filters for caretaker's active requests: date range, name, vet name */}
               <div className="flex flex-wrap gap-4 mb-4 items-end">
                   <div className="flex flex-col relative">
                     <DatePicker
@@ -397,7 +407,8 @@ function VeterinarianExaminations() {
                   />
                 </div>
               </div>
-
+              
+              {/* Display caretaker active requests either as cards or list items */}
               <div className="flex flex-wrap gap-10">
               {viewMode === "card"
                 ? filteredCaretakerActiveRequests.slice(0, visibleCaretakerActiveRequests).map((request) => (
@@ -431,6 +442,7 @@ function VeterinarianExaminations() {
           </>
         )}
 
+        {/* Veterinarian view: Shows new, in-progress, and completed requests with various filters */}
         {user.role === 'Veterinarian' && (
           <>
            {/* New Requests with filters */}

@@ -1,5 +1,5 @@
 /*
-* Mikhail Vorobev xvorob01
+* Author: Mikhail Vorobev xvorob01
 * Page for user authentication
 */
 
