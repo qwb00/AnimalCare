@@ -15,11 +15,13 @@ import axios from "axios";
 
 export const AppContext = createContext();
 
+// AppProvider component to wrap around parts of the app that need access to the context
 export const AppProvider = ({ children }) => {
   const [reservationHistory, setReservationHistory] = useState([]);
   const [suggestedAnimals, setSuggestedAnimals] = useState([]);
   const [selectedAnimalId, setSelectedAnimalId] = useState(null);
 
+  // Memoized function to update suggested animals based on user reservations.
   const updateSuggestedAnimals = useCallback(async () => {
     try {
       const authToken = sessionStorage.getItem("token");
@@ -34,7 +36,7 @@ export const AppProvider = ({ children }) => {
         const response = await axios.get(`${API_BASE_URL}/animals`);
         const animals = response.data;
 
-        // Randomly select 3 animals
+        // Select up to 3 random animals
         const randomIndexes = new Set();
         while (randomIndexes.size < 3 && randomIndexes.size < animals.length) {
           const randomIndex = Math.floor(Math.random() * animals.length);
@@ -66,6 +68,7 @@ export const AppProvider = ({ children }) => {
         const animalsResponse = await axios.get(`${API_BASE_URL}/animals`);
         const animals = animalsResponse.data;
 
+        // Sort animals based on reservation counts
         const sortedAnimalIds = Object.entries(reservationCount)
           .sort((a, b) => b[1] - a[1])
           .map(([animalId]) => animalId);
@@ -74,6 +77,7 @@ export const AppProvider = ({ children }) => {
           .map((id) => animals.find((animal) => animal.id === id))
           .filter(Boolean);
 
+        // Ensure at least 3 suggested animals by adding random ones if necessary
         while (sortedAnimals.length < 3) {
           const randomAnimal =
             animals[Math.floor(Math.random() * animals.length)];
@@ -85,6 +89,7 @@ export const AppProvider = ({ children }) => {
         newSuggestedAnimals = sortedAnimals.slice(0, 3);
       }
 
+      // Update suggestedAnimals state only if there's a change
       if (
         JSON.stringify(newSuggestedAnimals) !== JSON.stringify(suggestedAnimals)
       ) {
@@ -101,9 +106,9 @@ export const AppProvider = ({ children }) => {
         reservationHistory,
         setReservationHistory,
         suggestedAnimals,
-        updateSuggestedAnimals, // Мемоизированная функция
-        selectedAnimalId,        // Добавляем в value контекста
-        setSelectedAnimalId,  
+        updateSuggestedAnimals,
+        selectedAnimalId,
+        setSelectedAnimalId,
       }}
     >
       {children}

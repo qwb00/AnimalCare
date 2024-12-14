@@ -44,6 +44,7 @@ function Calendar({}) {
   const [userReservedSlots, setUserReservedSlots] = useState([]);
   const [allUserReservations, setAllUserReservations] = useState([]);
   const [hoveredSlot, setHoveredSlot] = useState(null);
+  const userReservationsRef = useRef(userReservations);
 
   const [notification, setNotification] = useState({
     message: "",
@@ -336,6 +337,10 @@ function Calendar({}) {
     loadAllReservations();
   }, [refreshKey]);
 
+  useEffect(() => {
+    userReservationsRef.current = userReservations;
+  }, [userReservations]);
+
   // Fetch and return detailed information for a specific animal by its ID
   const fetchAnimalDetails = async (animalId) => {
     try {
@@ -543,6 +548,11 @@ function Calendar({}) {
       setSelectedSlotsByAnimal((prev) => {
         const updated = { ...prev };
         updated[selectedAnimalId] = currentSlots.filter((s) => s !== slotKey);
+
+        if (updated[selectedAnimalId].length === 0) {
+          delete updated[selectedAnimalId];
+        }
+
         return updated;
       });
     } else if (isFutureDate && currentSlots.length < MAX_SLOTS) {
@@ -750,7 +760,7 @@ function Calendar({}) {
       const chosenSlotTime = parse(slot, "hh:mm a", new Date());
 
       // Attempt to find the reservation that exactly matches the slotKey
-      let reservation = userReservations.find((reservation) => {
+      let reservation = userReservationsRef.current.find((reservation) => {
         const reservationDate = parseISO(reservation.date);
         const startDateTime = parse(
           reservation.startTime,
@@ -1001,6 +1011,7 @@ function Calendar({}) {
       }
 
       try {
+        // 1. Cancel the initial reservation
         let response = await fetch(
           `${API_BASE_URL}/reservations/${reservationId}`,
           {
@@ -1024,14 +1035,87 @@ function Calendar({}) {
           throw new Error(`Failed to cancel reservation: ${errorText}`);
         }
 
-        const reservationSlotsToRemove = [];
-        let currentSlot = startDateTime;
-        while (currentSlot < endDateTime) {
-          const fDate = format(currentSlot, "yyyy-MM-dd");
-          const fTime = format(currentSlot, "hh:mm a");
-          reservationSlotsToRemove.push(`${fDate}-${fTime}`);
-          currentSlot = addHours(currentSlot, 1);
+        // 2. Calculate new reservation times
+        const slotStartTime = slotDateTime;
+        const slotEndTime = addHours(slotStartTime, 1);
+
+        // Check if there are reservations before the canceled slot
+        if (isAfter(slotStartTime, startDateTime)) {
+          const newStartTime = format(startDateTime, "HH:mm:ss");
+          const newEndTime = format(slotStartTime, "HH:mm:ss");
+          const formattedReservationDate = format(startDateTime, "yyyy-MM-dd");
+          const newReservationDataBefore = {
+            userId: reservation.userId,
+            animalId: reservation.animalId,
+            reservationDate: formattedReservationDate,
+            startTime: newStartTime,
+            endTime: newEndTime,
+          };
+
+          // Create a new reservation before the canceled slot
+          const responseBefore = await fetch(`${API_BASE_URL}/reservations`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newReservationDataBefore),
+          });
+
+          if (!responseBefore.ok) {
+            const errorText = await responseBefore.text();
+            console.error(
+              "[handleCancelWithinRange] Failed to create shortened reservation before slot:",
+              errorText
+            );
+            throw new Error(
+              `Failed to create shortened reservation before slot: ${errorText}`
+            );
+          }
         }
+
+        // Check if there are reservations after the canceled slot
+        if (isBefore(slotEndTime, endDateTime)) {
+          const newStartTime = format(slotEndTime, "HH:mm:ss");
+          const newEndTime = format(endDateTime, "HH:mm:ss");
+          const formattedReservationDate = format(endDateTime, "yyyy-MM-dd");
+          const newReservationDataAfter = {
+            userId: reservation.userId,
+            animalId: reservation.animalId,
+            reservationDate: formattedReservationDate,
+            startTime: newStartTime,
+            endTime: newEndTime,
+          };
+
+          // Create a new reservation after the canceled slot
+          const responseAfter = await fetch(`${API_BASE_URL}/reservations`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newReservationDataAfter),
+          });
+
+          if (!responseAfter.ok) {
+            const errorText = await responseAfter.text();
+            console.error(
+              "[handleCancelWithinRange] Failed to create shortened reservation after slot:",
+              errorText
+            );
+            throw new Error(
+              `Failed to create shortened reservation after slot: ${errorText}`
+            );
+          }
+        }
+
+        // 3. Remove the canceled slot from the user's reserved slots
+        const reservationSlotsToRemove = [
+          `${format(slotStartTime, "yyyy-MM-dd")}-${format(
+            slotStartTime,
+            "hh:mm a"
+          )}`,
+        ];
 
         setUserReservedSlots((prevSlots) => {
           const filtered = prevSlots.filter(
@@ -1039,6 +1123,7 @@ function Calendar({}) {
           );
           return filtered;
         });
+
         setUserReservations((prevReservations) => {
           const filtered = prevReservations.filter(
             (res) => res.reservationId !== reservationId
@@ -1046,83 +1131,9 @@ function Calendar({}) {
           return filtered;
         });
 
-        // Create two new reservations if the canceled slot is within a longer reservation:
-        // 1) Shortened reservation before the canceled slot
-        // 2) Shortened reservation after the canceled slot
-
-        // Reservation before the canceled slot
-        if (slotDateTime > startDateTime) {
-          const newEndTime = format(slotDateTime, "HH:mm:ss");
-          const newStartTime = format(startDateTime, "HH:mm:ss");
-          const formattedReservationDate = format(startDateTime, "yyyy-MM-dd");
-          const newReservationData = {
-            userId: reservation.userId,
-            animalId: reservation.animalId,
-            reservationDate: formattedReservationDate,
-            startTime: newStartTime,
-            endTime: newEndTime,
-          };
-
-          response = await fetch(`${API_BASE_URL}/reservations`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newReservationData),
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(
-              "[handleCancelWithinRange] Failed to create shortened reservation before slot:",
-              errorText
-            );
-            throw new Error(
-              `Failed to create shortened reservation: ${errorText}`
-            );
-          }
-        }
-
-        // Reservation after the canceled slot
-        if (slotDateTime < endDateTime) {
-          const newStartTime = format(slotDateTime, "HH:mm:ss");
-          const newEndTime = format(endDateTime, "HH:mm:ss");
-          const formattedReservationDate = format(startDateTime, "yyyy-MM-dd");
-          const newReservationData = {
-            userId: reservation.userId,
-            animalId: reservation.animalId,
-            reservationDate: formattedReservationDate,
-            startTime: newStartTime,
-            endTime: newEndTime,
-          };
-
-          const response2 = await fetch(`${API_BASE_URL}/reservations`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newReservationData),
-          });
-
-          if (!response2.ok) {
-            const errorText = await response2.text();
-            console.error(
-              "[handleCancelWithinRange] Failed to create shortened reservation after slot:",
-              errorText
-            );
-            throw new Error(
-              `Failed to create second shortened reservation: ${errorText}`
-            );
-          }
-        }
-
+        // 4. Refresh all user reservations and trigger a state update
         await fetchAllUserReservations();
-        setRefreshKey((prevKey) => {
-          const newKey = prevKey + 1;
-          return newKey;
-        });
+        setRefreshKey((prevKey) => prevKey + 1);
       } catch (error) {
         console.error(
           "[handleCancelWithinRange] Error occurred during reservation update:",
@@ -1137,7 +1148,6 @@ function Calendar({}) {
       } finally {
         setCancelNotification((prev) => ({ ...prev, isOpen: false }));
         await updateSuggestedAnimals();
-
         await fetchUserReservations();
       }
     }, cancelTimer);
@@ -1346,18 +1356,18 @@ function Calendar({}) {
                 // Style classes for button
                 const generateButtonClass = (slotKey) => {
                   if (hoveredSlot === slotKey && isUserReserved) {
-                    return "cursor-pointer"; 
+                    return "cursor-pointer";
                   }
                   if (isUserReserved) {
-                    return "text-white cursor-pointer"; 
+                    return "text-white cursor-pointer";
                   }
                   if (isInactive) {
-                    return "bg-gray-300 text-white border border-gray-300 cursor-default"; 
+                    return "bg-gray-300 text-white border border-gray-300 cursor-default";
                   }
                   if (isSelected) {
-                    return "bg-white text-black border border-black"; 
+                    return "bg-white text-black border border-black";
                   }
-                  return "bg-main-blue text-white border border-main-blue hover:bg-white hover:text-black hover:border-black"; 
+                  return "bg-main-blue text-white border border-main-blue hover:bg-white hover:text-black hover:border-black";
                 };
 
                 return (
@@ -1380,7 +1390,7 @@ function Calendar({}) {
                                 ? "#ef4444" // Bright-red (something close to red-300 in Tailwind)
                                 : "#22c55e", // Greed
                             color: "white", // White text
-                            border: "1px solid", 
+                            border: "1px solid",
                           }
                         : {}
                     }
@@ -1492,7 +1502,7 @@ function Calendar({}) {
 
               return (
                 <p className="text-sm">
-                  <strong>Date & Time:</strong> {formattedTime}
+                  <strong>Time:</strong> {formattedTime}
                 </p>
               );
             })()}
@@ -1502,9 +1512,9 @@ function Calendar({}) {
             variant="green"
             icon="/icons/undo.png"
             iconPosition="left"
-            className="mt-4 px-4 py-2 w-full" 
+            className="mt-4 px-4 py-2 w-full"
             onClick={() => {
-              cancelProcessRef.current = true; 
+              cancelProcessRef.current = true;
               setCancelNotification((prev) => ({ ...prev, isOpen: false }));
             }}
           />
