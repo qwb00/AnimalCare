@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config";
 import Header from "../components/Header";
@@ -11,6 +11,7 @@ import ErrorMessages from "../components/ErrorMessages";
 
 function AnimalDetails() {
   const { animalID } = useParams();
+  const navigate = useNavigate();
   const [animalData, setAnimalData] = useState(null); // Detailed data of the selected animal
   const [otherAnimals, setOtherAnimals] = useState([]); // Other animals for suggestions
   const [isLoading, setIsLoading] = useState(true); // Loading state
@@ -391,6 +392,34 @@ function AnimalDetails() {
     return sex === 0 ? "Male" : "Female";
   };
 
+  const handleDeleteAnimal = async () => {
+    try {
+      await axios.patch(
+          `${API_BASE_URL}/animals/${animalID}`,
+          [{
+            op: "replace",
+            path: "/isActive",
+            value: false,
+          }],
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json-patch+json",
+            },
+          }
+      );
+      setAnimalData((prevData) => ({ ...prevData, isActive: false }));
+      alert("Animal has been deactivated successfully.");
+      navigate("/animals");
+    } catch (error) {
+      console.error("Error deactivating animal:", error);
+      setErrorMessages((prevErrors) => [
+        ...prevErrors,
+        ...extractErrorMessages(error.response?.data || "Failed to deactivate animal."),
+      ]);
+    }
+  };
+
   const getHealthCondition = (health) => {
     switch (health) {
       case 0:
@@ -689,6 +718,18 @@ function AnimalDetails() {
                   iconPosition="right"
                 />
               </Link>
+              {isEditable && (
+                  <div>
+                    <Button
+                        text="DELETE ANIMAL"
+                        variant="red"
+                        icon="/icons/cancel_white.png"
+                        iconPosition="right"
+                        onClick={handleDeleteAnimal}
+                        className={"mt-2"}
+                    />
+                  </div>
+              )}
             </div>
           </div>
         </div>

@@ -142,7 +142,7 @@ function PlannedWalks() {
                             />
 
                 {filtersVisible && (
-                    <div className="p-4 bg-gray-100 rounded-lg shadow max-w-[978px]">
+                    <div className="p-4 bg-gray-100 rounded-lg shadow max-w-[978px] mt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <input
                                 type="text"
@@ -196,12 +196,22 @@ function PlannedWalks() {
                                     renderTrack={({ props, children }) => (
                                         <div
                                             {...props}
-                                            className="h-2 bg-gray-300 rounded-full"
+                                            className="h-2 rounded-full"
+                                            style={{
+                                                // calculate the gradient based on the range values
+                                                background: `linear-gradient(
+                                                    to right,
+                                                    #d1d5db ${((filters.timeRange[0] - 9) / (17 - 9)) * 100}%,
+                                                    #4BD4FF ${((filters.timeRange[0] - 9) / (17 - 9)) * 100}%,
+                                                    #4BD4FF ${((filters.timeRange[1] - 9) / (17 - 9)) * 100}%,
+                                                    #d1d5db ${((filters.timeRange[1] - 9) / (17 - 9)) * 100}%
+                                                )`,
+                                            }}
                                         >
                                             {children}
                                         </div>
                                     )}
-                                    renderThumb={({ props }) => (
+                                    renderThumb={({props}) => (
                                         <div
                                             {...props}
                                             className="h-4 w-4 bg-main-blue rounded-full"
@@ -215,13 +225,13 @@ function PlannedWalks() {
 
                 <div className="flex flex-wrap gap-20 mt-6">
                     {viewMode === "card"
-                     ? plannedWalks.map((reservation) => (
-                        <Card
-                            key={reservation.id}
-                            title={`Walk with ${reservation.animalName}`}
-                            imageSrc={reservation.photo || icons.placeholder}
-                            infoItems={[
-                                { icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
+                        ? plannedWalks.map((reservation) => (
+                            <Card
+                                key={reservation.id}
+                                title={`Walk with ${reservation.animalName}`}
+                                imageSrc={reservation.photo || icons.placeholder}
+                                infoItems={[
+                                    {icon: icons.volunteer, label: "Volunteer", value: reservation.volunteerName },
                                 { icon: icons.animal, label: "Animal", value: `${reservation.animalName} (${reservation.animalBreed})` },
                                 { icon: icons.phone, label: "Phone number", value: reservation.phoneNumber },
                                 { icon: icons.date, label: "Date", value: new Date(reservation.reservationDate).toLocaleDateString() },
