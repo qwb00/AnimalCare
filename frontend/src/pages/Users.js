@@ -73,6 +73,7 @@ function Users() {
       const token = sessionStorage.getItem("token");
       const queryParams = new URLSearchParams();
 
+      // Aleksander Postelga: filters for users
       if (filters.name) queryParams.append("name", filters.name);
       if (filters.email) queryParams.append("email", filters.email);
       if (filters.phoneNumber) queryParams.append("phoneNumber", filters.phoneNumber);
@@ -103,7 +104,7 @@ function Users() {
     fetchFilteredUsers(); // Fetch initial data
   }, [navigate]);
 
-  // Refetch data when filters change
+  // Aleksander Postelga: refetch data when filters change
   useEffect(() => {
     const debounceFetch = setTimeout(() => {
       fetchFilteredUsers();
@@ -237,7 +238,7 @@ function Users() {
       <UserHeader user={user} />
       <UserNav role={user.role} />
 
-      {/* Filters Section */}
+       {/* Aleksander Postelga: filters section */}
       <div className="w-full max-w-[1024px] mx-auto mb-6">
         <Button
           text="Add New User"
@@ -255,6 +256,7 @@ function Users() {
             value={filters.name}
             onChange={handleFilterChange}
             className="p-2 border border-gray-300 rounded-md w-1/4 focus:outline-none focus:border-main-blue"
+
           />
           <input
             type="email"

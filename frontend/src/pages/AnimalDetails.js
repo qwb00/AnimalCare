@@ -392,6 +392,7 @@ function AnimalDetails() {
     return sex === 0 ? "Male" : "Female";
   };
 
+  // Aleksander Postelga: a function to delete an animal from system
   const handleDeleteAnimal = async () => {
     try {
       await axios.patch(
@@ -720,6 +721,7 @@ function AnimalDetails() {
               </Link>
               {isEditable && (
                   <div>
+                    {/* Aleksander Postelga: button to delete animals */}
                     <Button
                         text="DELETE ANIMAL"
                         variant="red"

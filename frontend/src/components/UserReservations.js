@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* A users reservations history component
+*/
+
 import React, { useEffect, useState } from 'react';
 import API_BASE_URL from "../config";
 
@@ -40,6 +46,7 @@ function UserReservations({ userId }) {
         }
     }, [userId]);
 
+    // Shows more reservations when clicked
     const loadMoreReservations = () => {
         setVisibleReservations((prev) => prev + 3);
     };

@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* Volunteers approval page in user dashboard
+*/
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
@@ -25,6 +31,7 @@ function Volunteers() {
             return;
         }
 
+        // Fetches user data
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -45,6 +52,7 @@ function Volunteers() {
         fetchVolunteers(); // Fetch initial volunteers data
     }, [navigate]);
 
+    // Fetches volunteers based on filter
     const fetchVolunteers = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -78,6 +86,7 @@ function Volunteers() {
         setStatusFilter(status);
     };
 
+    // A unified function to handle all PATCH request actions
     const handleAction = async (id, action, value) => {
         try {
             const response = await fetch(`${API_BASE_URL}/volunteers/${id}`, {
@@ -103,6 +112,7 @@ function Volunteers() {
         }
     };
 
+    // Filter by VolunteerStatus
     const filteredVolunteers = volunteers.filter((volunteer) => volunteer.volunteerStatus === statusFilter);
 
     if (!user) return <div>Loading...</div>;
@@ -112,7 +122,7 @@ function Volunteers() {
             <Header />
             <UserHeader user={user} />
             <UserNav role={user.role} />
-
+            {/* Filters */}
             <div className="w-full max-w-[1024px] mx-auto mb-14">
                 <div>
                     <div className="flex items-center gap-6 bg-gray-100 p-4 rounded-lg shadow max-w-[978px]">
@@ -196,11 +206,15 @@ function Volunteers() {
                                     case 1:
                                         return [
                                             {
-                                                text: 'Unprocess',
-                                                variant: 'yellow',
+                                                text: 'Delete',
+                                                variant: 'red',
                                                 className: 'w-full',
                                                 icon: icons.cancel,
-                                                onClick: () => handleAction(volunteer.id, '/volunteerStatus', 0),
+                                                onClick: async () => {
+                                                    await handleAction(volunteer.id, '/volunteerStatus', 0);
+                                                    await handleAction(volunteer.id, '/isVerified', false);
+                                                    await handleAction(volunteer.id, '/isActive', false);
+                                                },
                                             },
                                             {
                                                 text: 'Approve',
@@ -216,21 +230,21 @@ function Volunteers() {
                                     case 2:
                                         return [
                                             {
+                                                text: 'Delete',
+                                                variant: 'red',
+                                                className: 'w-full',
+                                                icon: icons.cancel,
+                                                onClick: () => handleAction(volunteer.id, '/isActive', false),
+                                            },
+                                            {
                                                 text: 'Unverify',
                                                 variant: 'yellow',
                                                 className: 'w-full',
                                                 icon: icons.unverify,
                                                 onClick: async () => {
-                                                    await handleAction(volunteer.id, '/volunteerStatus', 1);
+                                                    await handleAction(volunteer.id, '/volunteerStatus', 0);
                                                     await handleAction(volunteer.id, '/isVerified', false);
                                                 },
-                                            },
-                                            {
-                                                text: 'Deactivate',
-                                                variant: 'red',
-                                                className: 'w-full',
-                                                icon: icons.cancel,
-                                                onClick: () => handleAction(volunteer.id, '/isActive', false),
                                             },
                                         ];
                                     default:
@@ -240,7 +254,7 @@ function Volunteers() {
                         />
                     ))}
                 </div>
-
+                {/* If no volunteers was found */}
                 {filteredVolunteers.length === 0 && (
                     <p className="text-center text-gray-500 mt-4">No volunteers found.</p>
                 )}

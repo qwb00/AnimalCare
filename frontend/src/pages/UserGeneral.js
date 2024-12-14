@@ -1,3 +1,9 @@
+// Aleksander Postelga xposte00
+
+/*
+* A general user page in dashboard
+*/
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
@@ -18,6 +24,7 @@ function UserGeneral() {
             return;
         }
 
+        // Getting current login user
         const fetchUser = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/users/me`, {

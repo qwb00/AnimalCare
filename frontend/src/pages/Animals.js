@@ -206,6 +206,7 @@ function Animals() {
     }
   };
 
+  // Aleksander Postelga: Function to delete an animal
   const handleDeactivateAnimal = async (id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/animals/${id}`, {
