@@ -11,10 +11,10 @@ namespace Service
 {
     public class UserService : IUserService
     {
-        private readonly _repository<User> _repository;
+        private readonly UserManager<User> _repository;
         private readonly IMapper _mapper;
 
-        public UserService(_repository<User> repository, IMapper mapper)
+        public UserService(UserManager<User> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
