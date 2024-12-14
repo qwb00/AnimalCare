@@ -1,3 +1,14 @@
+/*
+  File: HomeSlider.js
+  Description:
+    - HomeSlider component responsible for displaying a two-slide carousel on the homepage.
+      Each slide features an image, descriptive text, and a call-to-action button.
+      The slides automatically transition every 5 seconds with smooth opacity transitions.
+      
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect } from "react";
 import Button from "../components/Button";
 import { Link } from "react-router-dom";

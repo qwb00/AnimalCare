@@ -1,3 +1,16 @@
+/*
+  File: Reservations.js
+  Description:
+    - Reservations component responsible for displaying the animal walking schedule.
+      It integrates Header, Search, Calendar, and Footer components, manages user
+      selection of animals, fetches available animals from the backend, handles
+      search results, processes URL parameters for initial animal selection, and
+      updates the application context based on user interactions.
+      
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import Search from "../components/Search";
@@ -23,11 +36,10 @@ function Reservations() {
         }));
         setAvailableAnimals(animalData);
 
-        // Проверим, есть ли в URL параметр animalName
+        // Check for URL query parameters to pre-select an animal
         const params = new URLSearchParams(location.search);
         const animalName = params.get("animalName");
         if (animalName) {
-          // Найдём животное по имени сразу
           const foundAnimal = animalData.find(
             (animal) => animal.name.toLowerCase() === animalName.toLowerCase()
           );
@@ -54,7 +66,7 @@ function Reservations() {
     }
   };
 
-  // Получаем animalName из query-параметров, чтобы передать в Search
+  // Get the initial animal name from the URL query parameters
   const params = new URLSearchParams(location.search);
   const initialAnimalName = params.get("animalName") || "";
 
@@ -81,7 +93,7 @@ function Reservations() {
             placeholder="Animal's name"
             icon="/icons/pen.png"
             onSearch={handleSearchResult}
-            initialAnimalName={initialAnimalName} // Передаем имя животного из параметра
+            initialAnimalName={initialAnimalName}
           />
         </div>
 

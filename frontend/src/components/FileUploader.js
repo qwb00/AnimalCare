@@ -1,3 +1,12 @@
+/*
+  File: FileUploader.js
+  Description:
+    - Responsible for uploading images to Cloudinary, handling upload status, and providing customizable button options with optional icons.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState } from "react";
 import axios from "axios";
 import {

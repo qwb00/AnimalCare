@@ -1,5 +1,17 @@
+/*
+  File: Search.js
+  Description:
+    - Search component responsible for providing an interface to search and select animals.
+      It integrates with AppContext to fetch and display suggested animals, handles user input,
+      manages dropdown visibility, displays animal details on hover, and facilitates the selection
+      of animals either from search results or suggested options.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { AppContext } from "../context/AppContext"; // Импортируйте AppContext
+import { AppContext } from "../context/AppContext"; 
 import Button from "./Button";
 import axios from "axios";
 import API_BASE_URL from "../config";
@@ -13,10 +25,10 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
   const [isInitialAnimalSet, setIsInitialAnimalSet] = useState(false);
 
   useEffect(() => {
-    // При первом рендере передаем самое популярное животное
+    // With first render, select the first suggested animal if it exists
     if (suggestedAnimals.length > 0 && !isInitialAnimalSet) {
-      handleSelectAnimal(suggestedAnimals[0]); // Выбираем первое животное из списка
-      setIsInitialAnimalSet(true); // Устанавливаем флаг, чтобы больше не вызывать
+      handleSelectAnimal(suggestedAnimals[0]); // Picking first animal from the list
+      setIsInitialAnimalSet(true); 
     }
   }, [suggestedAnimals, isInitialAnimalSet]);
 
@@ -24,11 +36,11 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [animals, setAnimals] = useState([]);
   const [isInputError, setIsInputError] = useState(false);
-  const [hoveredAnimal, setHoveredAnimal] = useState(null); // State for hovered animal
+  const [hoveredAnimal, setHoveredAnimal] = useState(null);
 
   useEffect(() => {
     updateSuggestedAnimals();
-  }, [calendarUpdated, updateSuggestedAnimals]); // updateSuggestedAnimals теперь мемоизирована
+  }, [calendarUpdated, updateSuggestedAnimals]); 
 
   useEffect(() => {
     const loadAnimals = async () => {
@@ -51,12 +63,9 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
               animal.name.toLowerCase() === initialAnimalName.toLowerCase()
           );
           if (foundAnimal) {
-            handleSelectAnimal(foundAnimal); // Вызывает onSearch(foundAnimal.id)
+            handleSelectAnimal(foundAnimal); 
           } else {
-            // Устанавливаем значение в инпут
             setSearchValue(initialAnimalName);
-            // Вызываем handleSearch, чтобы попытаться найти животное по инпуту
-            // Это вызовет onSearch(null), если животное не найдено.
             handleSearch();
           }
         }
@@ -100,7 +109,7 @@ function Search({ placeholder, icon, onSearch, initialAnimalName = "" }) {
     setSearchValue(animal.name);
     setIsDropdownOpen(false);
     setIsInputError(false);
-    setHoveredAnimal(null); // Скрыть карточку животного при выборе
+    setHoveredAnimal(null);
     onSearch(animal.id);
     setSelectedAnimalId(animal.id);
   };

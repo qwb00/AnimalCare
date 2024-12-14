@@ -1,3 +1,12 @@
+/*
+  File: Header.js
+  Description:
+    - Header component responsible for displaying the navigation bar, including links to Animals, Reservations, and user account management. It handles user authentication state and provides logout functionality.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React, { useEffect, useState } from "react";
 import Button from "../components/Button";
 import { Link, useNavigate, useLocation } from "react-router-dom";

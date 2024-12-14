@@ -1,3 +1,13 @@
+/*
+  File: AchievementsSlider.js
+  Description:
+    - AchievementsSlider component responsible for displaying a sliding showcase of the shelter's achievements, featuring images, titles, and descriptions with automatic and manual navigation controls.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
+
 import React, { useState, useEffect, useRef } from "react";
 
 function AchievementsSlider() {

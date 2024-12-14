@@ -1,3 +1,12 @@
+/*
+  File: Footer.js
+  Description:
+    - Footer component responsible for displaying contact information and social media links for the Happy Paws Animal Shelter.
+  
+  Author:
+    - Aleksei Petrishko [xpetri23]
+*/
+
 import React from "react";
 
 function Footer() {
