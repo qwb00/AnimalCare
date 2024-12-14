@@ -1,5 +1,5 @@
 /*
-* Mikhail Vorobev xvorob01
+* Author: Mikhail Vorobev xvorob01
 * Component for show treatment in list form, working exactly like TreatmentRequest card
 */
 
