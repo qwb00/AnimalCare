@@ -176,7 +176,7 @@ namespace Service
 
         public async Task UpdateUserRoleAsync(Guid userId, UpdateUserRoleDTO request)
         {
-            var user = await _repository.FindByIdAsync(userId);
+            var user = await _repository.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 throw new Exception("User not found");
