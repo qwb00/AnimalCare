@@ -560,7 +560,7 @@ function VeterinarianExaminations() {
 
             {/* Completed Requests with filters */}
             <div className="w-full max-w-[1024px] mx-auto mb-4 mt-4">
-              <div className="mb-8 flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
                 <Button
                   icon={viewMode === "card" ? "/icons/switch_off.png" : "/icons/switch_on.png"}
