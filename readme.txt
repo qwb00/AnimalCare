@@ -1,5 +1,7 @@
 This document describes the directory structure of the frontend part of the Happy Paws project.
 
+Link to the project on Internet: https://happypaws1-ebf6715a6c46.herokuapp.com/
+
 Directory Structure:
 
 /frontend
