@@ -50,7 +50,7 @@ function Volunteers() {
 
         fetchUser();
         fetchVolunteers(); // Fetch initial volunteers data
-    }, [navigate]);
+    }, [navigate, filters]);
 
     // Fetches volunteers based on filter
     const fetchVolunteers = async () => {
@@ -76,10 +76,7 @@ function Volunteers() {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleStatusFilterChange = (status) => {
