@@ -1,5 +1,5 @@
 // Aleksander Postelga xposte00
-// Aleksei Petrishko xpetri23 (editing animal details)
+// Aleksei Petrishko xpetri23 (editing animal details and photo)
 
 /*
 * File to show a detailed information about an animal
