@@ -1,5 +1,5 @@
 // Aleksander Postelga xposte00
-// Aleksei Petrishko xpetri23
+// Aleksei Petrishko xpetri23 (editing animal details)
 
 /*
 * File to show a detailed information about an animal
@@ -150,7 +150,9 @@ function AnimalDetails() {
     fetchOtherAnimals();
   }, [animalID]);
 
-  // Function to update animal attribute in the database
+  
+  // Made by Aleksei Petrishko [xpetri23]
+  // // Function to update animal attribute in the database
   async function updateAnimalAttribute(path, value) {
     console.log(`Updating ${path} with value:`, value);
 
@@ -185,6 +187,7 @@ function AnimalDetails() {
     }
   }
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Functions to handle editing and saving changes
   const handleEditGeneralToggle = () => {
     // Open editer mode
@@ -204,6 +207,7 @@ function AnimalDetails() {
     });
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Fuction to apply changes to general data
   const handleSaveGeneralChanges = async () => {
     try {
@@ -229,12 +233,14 @@ function AnimalDetails() {
     }
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Close editor mode and reset data to initial data
   const handleCancelGeneralChanges = () => {
     setEditedGeneralData(animalData);
     setIsEditingGeneral(false);
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Function to toggle history editor mode
   const handleEditHistoryToggle = () => {
     // Open editor mode
@@ -246,6 +252,7 @@ function AnimalDetails() {
     }
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Function to save changes to history
   const handleSaveHistoryChanges = async () => {
     try {
@@ -266,6 +273,7 @@ function AnimalDetails() {
     }
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Function to cancel changes to history
   const handleCancelHistoryChanges = () => {
     setIsEditingHistory(false);
@@ -276,6 +284,7 @@ function AnimalDetails() {
     return dateString ? dateString.split("T")[0] : "";
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Function to toggle medical editor mode
   const handleEditMedicalToggle = () => {
     setIsEditingMedical(true);
@@ -287,6 +296,7 @@ function AnimalDetails() {
     });
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   // Function to save changes to medical data
   const handleSaveMedicalChanges = async () => {
     try {
@@ -315,6 +325,7 @@ function AnimalDetails() {
     }
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   const handleCancelMedicalChanges = () => {
     setIsEditingMedical(false);
     setEditedMedicalData({
@@ -325,6 +336,7 @@ function AnimalDetails() {
     });
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   const handleEditBehaviorToggle = () => {
     setIsEditingBehavior(true);
     setEditedBehaviorData({
@@ -335,6 +347,7 @@ function AnimalDetails() {
     });
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   const handleSaveBehaviorChanges = async () => {
     try {
       console.log("Edited behavior data:", editedBehaviorData);
@@ -371,6 +384,7 @@ function AnimalDetails() {
     }
   };
 
+  // Made by Aleksei Petrishko [xpetri23]
   const handleCancelBehaviorChanges = () => {
     setIsEditingBehavior(false);
     setEditedBehaviorData({
