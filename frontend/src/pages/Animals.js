@@ -1,7 +1,8 @@
 /*
-* Author: Mikhail Vorobev xvorob01
-* Page for showing animals
-*/
+ * Author: Mikhail Vorobev xvorob01
+ * Author: Aleksei Petrishko xpetri23 (Only new animals creation)
+ * Page for showing animals
+ */
 
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
@@ -11,7 +12,7 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 import Button from "../components/Button";
 import FileUploader from "../components/FileUploader";
-import ErrorMessages from '../components/ErrorMessages';
+import ErrorMessages from "../components/ErrorMessages";
 import "react-range-slider-input/dist/style.css";
 import RangeSlider from "react-range-slider-input";
 
@@ -34,7 +35,7 @@ function Animals() {
       ? animalsPerPageForAdmin
       : animalsPerPageForUser;
 
-   // Calculate total pages based on current filters and user role
+  // Calculate total pages based on current filters and user role
   const totalPages = Math.ceil(allAnimals.length / animalsPerPage);
 
   // Filters applied to the animals list
@@ -47,7 +48,7 @@ function Animals() {
     breed: "",
     searchTerm: "",
   });
-  
+
   // State variables for new animal form fields
   const [currentPage, setCurrentPage] = useState(1);
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -82,7 +83,6 @@ function Animals() {
     }
   };
 
-
   useEffect(() => {
     const storedUserRole = sessionStorage.getItem("role");
     setUserRole(storedUserRole);
@@ -110,7 +110,7 @@ function Animals() {
             Accept: "application/json",
           },
         });
-  
+
         const data = response.data;
         if (data) {
           const activeAnimals = data.filter((animal) => animal.isActive);
@@ -167,9 +167,11 @@ function Animals() {
     setCurrentPage(page);
   };
 
+  {/* Made by Aleksei Petrishko [xpetri23] */}
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
+  {/* Made by Aleksei Petrishko [xpetri23] */}
   const handleAddAnimal = async () => {
     try {
       const animalData = {
@@ -179,12 +181,22 @@ function Animals() {
         weight: weight ? parseInt(weight) : 0,
         photo: photoUrl,
         sex: sex === "Male" ? 0 : 1,
-        size: size === "Small" ? 0 : size === "Medium" ? 1 : size === "Large" ? 2 : 3,
+        size:
+          size === "Small"
+            ? 0
+            : size === "Medium"
+            ? 1
+            : size === "Large"
+            ? 2
+            : 3,
         health: health === "Good" ? 0 : health === "Fair" ? 1 : 2,
         species: species === "Dog" ? 0 : 1,
         history,
         personality,
-        dateFound: foundDate && !isNaN(new Date(foundDate)) ? new Date(foundDate).toISOString() : null,
+        dateFound:
+          foundDate && !isNaN(new Date(foundDate))
+            ? new Date(foundDate).toISOString()
+            : null,
       };
 
       console.log("Animal data:", animalData);
@@ -198,14 +210,20 @@ function Animals() {
       });
 
       if (response.status === 201) {
-        setNotification({ isSuccess: true, message: "Animal added successfully!" });
+        setNotification({
+          isSuccess: true,
+          message: "Animal added successfully!",
+        });
         setIsNotificationOpen(true);
         loadAllAnimals(); // Refresh list
         handleCloseModal();
       }
     } catch (error) {
       console.error("Error adding animal:", error);
-      setNotification({ isSuccess: false, message: <ErrorMessages errorData={error.response?.data} />  });
+      setNotification({
+        isSuccess: false,
+        message: <ErrorMessages errorData={error.response?.data} />,
+      });
       setIsNotificationOpen(true);
       return;
     }
@@ -225,17 +243,22 @@ function Animals() {
         ]),
       });
 
-      if (!response.ok) throw new Error(`Failed to deactivate animal: ${await response.text()}`);
+      if (!response.ok)
+        throw new Error(
+          `Failed to deactivate animal: ${await response.text()}`
+        );
 
       // Remove deactivated animal from the list
       setAllAnimals((prev) => prev.filter((animal) => animal.id !== id));
     } catch (error) {
       console.error("Error deactivating animal:", error);
-      setNotification({ isSuccess: false, message: "Error deactivating animal." });
+      setNotification({
+        isSuccess: false,
+        message: "Error deactivating animal.",
+      });
       setIsNotificationOpen(true);
     }
   };
-
 
   return (
     <div className="max-w-screen-lg mx-auto">
@@ -249,104 +272,112 @@ function Animals() {
         {/* Filters Toggle Button */}
         <div className="mx-auto p-4">
           <Button
-            variant="blue" 
+            variant="blue"
             icon="/icons/filter.png"
-            text= {filtersVisible ? "Hide Filters" : "Show Filters"}
+            text={filtersVisible ? "Hide Filters" : "Show Filters"}
             onClick={() => setFiltersVisible(!filtersVisible)}
             className="px-6 py-3 rounded-lg transform transition-transform"
-          >
-
-          </Button>
+          ></Button>
         </div>
 
+        {/* Filters */}
+        <div className="mx-auto p-4">
+          {filtersVisible && (
+            <div className="filter-container max-w-[1024px] bg-white shadow-md p-6 rounded-xl border border-gray-200">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-center"
+              >
+                <div className="flex flex-col">
+                  <label className="text-sm font-semibold text-gray-700 mb-2">
+                    Age Range: {filters.minAge} - {filters.maxAge} years
+                  </label>
+                  <RangeSlider
+                    min={0}
+                    max={25}
+                    value={[filters.minAge, filters.maxAge]}
+                    onInput={(values) =>
+                      setFilters({
+                        ...filters,
+                        minAge: values[0],
+                        maxAge: values[1],
+                      })
+                    }
+                    className="range-slider"
+                  />
+                </div>
 
-  {/* Filters */}
-  <div className="mx-auto p-4">
-  {filtersVisible && (
-    <div className="filter-container max-w-[1024px] bg-white shadow-md p-6 rounded-xl border border-gray-200">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          
-        }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-center"
-      >
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-700 mb-2">
-            Age Range: {filters.minAge} - {filters.maxAge} years
-          </label>
-          <RangeSlider
-            min={0}
-            max={25}
-            value={[filters.minAge, filters.maxAge]}
-            onInput={(values) =>
-              setFilters({ ...filters, minAge: values[0], maxAge: values[1] })
-            }
-            className="range-slider"
-          />
+                <div className="flex flex-col">
+                  <label className="text-sm font-semibold text-gray-700 mb-2">
+                    Max Weight: {filters.weight} kg
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="35"
+                    value={filters.weight}
+                    onChange={(e) =>
+                      setFilters({ ...filters, weight: Number(e.target.value) })
+                    }
+                    className="my-range"
+                    style={{
+                      background: `linear-gradient(to right, #4BD4FF ${
+                        (filters.weight / 35) * 100
+                      }%, #e0e0e0 ${(filters.weight / 35) * 100}%)`,
+                    }}
+                  />
+                </div>
+
+                <select
+                  value={filters.sex}
+                  onChange={(e) =>
+                    setFilters({ ...filters, sex: e.target.value })
+                  }
+                  className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+                >
+                  <option value="">Select Sex</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+
+                <select
+                  value={filters.type}
+                  onChange={(e) =>
+                    setFilters({ ...filters, type: e.target.value })
+                  }
+                  className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
+                >
+                  <option value="">Select Type</option>
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                </select>
+
+                <input
+                  type="text"
+                  placeholder="Breed"
+                  value={filters.breed}
+                  onChange={(e) =>
+                    setFilters({ ...filters, breed: e.target.value })
+                  }
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={filters.searchTerm}
+                  onChange={(e) =>
+                    setFilters({ ...filters, searchTerm: e.target.value })
+                  }
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
+                />
+              </form>
+            </div>
+          )}
         </div>
-
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-700 mb-2">
-            Max Weight: {filters.weight} kg
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="35"
-            value={filters.weight}
-            onChange={(e) =>
-              setFilters({ ...filters, weight: Number(e.target.value) })
-            }
-            className="my-range"
-            style={{
-              background: `linear-gradient(to right, #4BD4FF ${(filters.weight / 35) * 100}%, #e0e0e0 ${(filters.weight / 35) * 100}%)`,
-            }}
-          />
-        </div>
-
-        <select
-          value={filters.sex}
-          onChange={(e) => setFilters({ ...filters, sex: e.target.value })}
-          className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
-        >
-          <option value="">Select Sex</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-
-        <select
-          value={filters.type}
-          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-          className="p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-main-blue"
-        >
-          <option value="">Select Type</option>
-          <option value="Dog">Dog</option>
-          <option value="Cat">Cat</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder="Breed"
-          value={filters.breed}
-          onChange={(e) => setFilters({ ...filters, breed: e.target.value })}
-          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-        />
-
-        <input
-          type="text"
-          placeholder="Enter name"
-          value={filters.searchTerm}
-          onChange={(e) =>
-            setFilters({ ...filters, searchTerm: e.target.value })
-          }
-          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-main-blue"
-        />
-      </form>
-    </div>
-  )}
-</div>
-</div>
+      </div>
 
       {/* Animal cards list */}
       <div className="container mx-auto p-4">
@@ -365,6 +396,7 @@ function Animals() {
           ))}
 
           {/* If user is an Admin or Caretaker, show a "New Animal" card to add more animals */}
+          {/* Made by Aleksei Petrishko [xpetri23] */}
           {userRole &&
             (userRole === "Caretaker" || userRole === "Administrator") && (
               <div
@@ -423,6 +455,7 @@ function Animals() {
       </div>
 
       {/* Modal for adding new animal */}
+      {/* Made by Aleksei Petrishko [xpetri23] */}
       {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -522,8 +555,6 @@ function Animals() {
                   onChange={(e) => setWeight(e.target.value)}
                 />
               </div>
-
-              
 
               <div className="flex-1 relative">
                 <label className="block text-gray-700 mb-1 font-medium text-xs">
@@ -657,41 +688,41 @@ function Animals() {
           </div>
         </div>
       )}
-      
+
       {/* Notification (success/error message) */}
       {isNotificationOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={() => setIsNotificationOpen(false)}
+        >
           <div
-              className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-              onClick={() => setIsNotificationOpen(false)}
+            className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
+              notification.isSuccess ? "border-green-600" : "border-red-600"
+            }`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div
-                className={`bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full transform transition-transform duration-300 ease-out scale-105 border-2 ${
-                    notification.isSuccess ? "border-green-600" : "border-red-600"
-                }`}
-                onClick={(e) => e.stopPropagation()}
+            <h3
+              className={`text-2xl font-bold mb-6 text-center ${
+                notification.isSuccess ? "text-green-600" : "text-red-600"
+              }`}
             >
-              <h3
-                  className={`text-2xl font-bold mb-6 text-center ${
-                      notification.isSuccess ? "text-green-600" : "text-red-600"
-                  }`}
-              >
-                {notification.isSuccess ? "Success!" : "Error"}
-              </h3>
-              <p className="text-lg mb-6 text-center text-gray-800">
-                {notification.message}
-              </p>
-              <div className="flex justify-center">
-                <Button
-                    text="Close"
-                    variant="blue"
-                    icon="/icons/cancel_white.png"
-                    iconPosition="right"
-                    className="px-5 py-2"
-                    onClick={() => setIsNotificationOpen(false)}
-                />
-              </div>
+              {notification.isSuccess ? "Success!" : "Error"}
+            </h3>
+            <p className="text-lg mb-6 text-center text-gray-800">
+              {notification.message}
+            </p>
+            <div className="flex justify-center">
+              <Button
+                text="Close"
+                variant="blue"
+                icon="/icons/cancel_white.png"
+                iconPosition="right"
+                className="px-5 py-2"
+                onClick={() => setIsNotificationOpen(false)}
+              />
             </div>
           </div>
+        </div>
       )}
 
       <Footer />
